@@ -14,19 +14,16 @@
  </head>
 
 <body id="gameBody">
-
- <canvas id="iCanvas" width="550" height="300"></canvas>
-
-<br>
-
+<canvas id="iCanvas" width="550" height="300"></canvas>
 <div id="hint"></div>
 
 <script type="text/javascript">
-// Инициализируем устройство ввода
-initInput('gameBody');
-
 // Создаем сцену
 scene= createScene('iCanvas', '#ceeeee');
+
+post= createPost(scene);
+
+initInput(scene);
 
 // Создаем хранилище
 data= createLocal('position_a');
@@ -38,10 +35,15 @@ a= createRect(vec2di(100, 100), vec2di(50, 50), 'black');
 // Создаем белый квадрат
 b= createRect(vec2di(300, 200), vec2di(50, 50), 'white');
 
+// Создаем белый квадрат
+c= createRect(vec2di(300, 200), vec2di(50, 50), 'green');
+
+
+
 // Описываем игровое состояние Game
 function Game() {
 
- input.upd(scene);
+ input.upd();
 
  // Выводим текст
  scene.drawText(vec2di(5,5), 'Demo J2ds. Drag & Drop');
@@ -51,12 +53,17 @@ function Game() {
  if (input.lClick && input.onNode(a)) 
  a.setPosition(input.pos);
 
-
+ if (input.lClick && input.onNode(c)) 
+ c.setPosition(input.pos);
+ 
+ 
  // Вращаем черный квадрат со скоростью 1
- a.turn(1); b.turn(-1);
+ a.turn(1); b.turn(-1); c.turn(1);
 	
 	// Отрисовываем объекты
-	a.draw(scene); b.draw(scene);
+	a.draw(scene); b.draw(scene); c.draw(scene);
+	
+	post.alphaBlur(3);
  
 }
 

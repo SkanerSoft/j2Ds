@@ -13,6 +13,8 @@
  touch : false,
  keyDown : [],
  canceled : false,
+ body : false,
+ scene : false,
  
  
  /* Функции */
@@ -63,13 +65,13 @@ function _onNode(_id) {
  (this.pos.y > _id.pos.y && this.pos.y < _id.pos.y+_id.size.y) );
 }
 
-function _Key_upd(_idScene) {
- var dX= _idScene.canvas.offsetWidth / _idScene.width;
- var dY= _idScene.canvas.offsetHeight / _idScene.height;
- this.x= (this.abs.x/dX);
- this.y= (this.abs.y/dY);
- this.pos.x= _idScene.view.x + this.x;
- this.pos.y= _idScene.view.y + this.y; 
+function _Key_upd() {
+ var dX= this.scene.canvas.offsetWidth / this.scene.width;
+ var dY= this.scene.canvas.offsetHeight / this.scene.height;
+ this.x= -this.scene.canvas.offsetLeft+(this.abs.x/dX);
+ this.y= -this.scene.canvas.offsetTop+(this.abs.y/dY);
+ this.pos.x= this.scene.view.x + this.x;
+ this.pos.y= this.scene.view.y + this.y; 
 }
 
 
@@ -107,6 +109,7 @@ function _onTouch(e) {
  input.abs.y= e.touches[0].pageY;
  input.lClick= true&&(!input.canceled);
  input.touch= true&&(!input.canceled);
+ return false;
 }
 
 function _Key_falseInput() { 
@@ -115,18 +118,20 @@ function _Key_falseInput() {
 	   input.rClick= false;
 }
 
-function initInput(_id) {
- obj(_id).ontouchstart= _onTouch;
- obj(_id).ontouchmove= _onTouch;
- obj(_id).ontouchend= function() { input.canceled= false; _Key_falseInput(); }; 
- obj(_id).oncontextmenu= function() { return false; }
- obj(_id).onselectstart= obj(_id).oncontextmenu;
- obj(_id).ondragstart= obj(_id).oncontextmenu;
- obj(_id).onmousedown= _onClick;
- obj(_id).onmouseup= function() { input.canceled= false; _Key_falseInput(); }
- obj(_id).onmousemove= _mousePosition;
- obj(_id).onkeydown= _keyEvent;
- obj(_id).onkeyup= function(e) { input.canceled= false; _keyEvent(e); };
+function initInput(_scene) {
+ input.scene= _scene;
+ input.body= window;
+ input.scene.canvas.ontouchstart= _onTouch;
+ input.scene.canvas.ontouchmove= _onTouch;
+ input.scene.canvas.ontouchend= function() { input.canceled= false; _Key_falseInput(); }; 
+ input.scene.canvas.oncontextmenu= function() { return false; }
+ input.scene.canvas.onselectstart= input.scene.canvas.oncontextmenu;
+ input.scene.canvas.ondragstart= input.scene.canvas.oncontextmenu;
+ input.scene.canvas.onmousedown= _onClick;
+ input.scene.canvas.onmouseup= function() { input.canceled= false; _Key_falseInput(); }
+ input.scene.canvas.onmousemove= _mousePosition;
+ input.body.onkeydown= _keyEvent;
+ input.body.onkeyup= function(e) { input.canceled= false; _keyEvent(e); };
 }
 
 

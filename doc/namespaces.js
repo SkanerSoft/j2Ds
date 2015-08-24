@@ -17,7 +17,7 @@ API системы распределено по отдельным файлам
 
 /*-------- Работа с объектами и сценой ---------*/
 Основной файл для подключение графического движка
-<script type="text/javascript" src="engine2D.js"></script>
+<script type="text/javascript" src="j2ds.js"></script>
 
 
 // Cтарт игры
@@ -221,7 +221,7 @@ a.setAnimation(anim); // объект анимации
 
 /*-------- enginePostEffects ---------*/
 Основной файл для подключения движка пост обработки
-<script type="text/javascript" src="enginePE.js"></script> 
+<script type="text/javascript" src="post.js"></script> 
  
 post= createPost(scene); // создает обработчик и привязывает его ко сцене
 
@@ -259,7 +259,7 @@ post.alphaBlur(vol);
 
 /*-------- engineNet ---------*/
 Основной файл для подключения сетевого движка (Не доделан)
-<script type="text/javascript" src="engineNet.js"></script>
+<script type="text/javascript" src="net.js"></script>
 
 // Jткрытие потока для работы с АJAX
 var myAjax= startajax(); 
@@ -277,16 +277,6 @@ function func(result){
 
 
 
-// Cookie
-myCookie= createCookie(id); // id - любое уникальное значение (строковое)
-
-// Сохранение данных с указанным количеством дней
-myCookie.save(id, value, days); // data.save('name', 'Василий', 20);
-
-// Загрузка данных
-myCookie.load(id); // data.load('name'); // Вернет "Василий"
-
-
 // Локальное хранилище
 myLocal= createLocal(id); // id - любое уникальное значение (строковое)
 
@@ -300,6 +290,11 @@ myLocal.load(id); // data.load('name').val; // Вернет "Василий"
   int - целочисленное
   dbl - вещественное
 
+// Сохранение данных
+myLocal.saveObject(id, value); // data.save('name', me); // Сохранит все свойства объекта
+
+// Загрузка данных
+myLocal.loadObject(id); // Вернет объект
 
 
 // Проверка существования локальной переменной
@@ -312,7 +307,7 @@ if (myLocal.is(id)) alert('Есть такая переменная');
 /*-------- engineMath ---------*/
 Основной файл для подключения движка 
 Дополнительных математических функций
-<script type="text/javascript" src="engineMath.js"></script> 
+<script type="text/javascript" src="math.js"></script> 
  
 // Вернет рандомное число между min и max
 var rnd= Random(min, max);
@@ -328,7 +323,7 @@ var rad= Rad(50); // переводит в радианы
 /*-------- engineDOM ---------*/
 Основной файл для подключение функций работы с DOM
 Деревом документа
-<script type="text/javascript" src="engineDOM.js"></script>
+<script type="text/javascript" src="dom.js"></script>
 
 // Функция обращения к объекту по ID
 obj(id); 
@@ -343,23 +338,19 @@ device().height // Высота
 
 
 
-/*-------- engineKey ---------*/
+/*-------- engineInput ---------*/
 Основной файл для подключение функций работы с клавиатурой
-<script type="text/javascript" src="engineDKey.js"></script>
+<script type="text/javascript" src="input.js"></script>
 
 Для работы с мышью есть следующие функции 
 // Координаты в игровом мире
 input.pos - vec2df объект с координатами x и y
+input.abs - vec2di объект с координатами относительно страницы
+
 
 // Координаты, проецирующиеся на СANVAS 
 input.x
 input.y
-
-
-
-
-// Абсолютные координаты относительно всего документа
-Mouse.abs - vec2df
 
 
 // Можно так же проверить нажатие клавиши мыши
@@ -382,7 +373,7 @@ input - Основной объект ввода
 // Чтобы указанные выше координаты обрабатывались корректно
 // Нужно функцию поместить в начало игрового цикла
 // Обновление координат мыши
-input.updPosition(scene); // Сцена
+input.upd(); // Сцена
 
 // Вернет true, если курсор над объектом
 input.onNode(a); // Объекь
@@ -391,7 +382,7 @@ input.onNode(a); // Объекь
 // объекта <body> с id="gameBody"
 // Эту функцию нужно поместить сразу после открытия <body>
 // Нужна, только если вы хотите пользоваться клавиатурой
-initInput('gameBody');
+initInput(scene);
 
 Для проверки нажатий клавишь достаточно использовать
 следующую конструкцию: input.keyDown[Key.LEFT], где Key - объект клавиши и возвращает сканкод

@@ -13,7 +13,7 @@
   <title>Demo Game on J2ds v.0</title>
  </head>
 
-<body id="gameBody">
+<body>
 
  <img id="imageMap" src="img/map.png" alt="">
 
@@ -24,11 +24,10 @@
 <div id="hint"></div>
 
 <script type="text/javascript">
-// Инициализируем устройство ввода
-initInput('gameBody');
-
 // Создаем сцену
 scene= createScene('iCanvas', '#ceeeee');
+
+initInput(scene);
 
 //scene.fullScreen(true);
 
@@ -57,7 +56,7 @@ turne= 0;
 // Описываем игровое состояние Game
 function Game() {
 
- input.upd(scene);
+ input.upd();
 
  turne+=0.1;
 
@@ -97,7 +96,7 @@ function Game() {
 	//post.setRotation(turne); // Угол поворота
 	
 	// Размывать при движении
-	post.alphaBlur(5);
+	post.alphaBlur(2);
 	
 	// "BETA" версия функции размытия, не оптимизированная
  //post.blurBETA(2);

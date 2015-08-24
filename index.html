@@ -13,23 +13,22 @@
   <title>BezaBead</title>
  </head>
 
-<body id="gameBody">
- <canvas id="iCanvas" width="550" height="300"></canvas>
+<body>
+<canvas id="iCanvas" width="550" height="300"></canvas>
 <div id="hint"></div>
 
 <script type="text/javascript">
 grav= 0; speed= 1; score= 0; maxScore= 0;
 
-initInput('gameBody');
-
-
 // Создаем сцену
 scene= createScene('iCanvas', '#C6E9DD');
+
+initInput(scene);
 
 post= createPost(scene);
 
 
-scene.fullScreen(true);
+//scene.fullScreen(true);
 
 gs= { r:221, g:226, b:227, max:250, min:30 };
 
@@ -106,7 +105,7 @@ function GameNew()
 {
  dY+= dY < 0 ? 1 : 0;
  // Обновление позиции мыши относительно сцены
- input.upd(scene);
+ input.upd();
  
  if (input.keyDown[key.UP] || input.lClick) {
   CreateGame();
@@ -117,6 +116,7 @@ function GameNew()
     'bold 40px Courier New', '#326598');
  scene.drawText(vec2df(150, 150+dY), 'Коснись экрана, чтобы начать');
  
+ post.alphaBlur(2); 
 }
 
 
@@ -125,7 +125,7 @@ function GameOver()
 {
  d2Y+= d2Y < 0 ? 1 : 0;
  // Обновление позиции мыши относительно сцены
- input.upd(scene);
+ input.upd();
  
  if (input.keyDown[key.UP] || (input.lClick)) {
   CreateGame();
@@ -139,14 +139,14 @@ function GameOver()
  scene.drawText(vec2df(180, 190+d2Y), 'Самый крутой счет: '+maxScore);
  
  
- post.motionBlur(3);
+ post.alphaBlur(2); 
 }
 
 // Инициализируем игровой цикл
 function Engine() {
 
  // Обновление позиции мыши относительно сцены
- input.upd(scene);
+ input.upd();
  
  grav+=grav > -3 ? -0.5 : 0;
   
@@ -224,6 +224,8 @@ function Engine() {
 
  // Выводим текст
  scene.drawText(vec2df(10, 5), 'Счет: '+score+' | Рекорд: '+maxScore); 
+ 
+ post.alphaBlur(2); 
  
 }  
 

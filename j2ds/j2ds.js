@@ -173,9 +173,6 @@ function createScene(_canvas, _color) {
  o.canvas.style.WebkitTransform= 'scale3dZ(1)'; 
  o.canvas.style.transform= 'translate3d(0,0,0)';
  
- o.canvas.style.position= 'fixed';
- o.canvas.style.left= '0px';
- o.canvas.style.top= '0px';
  o.canvas.style.width=  o.width+'px';
  o.canvas.style.height=  o.height+'px';
  
