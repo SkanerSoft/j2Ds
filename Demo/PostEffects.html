@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <script type="text/javascript" src="j2ds/engineMath.js"></script>
+  <script type="text/javascript" src="j2ds/engineKey.js"></script>   
+  <script type="text/javascript" src="j2ds/engineDOM.js"></script>
+  <script type="text/javascript" src="j2ds/engine2D.js"></script>
+  <script type="text/javascript" src="j2ds/engineNet.js"></script>
+  <script type="text/javascript" src="j2ds/engineParticles.js"></script>
+  <script type="text/javascript" src="j2ds/enginePE.js"></script>  
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width,user-scalable=no" />  
+  <title>Demo Game on J2ds v.0</title>
+ </head>
+
+<body id="gameBody">
+
+ <img id="imageMap" src="img/map.png" alt="">
+
+ <canvas id="iCanvas" width="550" height="300"></canvas>
+
+<br>
+
+<div id="hint"></div>
+
+<script type="text/javascript">
+// Инициализируем устройство ввода
+initInput('gameBody');
+
+// Создаем сцену
+scene= createScene('iCanvas', '#ceeeee');
+
+//scene.fullScreen(true);
+
+post= createPost(scene);
+
+// Если экран маленький, разворачиваем приложение на весь экран
+if (device().width < 600) scene.fullScreen(true);
+
+// Создаем карту изображения
+imageMap= createImageMap('imageMap');
+
+// Создаем анимационную текстуру
+anim= imageMap.createAnimation(0, 0, 50, 50, 2);
+
+// Создаем спрайт и накладываем на него текстуру
+s= createSprite(vec2di(200, 200), vec2di(40, 40), anim);
+
+// Создаем черный квадрат
+a= createRect(vec2di(100, 100), vec2di(50, 50), 'black');
+
+// Создаем белый квадрат
+b= createRect(vec2di(300, 200), vec2di(50, 50), 'white');
+
+turne= 0;
+
+// Описываем игровое состояние Game
+function Game() {
+
+ turne+=0.1;
+
+ // Выводим текст
+ scene.drawText(vec2di(5,5), 'Demo J2ds. Rotations');
+ 
+ // Управляем черным квадратом со скоростью 3 пикселя за одну игровую итерацию Game
+	a.keyControl(3);
+
+ // Вращаем черный квадрат со скоростью 1
+ a.turn(1); 
+ 
+ // Вращаем белый квадрат в обратную сторону
+ b.turn(-3);
+ 
+ // Вращаем спрайт, рассчитывая скорость на основе дистанции между объектами
+ // чем ближе черный квадрат к спрайту, тем он медленнее вращается
+ s.turn(a.getDistance(s)*0.1);
+	
+	// Отрисовываем объекты
+	a.draw(scene);
+	b.draw(scene);
+	
+	// Тут рисуем всю анимацию с замедлением в 10
+	s.drawAnimate(scene, 10);
+	
+	// Сепия
+	//post.sepia();
+	
+	//Инвертирование цветов
+	//post.invert();
+	
+	// Затемнить или осветить
+	//post.lightness(-50);
+	
+	//Вращать сцену
+	//post.setRotation(turne); // Угол поворота
+	
+	// Размывать при движении
+	// post.motionBlur(6);
+	
+	// "BETA" версия функции размытия, не оптимизированная
+ //post.blurBETA(2);
+ 
+}
+
+// Стартуем игру с игровым состоянием Game и FPS 25
+startGame(Game, 60);
+</script>
+
+</body>
+</html>

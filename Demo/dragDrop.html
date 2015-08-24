@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <script type="text/javascript" src="j2ds/engineMath.js"></script>
+  <script type="text/javascript" src="j2ds/engineKey.js"></script>   
+  <script type="text/javascript" src="j2ds/engineDOM.js"></script>
+  <script type="text/javascript" src="j2ds/engine2D.js"></script>
+  <script type="text/javascript" src="j2ds/engineNet.js"></script>
+  <script type="text/javascript" src="j2ds/engineParticles.js"></script>
+  <script type="text/javascript" src="j2ds/enginePE.js"></script>  
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width,user-scalable=no" />  
+  <title>Demo Game on J2ds v.0</title>
+ </head>
+
+<body id="gameBody">
+
+ <canvas id="iCanvas" width="550" height="300"></canvas>
+
+<br>
+
+<div id="hint"></div>
+
+<script type="text/javascript">
+// Инициализируем устройство ввода
+initInput('gameBody');
+
+// Создаем сцену
+scene= createScene('iCanvas', '#ceeeee');
+
+// Создаем хранилище
+data= createLocal('position_a');
+
+// Создаем черный квадрат
+a= createRect(vec2di(100, 100), vec2di(50, 50), 'black');
+
+
+// Создаем белый квадрат
+b= createRect(vec2di(300, 200), vec2di(50, 50), 'white');
+
+// Описываем игровое состояние Game
+function Game() {
+
+ input.upd(scene);
+
+ // Выводим текст
+ scene.drawText(vec2di(5,5), 'Demo J2ds. Drag & Drop');
+
+ a.color= input.onNode(a)?'red':'black';
+
+ if (input.lClick && input.onNode(a)) 
+ a.setPosition(input.pos);
+
+
+ // Вращаем черный квадрат со скоростью 1
+ a.turn(1); b.turn(-1);
+	
+	// Отрисовываем объекты
+	a.draw(scene); b.draw(scene);
+ 
+}
+
+// Стартуем игру с игровым состоянием Game и FPS 25
+startGame(Game, 60);
+</script>
+
+</body>
+</html>
