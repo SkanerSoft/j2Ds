@@ -421,6 +421,55 @@ function createBaseNode(_pos, _size) {
 
 
 
+
+
+
+/*-------------- Сферы ----------------*/
+
+//! Создание объекта
+function createCircle(_pos, _radius, _color)
+{
+ var o= createBaseNode(_pos, vec2df(_radius*2, _radius*2));
+ /*Свойства*/
+ o.color= _color; 
+ o.radius= _radius;
+ 
+ /*Функции*/
+ o.draw= _drawCircle;
+ return o;
+}
+
+
+//! системная 
+//! Отрисовка прямоугольника
+function _drawCircle(_scene)
+{
+ if (this.visible  && this.lookScene(_scene))
+ {  
+  var newX= (this.parent?this.parent.pos.x:0);
+  if (_scene.context.fillStyle != this.color) _scene.context.fillStyle= this.color;
+
+
+  var newY= (this.parent?this.parent.pos.y:0); 
+  
+  _scene.context.beginPath();
+  _scene.context.arc(newX+this.pos.x-_scene.view.x+this.radius, 
+                     newY+this.pos.y-_scene.view.y+this.radius, 
+                     this.radius, 0, 2*Math.PI,true);
+  _scene.context.stroke();  
+  _scene.context.fill();
+      
+ }
+}
+
+
+
+
+
+
+
+
+
 /*-------------- Линии ----------------*/
 
 //! Создание объекта "Линия"

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <script type="text/javascript" src="../j2ds/math.js"></script>
+  <script type="text/javascript" src="../j2ds/input.js"></script>   
+  <script type="text/javascript" src="../j2ds/dom.js"></script>
+  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width,user-scalable=no" />  
+  <title>Demo J2ds. Псевдофизика</title>
+ </head>
+
+<body>
+
+ <canvas id="iCanvas" width="550" height="300"></canvas>
+
+<br>
+
+<div id="hint"></div>
+
+<script type="text/javascript">
+
+/*----------------
+Пример организации примитивной физики столкновений с границей сцены
+Аналогичным образом можно использовать столкновения с другими объектами
+----------------*/
+
+// Создаем сцену
+scene= createScene('iCanvas', '#ceeeee');
+
+// Инициализируем устройство ввода
+initInput(scene);
+
+// создаем шар A
+a= createCircle(vec2df(10, 10), 20, 'green');
+a.grav= 1; 
+
+// Создаем шар Б
+b= createCircle(vec2df(150, 10), 20, 'black');
+b.grav= 3;
+
+// Описываем игровое состояние Game
+function Game() {
+ // обновляем позицию курсора / касания
+ input.upd();
+
+ // Тач/Клик вызывает прыжок шара А
+ if (input.lClick) jump(a);
+
+ // Клик правой кнопкой установит координаты шару А такими, как у курсора
+ if (input.rClick) 
+ {
+  // обнуляем ускорение падения, подвешивая элемент
+  a.grav= 0;
+  // Позиционируем в курсор
+  a.setPosition(input.pos);
+ }
+
+ // Применяем физику к объектам
+ phys(a);
+ phys(b);
+}
+
+
+// функция прыжка
+function jump(_id) {
+ // если объекту есть опора у нижней границей сцены 
+ if (_id.collisionScene(scene).y > 0)
+ {
+  // заставляем объект прыгнуть
+  _id.grav= -10;
+  // отменяем ввод
+  input.cancel();
+ }
+}
+
+
+// функция физики
+function phys(_id) {
+ // увеличиваем ускорение падения, пока оно меньше 7, больше семи не поднимаем
+ _id.grav+= _id.grav > 7 ? 0 : 0.1;
+ // проверяем столкновение с нижней границей сцены
+ if (_id.collisionScene(scene).y > 0)
+ {
+  // избегаем прохода сквозь границу
+  _id.pos.y= -_id.size.y+scene.height;
+  // инвертируем гравитацию, отталкивая объект вверх
+  _id.grav= (-_id.grav*0.7);
+  // если гравитация слишком маленькая чтобы падать или прыгать, обнуляем ее, чтобы
+  // объект не деркаглся
+  if ((_id.grav > 0 && _id.grav < 0.5) || (_id.grav > -0.5 && _id.grav < 0))
+   _id.grav= 0;
+ }
+ // двигаем в соответствии с параметром гравитации
+ _id.move(vec2df(0, _id.grav));
+ // отрисовываем на сцену
+ _id.draw(scene); 
+}
+
+// Стартуем игру с игровым состоянием Game и FPS 60
+startGame(Game, 60);
+</script>
+
+</body>
+</html>

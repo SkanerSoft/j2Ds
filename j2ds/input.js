@@ -100,6 +100,7 @@ function _onClick(e) {
  input.lClick= (e.which == 1?true:false)&&(!input.canceled);
  input.mClick= (e.which == 2?true:false)&&(!input.canceled);
  input.rClick= (e.which == 3?true:false)&&(!input.canceled);
+ input.body.focus();
  return false; 
 }
 
@@ -109,6 +110,7 @@ function _onTouch(e) {
  input.abs.y= e.touches[0].pageY;
  input.lClick= true&&(!input.canceled);
  input.touch= true&&(!input.canceled);
+ input.body.focus();
  return false;
 }
 
@@ -121,6 +123,7 @@ function _Key_falseInput() {
 function initInput(_scene) {
  input.scene= _scene;
  input.body= window;
+ input.body.focus();
  input.scene.canvas.ontouchstart= _onTouch;
  input.scene.canvas.ontouchmove= _onTouch;
  input.scene.canvas.ontouchend= function() { input.canceled= false; _Key_falseInput(); }; 

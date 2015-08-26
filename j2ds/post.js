@@ -39,7 +39,6 @@ function _PE_alphaBlur(_vol) {
    this.scene.context.fillRect(-rX, -rY, this.scene.width+rX*2, this.scene.height+rY*2);
   }
  } 
-
  delete img;
 }
 

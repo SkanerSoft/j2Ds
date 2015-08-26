@@ -174,8 +174,17 @@ a= CreateRect(
                vec2df(x, y), // Размеры
                'rgb(150,100,100)' // Цвет
               );
+
+
+a= createCircle(
+                 vec2df(x, y), // Позиция
+                 radius,
+                 color
+);
               
-// Рисование прямоугольника
+              
+              
+// Рисование
 a.draw(scene); // scene - объект сцены
 
 
