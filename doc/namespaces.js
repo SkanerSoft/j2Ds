@@ -256,8 +256,8 @@ post.blurBETA(vol);
 // Размытие при движении 2
 post.alphaBlur(vol);
 
-
-
+	// функция преобразования Mirror
+ post.mirror(x_true, y_true);
 
 
 

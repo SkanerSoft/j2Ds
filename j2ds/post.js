@@ -13,7 +13,25 @@ function createPost(_scene){
  o.motionBlur= _PE_motionBlur;
  o.blurBETA= _PE_blurBETA;
  o.alphaBlur= _PE_alphaBlur; 
+ o.mirror= _PE_mirror;  
  return o;
+}
+
+
+function _PE_mirror(_x, _y) {
+ var img= this.scene.context.createPattern(this.scene.canvas, 'no-repeat');
+ 
+ this.scene.clearDraw(); 
+  
+ this.scene.context.save();
+	this.scene.context.translate(this.scene.width/2, this.scene.height/2);
+ this.scene.context.scale(_x ? -1 : 1, _y ? -1 : 1);
+ this.scene.context.translate(-this.scene.width/2, -this.scene.height/2);
+ this.scene.context.fillStyle = img;
+ this.scene.context.fillRect(0, 0, this.scene.width, this.scene.height); 
+ 
+ this.scene.context.restore(); 
+ delete img;
 }
 
 
