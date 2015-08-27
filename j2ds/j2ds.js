@@ -1,9 +1,9 @@
 /* Константы */
-now = 0;
-framelimit= 60;
-sceneStartTime = 0,
-sceneSkipTime = 0;
-FDT= 0;
+var now = 0;
+var _framelimit= 60;
+var _sceneStartTime = 0;
+var _sceneSkipTime = 0;
+var _FDT= 0;
 
 function vec2df(_x, _y) { return { x: _x, y: _y }; }
 function vec2di(_x, _y) { return { x: Math.ceil(_x), y: Math.ceil(_y) }; }
@@ -11,10 +11,10 @@ function vec2di(_x, _y) { return { x: Math.ceil(_x), y: Math.ceil(_y) }; }
 /* Игровой процесс */
 
 //! Старт игрового цикла с ограничением FPS
-function startGame(_engine, _framelimit) {
+function startGame(_engine, __framelimit) {
  _engine= _engine || function() { document.body.innerHTML= 'Пожалуйста, инициализируйте игровую функцию!'; };;
- framelimit= _framelimit || framelimit;
- sceneSkipTime = 1000 / framelimit;
+ _framelimit= __framelimit || _framelimit;
+ _sceneSkipTime = 1000 / _framelimit;
  activeEngine= _engine;
 	nextGameStep(gameEngine);
 }
@@ -32,9 +32,9 @@ function exitGame() {
 //! Игровой цикл, вызывается автоматически
 function gameEngine(){
  now= Date.now();
- if (now - sceneStartTime > sceneSkipTime)
+ if (now - _sceneStartTime > _sceneSkipTime)
  {  
-  sceneStartTime = Date.now();
+  _sceneStartTime = Date.now();
   scene.clearDraw();
   activeEngine();
  }
@@ -49,7 +49,7 @@ var nextGameStep = (function(){
         window.oRequestAnimationFrame      ||
         window.msRequestAnimationFrame     ||
         function(callback){
-            window.setTimeout(callback, 1000 / framelimit);
+            window.setTimeout(callback, 1000 / _framelimit);
         };
 })();
 
@@ -441,7 +441,7 @@ function createCircle(_pos, _radius, _color)
 
 
 //! системная 
-//! Отрисовка прямоугольника
+//! Отрисовка
 function _drawCircle(_scene)
 {
  if (this.visible  && this.lookScene(_scene))
@@ -457,8 +457,7 @@ function _drawCircle(_scene)
                      newY+this.pos.y-_scene.view.y+this.radius, 
                      this.radius, 0, 2*Math.PI,true);
   _scene.context.stroke();  
-  _scene.context.fill();
-      
+  _scene.context.fill();  
  }
 }
 
@@ -473,19 +472,6 @@ function _drawCircle(_scene)
 /*-------------- Линии ----------------*/
 
 //! Создание объекта "Линия"
-/* a= CreateLine(
-              120, 80, // Координаты в игре 
-              [ // масив координат для точек
-               [40, 0],
-               [0, 24],
-               [20, -15],
-               [30, 24],
-               [0, -1]
-              ], 1, // Масштабирование (1 - оригинальный)
-               'green', 2, // Цвет, толщина
-               true, 'yellow'); // Закрашивать цветом */
-// Пример выше создаст "звезду" из линий
-// Количество координат может быть любым
 function createLine(_pos, _points, _scale, _color, _width, _fill, _cFill)
 {
  var o= createBaseNode(_pos, vec2df(0,0));
@@ -577,8 +563,7 @@ function  _2D_drawText()
   
   this.scene.context.strokeText(this.text, newX+this.pos.x-this.scene.view.x, newY+this.pos.y-this.scene.view.y);
   this.scene.context.fillText(this.text, newX+this.pos.x-this.scene.view.x, newY+this.pos.y-this.scene.view.y);   
-  
-
+ 
   this.scene.context.restore();      
  }
 }
@@ -598,11 +583,6 @@ function  _2D_drawText()
 /*-------------- Прямоугольники ----------------*/
 
 //! Создание объекта "Прямоугольник"
-/* Rect= CreateRect( 
-               90, 20, // Положение
-               50, 50, // Размеры
-               'rgb(150,100,100)' // Цвет
-              ); */
 function createRect(_pos, _size, _color)
 {
  var o= createBaseNode(_pos, _size);

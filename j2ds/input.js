@@ -14,15 +14,8 @@
  keyDown : [],
  canceled : false,
  body : false,
- scene : false,
- 
- 
- /* Функции */
- cancel : _Key_cancel,
- upd : _Key_upd,
- onNode : _onNode,
- getPosition  :  _Key_getPosition
-};
+ scene : false
+}
 
 
 // Константы клавиш
@@ -34,15 +27,15 @@ key= {
  SPACE : 32,
  ESC : 27
  
-};
+}
 
-function _Key_getPosition()
+input.getPosition= function()
 {
  return vec2df(this.pos.x, this.pos.y);
 }
 
 
-function _keyEvent(e) {
+function _input_keyEvent(e) {
  input.keyDown[e.keyCode] = (e.type == 'keydown')&&(!input.canceled);
  pKey= e.keyCode; 
  return false;
@@ -50,22 +43,22 @@ function _keyEvent(e) {
 
 //! системная
 // Вернет true, если мышь назодится над объектом
-function _Key_cancel(_id) {
+input.cancel= function(_id) {
 	input.canceled= true;
-	 _Key_falseInput();
+	 _input_falseInput();
 	 input.keyDown= [];
 }
 
 //! системная
 // Вернет true, если мышь назодится над объектом
-function _onNode(_id) {
+input.onNode= function(_id) {
 	return (
  (this.pos.x > _id.pos.x && this.pos.x < _id.pos.x+_id.size.x)
   &&
  (this.pos.y > _id.pos.y && this.pos.y < _id.pos.y+_id.size.y) );
 }
 
-function _Key_upd() {
+input.upd= function() {
  var dX= this.scene.canvas.offsetWidth / this.scene.width;
  var dY= this.scene.canvas.offsetHeight / this.scene.height;
  this.x= -this.scene.canvas.offsetLeft+(this.abs.x/dX);
@@ -75,7 +68,7 @@ function _Key_upd() {
 }
 
 
-function _mousePosition(e) {
+function _input_cursorPosition(e) {
  if (!input.touch)
  {
   if (document.all)  { 
@@ -91,7 +84,7 @@ function _mousePosition(e) {
 }
 
 
-function _onClick(e) {
+function _input_onClick(e) {
  if (!e.which && e.button) {
    if (e.button & 1) e.which = 1;
    else if (e.button & 4) e.which = 2;
@@ -104,7 +97,7 @@ function _onClick(e) {
  return false; 
 }
 
-function _onTouch(e) {
+function _input_onTouch(e) {
  e.preventDefault();
  input.abs.x= e.touches[0].pageX;
  input.abs.y= e.touches[0].pageY;
@@ -114,7 +107,7 @@ function _onTouch(e) {
  return false;
 }
 
-function _Key_falseInput() { 
+function _input_falseInput() { 
 	 input.lClick= 
 	  input.mClick= 
 	   input.rClick= false;
@@ -124,17 +117,17 @@ function initInput(_scene) {
  input.scene= _scene;
  input.body= window;
  input.body.focus();
- input.scene.canvas.ontouchstart= _onTouch;
- input.scene.canvas.ontouchmove= _onTouch;
- input.scene.canvas.ontouchend= function() { input.canceled= false; _Key_falseInput(); }; 
+ input.scene.canvas.ontouchstart= _input_onTouch;
+ input.scene.canvas.ontouchmove= _input_onTouch;
+ input.scene.canvas.ontouchend= function() { input.canceled= false; _input_falseInput(); }; 
  input.scene.canvas.oncontextmenu= function() { return false; }
  input.scene.canvas.onselectstart= input.scene.canvas.oncontextmenu;
  input.scene.canvas.ondragstart= input.scene.canvas.oncontextmenu;
- input.scene.canvas.onmousedown= _onClick;
- input.scene.canvas.onmouseup= function() { input.canceled= false; _Key_falseInput(); }
- input.scene.canvas.onmousemove= _mousePosition;
- input.body.onkeydown= _keyEvent;
- input.body.onkeyup= function(e) { input.canceled= false; _keyEvent(e); };
+ input.scene.canvas.onmousedown= _input_onClick;
+ input.scene.canvas.onmouseup= function() { input.canceled= false; _input_falseInput(); }
+ input.scene.canvas.onmousemove= _input_cursorPosition;
+ input.body.onkeydown= _input_keyEvent;
+ input.body.onkeyup= function(e) { input.canceled= false; _input_keyEvent(e); };
 }
 
 

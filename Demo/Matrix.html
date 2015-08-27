@@ -5,15 +5,12 @@
   <script type="text/javascript" src="../j2ds/input.js"></script>   
   <script type="text/javascript" src="../j2ds/dom.js"></script>
   <script type="text/javascript" src="../j2ds/j2ds.js"></script>
-  <script type="text/javascript" src="../j2ds/net.js"></script>
-  <script type="text/javascript" src="../j2ds/particles.js"></script>
-  <script type="text/javascript" src="../j2ds/post.js"></script>  
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />  
-  <title>Demo Game on J2ds v.0</title>
+  <title>Demo J2ds. Псевдофизика</title>
  </head>
 
-<body id="gameBody">
+<body>
 
  <canvas id="iCanvas" width="550" height="300"></canvas>
 
@@ -22,6 +19,12 @@
 <div id="hint"></div>
 
 <script type="text/javascript">
+
+/*----------------
+Пример организации примитивной физики столкновений с границей сцены
+Аналогичным образом можно использовать столкновения с другими объектами
+----------------*/
+
 // Создаем сцену
 scene= createScene('iCanvas', '#ceeeee');
 
@@ -33,11 +36,8 @@ initInput(scene);
 function Game() {
  input.upd();
 
-	
-
 }
 
-// Стартуем игру с игровым состоянием Game и FPS 25
 startGame(Game, 60);
 </script>
 
