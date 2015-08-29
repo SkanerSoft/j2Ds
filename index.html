@@ -148,7 +148,7 @@ function Engine() {
   
 
  for (var i= 0; i<count; i+=1) {
-  if (!back[i].lookScene(scene) && back[i].pos.x < a.pos.x)
+  if (!back[i].isLookScene(scene) && back[i].pos.x < a.pos.x)
    {
     back[i].color= gsDark(0.2);
     back[i].setPosition(vec2df(scene.view.x+800+oldB.size.x, 
@@ -192,7 +192,7 @@ function Engine() {
    
    
   
-    if (!arr[i].lookScene(scene) && arr[i].pos.x < a.pos.x)
+    if (!arr[i].isLookScene(scene) && arr[i].pos.x < a.pos.x)
     {
      arr[i].setSize(vec2df(speed+Random(20, 100), 20));
      arr[i].setPosition(vec2df(old.getPosition().x+old.size.x+speed*2+Random(0, 20), -speed+old.getPosition().y/2-Random(0, 20)));
