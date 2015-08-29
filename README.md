@@ -1,6 +1,8 @@
 # J2ds
 
+<div aling="center">
 <img src="http://s1.uploadpics.ru/images/-11yPdPEBl.png" width="400" alt=""/>
+</div>
 
 J2ds - is framework for API HTML5 - Canvas.
 
