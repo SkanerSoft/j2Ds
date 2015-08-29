@@ -7,4 +7,4 @@ J2ds - is framework for API HTML5 - Canvas.
 See to "Demo" folder and "doc".
 
 Смотрите папку Demo с примерами и doc с описанием функций.
-Так же на Wiki-странице проекта есть информация по объектам.
+Так же на <a href="https://github.com/SkanerSoft/J2ds/wiki">Wiki-странице</a> проекта есть информация по объектам.
