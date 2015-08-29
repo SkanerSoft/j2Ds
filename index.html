@@ -21,9 +21,8 @@
 grav= 0; speed= 1; score= 0; maxScore= 0;
 
 // Создаем сцену
-scene= createScene('iCanvas', '#C6E9DD');
-
-initInput(scene);
+scene.init('iCanvas', '#C6E9DD');
+input.init();
 
 post= createPost(scene);
 
@@ -54,27 +53,24 @@ scene.color= 'rgb('+gs.r+','+
                        gs.b+')';
 
 function CreateGame() {
-
-
-
  grav= 0; speed= 5; score= 0;
 
  // Создаем прямоугольник
- a= createRect( vec2df(0, -50),
+ a= addRectNode( vec2df(0, -50),
                 vec2df(20, 20),
                 gsDark()
                ); 
  a.setRotation(30);
 
  arr= []; count= 13;
- arr[0]= createRect(vec2df(0, 0),
+ arr[0]= addRectNode(vec2df(0, 0),
                 vec2df(200, 20),
                 gsDark()
                ); 
  old= arr[0];
  
  for (var i= 1; i<count; i+=1) {
-  arr[i]= createRect( 
+  arr[i]= addRectNode( 
           vec2df(old.pos.x+old.size.x+Random(2, 10), old.pos.y-Random(0,2) ),
           vec2df(Random(30, 60), 20),
                 old.color
@@ -83,14 +79,14 @@ function CreateGame() {
  }
  
  back= [];
- back[0]= createRect(vec2df(50, 0), 
+ back[0]= addRectNode(vec2df(50, 0), 
                 vec2df(100, 100),
                 gsDark(0.2)
                );
  oldB= back[0];
                
  for (var i= 1; i<count; i+=1) {
-  back[i]= createRect( 
+  back[i]= addRectNode( 
            vec2df(oldB.pos.x+oldB.size.x+Random(2, 10), oldB.pos.y-Random(0, 200)),
                 vec2df(Random(10, 100), Random(10, 100)),
                 gsDark(0.2)
@@ -109,7 +105,7 @@ function GameNew()
  
  if (input.keyDown[key.UP] || input.lClick) {
   CreateGame();
-  setActivEngine(Engine); 
+  scene.setEngine(Engine); 
  }
  
  scene.drawTextOpt(vec2df(170, 80+dY), 'BezaBead',
@@ -129,7 +125,7 @@ function GameOver()
  
  if (input.keyDown[key.UP] || (input.lClick)) {
   CreateGame();
-  setActivEngine(Engine); 
+  scene.setEngine(Engine); 
  }
  
  scene.drawTextOpt(vec2df(160, 80+d2Y), 'Game Over',
@@ -171,12 +167,12 @@ function Engine() {
     back[i].move(vec2df(speed-(speed*back[i].size.x*0.05),0));
    }   
    
-   back[i].draw(scene);
+   back[i].draw();
  }
 
  for (var i= 0; i<count; i+=1) {
 
-    if (a.collision(arr[i])) {
+    if (a.isCollision(arr[i])) {
      if (a.getPosition().y+a.size.y/2-3 < arr[i].getPosition().y-arr[i].size.y/2 && a.pos.x+a.size.x > arr[i].pos.x) {
        a.setRotation(0); grav= 0;
        if (input.keyDown[key.UP] || input.lClick) grav= 5; 
@@ -184,7 +180,7 @@ function Engine() {
       a.color= 'red'; 
       d2Y= -60; 
       maxScore= maxScore>score?maxScore:score;
-      setActivEngine(GameOver); 
+      scene.setEngine(GameOver); 
       input.cancel();
      }
     }
@@ -203,7 +199,7 @@ function Engine() {
      old= arr[i]; 
      score+= 1; 
     }
-    arr[i].draw(scene);
+    arr[i].draw();
     
     
        
@@ -213,14 +209,13 @@ function Engine() {
  speed+= ((speed < 30 && grav == 0 )? (0.05) : ((speed > 1 && grav > 0) ? (-0.05) : 0));  
  a.move(vec2df(speed, -grav)); if (grav != 0) a.turn(2+Math.abs(grav));
 
-  
 
  // Альтернативный вариант позиционирования камеры 
- scene.vFocus(a, vec2df(100, -50));
+ scene.setViewFocus(a, vec2df(100, -50));
 
 
  // Рисуем наши объекты
- a.draw(scene);
+ a.draw();
 
  // Выводим текст
  scene.drawText(vec2df(10, 5), 'Счет: '+score+' | Рекорд: '+maxScore); 
@@ -229,7 +224,7 @@ function Engine() {
 }  
 
 // Запускаем игру с 30 FPS
-startGame(GameNew, 30);
+scene.start(GameNew, 30);
 </script>
 
 </body>

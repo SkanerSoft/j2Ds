@@ -1,7 +1,6 @@
-function createPost(_scene){
+function createPost(){
  var o= {};
  /*Свойства*/
- o.scene= _scene;
  o.blurFrames= [];
  
  /*Функции*/
@@ -19,30 +18,30 @@ function createPost(_scene){
 
 
 function _PE_mirror(_x, _y) {
- var img= this.scene.context.createPattern(this.scene.canvas, 'no-repeat');
+ var img= scene.context.createPattern(scene.canvas, 'no-repeat');
  
- this.scene.clearDraw(); 
+ scene.clear(); 
   
- this.scene.context.save();
-	this.scene.context.translate(this.scene.width/2, this.scene.height/2);
- this.scene.context.scale(_x ? -1 : 1, _y ? -1 : 1);
- this.scene.context.translate(-this.scene.width/2, -this.scene.height/2);
- this.scene.context.fillStyle = img;
- this.scene.context.fillRect(0, 0, this.scene.width, this.scene.height); 
+ scene.context.save();
+	scene.context.translate(scene.width/2, scene.height/2);
+ scene.context.scale(_x ? -1 : 1, _y ? -1 : 1);
+ scene.context.translate(-scene.width/2, -scene.height/2);
+ scene.context.fillStyle = img;
+ scene.context.fillRect(0, 0, scene.width, scene.height); 
  
- this.scene.context.restore(); 
+ scene.context.restore(); 
  delete img;
 }
 
 
 function _PE_alphaBlur(_vol) {
  _vol= Math.ceil(_vol);
- this.blurFrames.push(this.scene.context.createPattern(this.scene.canvas, 'no-repeat'));
+ this.blurFrames.push(scene.context.createPattern(scene.canvas, 'no-repeat'));
  
  if (this.blurFrames.length >= _vol) this.blurFrames.shift(); 
  
- this.scene.context.fillStyle = this.blurFrames[_vol]; 
- this.scene.context.globalAlpha = 1; 
+ scene.context.fillStyle = this.blurFrames[_vol]; 
+ scene.context.globalAlpha = 1; 
  
  var blurStep= 1/_vol; 
  
@@ -52,22 +51,21 @@ function _PE_alphaBlur(_vol) {
   {
    var rX= Random(2,10);
    var rY= Random(2,10);   
-   this.scene.context.globalAlpha -= blurStep;
-   this.scene.context.fillStyle = this.blurFrames[i];
-   this.scene.context.fillRect(-rX, -rY, this.scene.width+rX*2, this.scene.height+rY*2);
+   scene.context.globalAlpha -= blurStep;
+   scene.context.fillStyle = this.blurFrames[i];
+   scene.context.fillRect(-rX, -rY, scene.width+rX*2, scene.height+rY*2);
   }
  } 
- delete img;
 }
 
 
 function _PE_motionBlur(_vol) {
  _vol= Math.ceil(_vol);
- this.blurFrames.push(this.scene.context.createPattern(this.scene.canvas, 'no-repeat'));
+ this.blurFrames.push(scene.context.createPattern(scene.canvas, 'no-repeat'));
  
  if (this.blurFrames.length >= _vol) this.blurFrames.shift(); 
  
- this.scene.context.fillStyle = this.blurFrames[_vol];  
+ scene.context.fillStyle = this.blurFrames[_vol];  
  
  var blurStep= 1/_vol; 
  
@@ -75,12 +73,12 @@ function _PE_motionBlur(_vol) {
  {
   if (this.blurFrames[i])
   {
-   this.scene.context.globalAlpha -= blurStep;
-   this.scene.context.fillStyle = this.blurFrames[i];
-   this.scene.context.fillRect(0, 0, this.scene.width, this.scene.height);
+   scene.context.globalAlpha -= blurStep;
+   scene.context.fillStyle = this.blurFrames[i];
+   scene.context.fillRect(0, 0, scene.width, scene.height);
   }
  } 
- this.scene.context.globalAlpha = 1; 
+ scene.context.globalAlpha = 1; 
 
  delete img;
 }
@@ -89,29 +87,29 @@ function _PE_motionBlur(_vol) {
 
 function _PE_lightness(_vol) {
  _vol= _vol || 10;
- var img= this.scene.context.getImageData(0, 0, 
-                                          this.scene.width, 
-                                          this.scene.height);	
+ var img= scene.context.getImageData(0, 0, 
+                                          scene.width, 
+                                          scene.height);	
  var pixels= img.data; 
  for (var i = 0, n = pixels.length; i < n; i += 4) {
   pixels[i] += _vol; 
   pixels[i+1] += _vol; 
   pixels[i+2] += _vol;  
  }
-	this.scene.context.putImageData(img, 0, 0);
+	scene.context.putImageData(img, 0, 0);
 	delete img;
 }
 
 
 
 function _PE_blurBETA(_vol) {
- var img= this.scene.context.getImageData(0, 0, 
-                                          this.scene.width, 
-                                          this.scene.height);	
+ var img= scene.context.getImageData(0, 0, 
+                                          scene.width, 
+                                          scene.height);	
  var pixels= img.data; 
  for (br = 0; br < _vol; br += 1) {
   for (var i = 0, n = pixels.length; i < n; i += 4) {
-   var iMW = 4 * this.scene.width;
+   var iMW = 4 * scene.width;
    var iSumOpacity = iSumRed = iSumGreen = iSumBlue = 0;
    var iCnt = 0;
             var aCloseData = [
@@ -137,7 +135,7 @@ function _PE_blurBETA(_vol) {
     }
 
 
-	this.scene.context.putImageData(img, 0, 0);
+	scene.context.putImageData(img, 0, 0);
 	delete img;
 }
 
@@ -146,12 +144,12 @@ function _PE_blurBETA(_vol) {
 
 
 function _PE_flip(_angle) {
- var img= this.scene.context.createPattern(this.scene.canvas, 'no-repeat');
+ var img= scene.context.createPattern(scene.canvas, 'no-repeat');
  
- this.scene.clearDraw(); 
+ scene.clear(); 
 
- this.scene.context.fillStyle = img;
- this.scene.context.fillRect(this.scene.width, 0, -this.scene.width, this.scene.height); 
+ scene.context.fillStyle = img;
+ scene.context.fillRect(scene.width, 0, -scene.width, scene.height); 
 
  delete img;
 }
@@ -160,43 +158,43 @@ function _PE_flip(_angle) {
 
 
 function _PE_setRotation(_angle) {
- var img= this.scene.context.createPattern(this.scene.canvas, 'no-repeat');
+ var img= scene.context.createPattern(scene.canvas, 'no-repeat');
  
- this.scene.clearDraw(); 
+ scene.clear(); 
   
- this.scene.context.save();
-	this.scene.context.translate(this.scene.width/2, this.scene.height/2);
- this.scene.context.rotate(Rad(_angle));
- this.scene.context.translate(-this.scene.width/2, -this.scene.height/2);
+ scene.context.save();
+	scene.context.translate(scene.width/2, scene.height/2);
+ scene.context.rotate(Rad(_angle));
+ scene.context.translate(-scene.width/2, -scene.height/2);
  
- this.scene.context.fillStyle = img;
- this.scene.context.fillRect(0, 0, this.scene.width, this.scene.height); 
+ scene.context.fillStyle = img;
+ scene.context.fillRect(0, 0, scene.width, scene.height); 
  
- this.scene.context.restore(); 
+ scene.context.restore(); 
  delete img;
 }
 
 
 function _PE_invert() {
- var img= this.scene.context.getImageData(0, 0, 
-                                          this.scene.width, 
-                                          this.scene.height);	
+ var img= scene.context.getImageData(0, 0, 
+                                          scene.width, 
+                                          scene.height);	
  var pixels= img.data; 
  for (var i = 0, n = pixels.length; i < n; i += 4) {
    pixels[i] = 255 - pixels[i]; 
    pixels[i+1] = 255 - pixels[i+1];
    pixels[i+2] = 255 - pixels[i+2];
  }
-	this.scene.context.putImageData(img, 0, 0);
+	scene.context.putImageData(img, 0, 0);
 	delete img;
 }
 
 
 function _PE_sepia(_vol) {
  _vol= _vol || 0;
- var img= this.scene.context.getImageData(0, 0, 
-                                          this.scene.width, 
-                                          this.scene.height);	
+ var img= scene.context.getImageData(0, 0, 
+                                          scene.width, 
+                                          scene.height);	
  var pixels= img.data; 
  for (var i = 0; i < pixels.length; i += 4) {
   var r = pixels[i];
@@ -206,7 +204,7 @@ function _PE_sepia(_vol) {
   pixels[i + 1] = (r * 0.349)+(g * 0.686)+(b * 0.168)+_vol; // green
   pixels[i + 2] = (r * 0.272)+(g * 0.534)+(b * 0.131)+_vol; // blue
  }
-	this.scene.context.putImageData(img, 0, 0);
+	scene.context.putImageData(img, 0, 0);
 	delete img;
 }
 

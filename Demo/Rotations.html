@@ -25,10 +25,10 @@
 
 <script type="text/javascript">
 // Создаем сцену
-scene= createScene('iCanvas', '#ceeeee');
+scene.init('iCanvas', '#ceeeee');
 
 // Инициализируем устройство ввода
-initInput(scene);
+input.init();
 
 
 // Если экран маленький, разворачиваем приложение на весь экран
@@ -41,13 +41,13 @@ imageMap= createImageMap('imageMap');
 anim= imageMap.createAnimation(0, 0, 50, 50, 2);
 
 // Создаем спрайт и накладываем на него текстуру
-s= createSprite(vec2df(200, 200), vec2df(40, 40), anim);
+s= addSpriteNode(vec2df(200, 200), vec2df(40, 40), anim);
 
 // Создаем черный квадрат
-a= createRect(vec2df(100, 100), vec2df(50, 50), 'black');
+a= addRectNode(vec2df(100, 100), vec2df(50, 50), 'black');
 
 // Создаем белый квадрат
-b= createRect(vec2df(300, 200), vec2df(50, 50), 'white');
+b= addRectNode(vec2df(300, 200), vec2df(50, 50), 'white');
 
 
 // Описываем игровое состояние Game
@@ -73,15 +73,15 @@ function Game() {
  s.turn(a.getDistance(s)*0.1);
 	
 	// Отрисовываем объекты
-	a.draw(scene);
-	b.draw(scene);
+	a.draw();
+	b.draw();
 	
 	// Тут рисуем всю анимацию с замедлением в 10
-	s.drawAnimate(scene, 10);
+	s.drawAnimate(10);
 }
 
 // Стартуем игру с игровым состоянием Game и FPS 25
-startGame(Game, 25);
+scene.start(Game, 25);
 </script>
 
 </body>

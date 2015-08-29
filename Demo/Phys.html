@@ -17,21 +17,22 @@
 
 <script type="text/javascript">
 // Создаем сцену
-scene= createScene('iCanvas', '#ceeeee');
+scene.init('iCanvas', '#ceeeee');
 
 if (device().width < 800)
  scene.fullScreen(true);
 
 // Инициализируем устройство ввода
-initInput(scene);
+input.init();
 
 // создаем шар A
-a= createCircle(vec2df(10, 10), 20, 'green');
+a= addCircleNode(vec2df(10, 10), 20, 'green');
 a.grav= 1; a.speed= 0;
 
-b= createCircle(vec2df(300, 250), 20, 'yellow');
+b= addCircleNode(vec2df(300, 250), 20, 'yellow');
 b.grav= 1; b.speed= 0;
 
+a.draw();
 
 // Описываем игровое состояние Game
 function Game() {
@@ -62,7 +63,7 @@ function Game() {
 function phys2(_id1, _id2)
 {
  // проверим, столкнулись ли объекты
- if (_id1.collision(_id2))
+ if (_id1.isCollision(_id2))
  {
   // если столкнулись, передаем силу гравитации одного - другому, умножив их
   // на коэффициент, определяющий, какой из них выше, чтобы оттолкнуть объект
@@ -92,7 +93,7 @@ function phys2(_id1, _id2)
 function phys(_id)
 {
  // если столкновение с нижней границей сцены
- if (_id.collisionScene(scene).y > 0)
+ if (_id.isCollisionScene().y > 0)
  {
   // ихбегаем проваливания сквозь нее
   _id.pos.y= -_id.size.y + scene.height;
@@ -113,12 +114,12 @@ function phys(_id)
  // Толкаме обхект с заданной скоростью и гравитацией
  _id.move(vec2df(_id.speed, _id.grav));
  // отрисовываем
- _id.draw(scene);
+ _id.draw();
 }
 
 
 // Стартуем игру с игровым состоянием Game и FPS 60
-startGame(Game, 60);
+scene.start(Game, 60);
 </script>
 
 </body>

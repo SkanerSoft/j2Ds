@@ -21,22 +21,22 @@ API системы распределено по отдельным файлам
 
 
 // Cтарт игры
-startGame(GameState, fps);
+scene.start(GameState, fps);
 
 запускает игровой движок с указанным FPS
 GameEngine - игровое состояние. В любой момент времени
 игра может находиться только в одном игровом состоянии.
 
 // Сменяет игровое состояние на то, что указано движку
-setActivEngine(newGameState);
+scene.setEngine(newGameState);
 
 // Например, можно определить функцию GameOver
 // и Использовать setActivEngine(GameOver);
 
 
 // Создание сцены на основе сanvas
-scene= createScene('idCanvas', // Первый агрумент - id объекта Сanvas
-                    '#dddddd'); // Второй агрумент - цвет фона
+scene.init('idCanvas', // Первый агрумент - id объекта Сanvas
+           '#dddddd'); // Второй агрумент - цвет фона
 
 //Развернуть игру на весь экран
 scene.fullScreen(true);
@@ -66,15 +66,15 @@ scene.DrawText(vec2df(2, 2),  // Позиция
                'Tutorial #1'); // Текст
 
 // Установить камеру в позицию
-scene.vSetPosition(vec2df(x, y));
+scene.setViewPosition(vec2df(x, y));
 
 // "Следить" за объектом
-scene.vFocus(a); // a - базовый объект или его потомок
+scene.setViewFocus(a); // a - базовый объект или его потомок
 
-scene.vFocus(a, vec2df(100, 0));  // Сместит взгляд по оси X (опционально)
+scene.setViewFocus(a, vec2df(100, 0));  // Сместит взгляд по оси X (опционально)
 
 // Двигать камеру по осям
-scene.vMove(vec3df(x, y));
+scene.viewMove(vec3df(x, y));
 
 // Очистка игрового окна
 scene.clearDraw(); // В качестве параметра можно
@@ -88,7 +88,7 @@ scene.clearDraw(); // В качестве параметра можно
 
 // Создание "базового объекта", не имеет функций отрисовки,
 // но имеет все описанные ниже функции
-a= createBaseNode(vec2df(x, y), vec2df(Width, Height));
+a= addBaseNode(vec2df(x, y), vec2df(Width, Height));
 
 
 // Вращение объекта
@@ -135,14 +135,7 @@ a.getDistanceXY(b).y // Y
 
 
 // Вернет true, если "a" и "b" стулкнутся
-a.collision(b);
-
-
-// Вернет объект с двумя переменными,
-// x - true/false при столкновении по оси Х
-// y - true/false при столкновении по оси Y
-a.collisionXY(b).x; // Для оси X
-a.collisionXY(b).y; // Для оси Y
+a.isCollision(b);
 
 
 
@@ -154,10 +147,10 @@ a.collisionRadius(b);
 
 
 // Вернет true, если объект в пределах видимости камерой
-a.lookScene(scene);
+a.isLookScene();
 
 // Проверить столкновение с границами видимости сцены
-a.collisionScene() // вернет объект с тремя переменными:
+a.isCollisionScene() // вернет объект с тремя переменными:
 x == 1 - правай сторона, x == -1 - левая сторона
 y == 1 - низ, x == -1 - верх
 all = true - лбой вариант столкнокения
@@ -169,14 +162,14 @@ all = true - лбой вариант столкнокения
 
 // Потомок базового объекта
 // Создает прямоугольник
-a= CreateRect( 
+a= addRectNode( 
                vec2df(x, y), // Положение
                vec2df(x, y), // Размеры
                'rgb(150,100,100)' // Цвет
               );
 
 
-a= createCircle(
+a= addCircleNode(
                  vec2df(x, y), // Позиция
                  radius,
                  color
@@ -185,7 +178,7 @@ a= createCircle(
               
               
 // Рисование
-a.draw(scene); // scene - объект сцены
+a.draw(); // scene - объект сцены
 
 
 
@@ -207,17 +200,17 @@ anim= imageMap.createAnimation(
                
 // Потомок базового объекта
 // Создание спрайта
-a= CreateSprite(
+a= addSpriteNode(
     vec2df(x, y), // Позиция в игре
     vec2df(x, y), // Размеры в игре
     anim    // Анимация
    );
 
 // Рисование одного кадра спрайта             
-a.draw(scene, frame); // сцена, номер кадра (1 - первый)
+a.drawFrame(frame); // сцена, номер кадра (1 - первый)
 
 // Проигрывать всю анимацию
-a.drawAnimate(scene, speed); // сцена, скорость (чем больше, тем медленнее)
+a.drawAnimate(speed); // сцена, скорость (чем больше, тем медленнее)
 
 // Установить анимацию спрайту
 a.setAnimation(anim); // объект анимации
@@ -232,7 +225,7 @@ a.setAnimation(anim); // объект анимации
 Основной файл для подключения движка пост обработки
 <script type="text/javascript" src="post.js"></script> 
  
-post= createPost(scene); // создает обработчик и привязывает его ко сцене
+post= createPost(); // создает обработчик и привязывает его ко сцене
 
 // Эффект сепии
 post.sepia(vol); // vol - осветление или затемнение (- 0 +)
@@ -256,8 +249,8 @@ post.blurBETA(vol);
 // Размытие при движении 2
 post.alphaBlur(vol);
 
-	// функция преобразования Mirror
- post.mirror(x_true, y_true);
+// функция преобразования Mirror
+post.mirror(x_true, y_true);
 
 
 

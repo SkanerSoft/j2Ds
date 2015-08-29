@@ -1,3 +1,8 @@
+function vec2df(_x, _y) { return { x: _x, y: _y }; }
+
+function vec2di(_x, _y) { return { x: Math.ceil(_x), y: Math.ceil(_y) }; }
+
+
 function Random(min, max) { 
  return Math.ceil(Math.random() * (max - min) + min);
 }

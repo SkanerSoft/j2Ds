@@ -17,6 +17,22 @@
  scene : false
 }
 
+input.init= function() {
+ input.scene= scene;
+ input.body= window;
+ input.body.focus();
+ input.scene.canvas.ontouchstart= _input_onTouch;
+ input.scene.canvas.ontouchmove= _input_onTouch;
+ input.scene.canvas.ontouchend= function() { input.canceled= false; _input_falseInput(); }; 
+ input.scene.canvas.oncontextmenu= function() { return false; }
+ input.scene.canvas.onselectstart= input.scene.canvas.oncontextmenu;
+ input.scene.canvas.ondragstart= input.scene.canvas.oncontextmenu;
+ input.scene.canvas.onmousedown= _input_onClick;
+ input.scene.canvas.onmouseup= function() { input.canceled= false; _input_falseInput(); }
+ input.scene.canvas.onmousemove= _input_cursorPosition;
+ input.body.onkeydown= _input_keyEvent;
+ input.body.onkeyup= function(e) { input.canceled= false; _input_keyEvent(e); };
+}
 
 // Константы клавиш
 key= {
@@ -111,23 +127,6 @@ function _input_falseInput() {
 	 input.lClick= 
 	  input.mClick= 
 	   input.rClick= false;
-}
-
-function initInput(_scene) {
- input.scene= _scene;
- input.body= window;
- input.body.focus();
- input.scene.canvas.ontouchstart= _input_onTouch;
- input.scene.canvas.ontouchmove= _input_onTouch;
- input.scene.canvas.ontouchend= function() { input.canceled= false; _input_falseInput(); }; 
- input.scene.canvas.oncontextmenu= function() { return false; }
- input.scene.canvas.onselectstart= input.scene.canvas.oncontextmenu;
- input.scene.canvas.ondragstart= input.scene.canvas.oncontextmenu;
- input.scene.canvas.onmousedown= _input_onClick;
- input.scene.canvas.onmouseup= function() { input.canceled= false; _input_falseInput(); }
- input.scene.canvas.onmousemove= _input_cursorPosition;
- input.body.onkeydown= _input_keyEvent;
- input.body.onkeyup= function(e) { input.canceled= false; _input_keyEvent(e); };
 }
 
 

@@ -19,24 +19,24 @@
 
 <script type="text/javascript">
 // Создаем сцену
-scene= createScene('iCanvas', '#ceeeee');
+scene.init('iCanvas', '#ceeeee');
 
 post= createPost(scene);
 
-initInput(scene);
+init.input(scene);
 
 // Создаем хранилище
 data= createLocal('position_a');
 
 // Создаем черный квадрат
-a= createRect(vec2di(100, 100), vec2di(50, 50), 'black');
+a= addRectNode(vec2di(100, 100), vec2di(50, 50), 'black');
 
 
 // Создаем белый квадрат
-b= createRect(vec2di(300, 200), vec2di(50, 50), 'white');
+b= addRectNode(vec2di(300, 200), vec2di(50, 50), 'white');
 
 // Создаем белый квадрат
-c= createRect(vec2di(300, 200), vec2di(50, 50), 'green');
+c= addRectNode(vec2di(300, 200), vec2di(50, 50), 'green');
 
 
 
@@ -61,7 +61,7 @@ function Game() {
  a.turn(1); b.turn(-1); c.turn(1);
 	
 	// Отрисовываем объекты
-	a.draw(scene); b.draw(scene); c.draw(scene);
+	a.draw(); b.draw(); c.draw();
 	
 	post.alphaBlur(3);
  
