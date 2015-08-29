@@ -63,7 +63,7 @@ nextJ2dsGameStep= (function(){
 
 /* сцена */
 
- var scene= {
+var scene= {
  
   /*функции*/
  
@@ -180,10 +180,10 @@ nextJ2dsGameStep= (function(){
    
     /* Вид "камеры" */
    scene.view= vec2df(0,0);
-  },
+  }
  
  
- }
+}
 
 
 
@@ -299,11 +299,11 @@ var addBaseNode= function(_pos, _size) {
  	
  	if (this.pos.x+this.size.x >= scene.view.x+scene.width) o.x= 1;
  	else	if (this.pos.x <= scene.view.x) o.x= -1;
- 	else o.x= 0;
+ 	     else o.x= 0;
  	
  	if (this.pos.y+this.size.y >= scene.view.y+scene.height) o.y= 1;
  	else	if (this.pos.y <= scene.view.y) o.y= -1;
- 	else  o.y= 0;
+ 	     else  o.y= 0;
  	
  	o.all= (o.x || o.y);
  	
@@ -432,8 +432,7 @@ var addRectNode= function(_pos, _size, _color)
    scene.context.fillRect(
    newX+this.pos.x-scene.view.x, 
    newY+this.pos.y-scene.view.y, 
-   this.size.x, 
-   this.size.y);
+   this.size.x, this.size.y);
  
    scene.context.restore();      
   }
