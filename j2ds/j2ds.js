@@ -153,7 +153,7 @@ var scene= {
  
   // инициализация сцены
   init : function(_canvas, _color) {
-  	scene.canvas= obj(_canvas);
+  	scene.canvas= $(_canvas);
    scene.context= scene.canvas.getContext('2d');
    scene.width= scene.canvas.width;
    scene.height= scene.canvas.height;  
@@ -445,7 +445,7 @@ var addRectNode= function(_pos, _size, _color)
 
 var createImageMap= function(_id) {
  var o= {};
- o.img = obj(_id);
+ o.img = $(_id);
  o.img.onload= function() { o.img.style.display= 'none'; };
  /* Свойства */ 
  

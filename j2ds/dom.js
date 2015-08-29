@@ -1,4 +1,4 @@
-function obj(id){ return document.getElementById(id); }
+function $(id){ return document.getElementById(id); }
 
 function dbg(_text) {
 	scene.drawText(vec2di(10, 10), _text)
