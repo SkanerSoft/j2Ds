@@ -1,5 +1,4 @@
 // Массивы состояний клавиш
- pKey= 0;
 
  input= {
  /* Gеременные */
@@ -13,7 +12,8 @@
  touch : false,
  keyDown : [],
  canceled : false,
- body : false
+ body : false,
+ anyKey : false
 }
 
 // Константы клавиш
@@ -35,7 +35,7 @@ input.getPosition= function()
 
 function _input_keyEvent(e) {
  input.keyDown[e.keyCode] = (e.type == 'keydown')&&(!input.canceled);
- pKey= e.keyCode; 
+ input.anyKey= e.keyCode; 
  return false;
 }
 
