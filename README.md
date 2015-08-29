@@ -1,6 +1,6 @@
 # J2ds
 
-<div aling="center">
+<div style="text-align: center;">
 <img src="http://s1.uploadpics.ru/images/-11yPdPEBl.png" width="400" alt=""/>
 </div>
 
