@@ -1,11 +1,7 @@
 function obj(id){ return document.getElementById(id); }
 
 function dbg(_text) {
-	obj('hint').innerHTML= '<pre>[LOG]: '+_text+'</pre>';
-}
-
-function dbgA(_text) {
-	obj('hint').innerHTML+= '<pre>[LOG]: '+_text+'</pre>';
+	scene.drawText(vec2di(10, 10), _text)
 }
 
 function device() {

@@ -13,25 +13,7 @@
  touch : false,
  keyDown : [],
  canceled : false,
- body : false,
- scene : false
-}
-
-input.init= function() {
- input.scene= scene;
- input.body= window;
- input.body.focus();
- input.scene.canvas.ontouchstart= _input_onTouch;
- input.scene.canvas.ontouchmove= _input_onTouch;
- input.scene.canvas.ontouchend= function() { input.canceled= false; _input_falseInput(); }; 
- input.scene.canvas.oncontextmenu= function() { return false; }
- input.scene.canvas.onselectstart= input.scene.canvas.oncontextmenu;
- input.scene.canvas.ondragstart= input.scene.canvas.oncontextmenu;
- input.scene.canvas.onmousedown= _input_onClick;
- input.scene.canvas.onmouseup= function() { input.canceled= false; _input_falseInput(); }
- input.scene.canvas.onmousemove= _input_cursorPosition;
- input.body.onkeydown= _input_keyEvent;
- input.body.onkeyup= function(e) { input.canceled= false; _input_keyEvent(e); };
+ body : false
 }
 
 // Константы клавиш
@@ -75,12 +57,12 @@ input.onNode= function(_id) {
 }
 
 input.upd= function() {
- var dX= this.scene.canvas.offsetWidth / this.scene.width;
- var dY= this.scene.canvas.offsetHeight / this.scene.height;
- this.x= -this.scene.canvas.offsetLeft+(this.abs.x/dX);
- this.y= -this.scene.canvas.offsetTop+(this.abs.y/dY);
- this.pos.x= this.scene.view.x + this.x;
- this.pos.y= this.scene.view.y + this.y; 
+ var dX= scene.canvas.offsetWidth / scene.width;
+ var dY= scene.canvas.offsetHeight / scene.height;
+ this.x= (this.abs.x/dX);
+ this.y= (this.abs.y/dY);
+ this.pos.x= scene.view.x + this.x;
+ this.pos.y= scene.view.y + this.y;  
 }
 
 
@@ -130,7 +112,21 @@ function _input_falseInput() {
 }
 
 
-
+input.init= function() {
+ input.body= window;
+ input.body.focus();
+ scene.canvas.ontouchstart= _input_onTouch;
+ scene.canvas.ontouchmove= _input_onTouch;
+ scene.canvas.ontouchend= function() { input.canceled= false; _input_falseInput(); }; 
+ scene.canvas.oncontextmenu= function() { return false; }
+ scene.canvas.onselectstart= scene.canvas.oncontextmenu;
+ scene.canvas.ondragstart= scene.canvas.oncontextmenu;
+ scene.canvas.onmousedown= _input_onClick;
+ scene.canvas.onmouseup= function() { input.canceled= false; _input_falseInput(); }
+ scene.canvas.onmousemove= _input_cursorPosition;
+ input.body.onkeydown= _input_keyEvent;
+ input.body.onkeyup= function(e) { input.canceled= false; _input_keyEvent(e); };
+}
 
 
 

@@ -23,10 +23,8 @@ scene.init('iCanvas', '#ceeeee');
 
 post= createPost(scene);
 
-init.input(scene);
+input.init();
 
-// Создаем хранилище
-data= createLocal('position_a');
 
 // Создаем черный квадрат
 a= addRectNode(vec2di(100, 100), vec2di(50, 50), 'black');
@@ -63,12 +61,12 @@ function Game() {
 	// Отрисовываем объекты
 	a.draw(); b.draw(); c.draw();
 	
-	post.alphaBlur(3);
- 
+	//post.alphaBlur(3);
+	
 }
 
 // Стартуем игру с игровым состоянием Game и FPS 25
-startGame(Game, 60);
+scene.start(Game, 60);
 </script>
 
 </body>

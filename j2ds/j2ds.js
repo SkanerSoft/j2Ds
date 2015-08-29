@@ -77,15 +77,9 @@ nextJ2dsGameStep= (function(){
  
   fullScreen : function(_true) {
    if (_true) {
-    scene.canvas.style.position= 'fixed';
-    scene.canvas.style.top= '0px';
-    scene.canvas.style.left= '0px';
     scene.canvas.style.width= device().width+'px';
     scene.canvas.style.height= device().height+'px';  
    } else { 
-    scene.canvas.style.position= '';
-    scene.canvas.style.top= '0px';
-    scene.canvas.style.left= '0px';
     scene.canvas.style.width= scene.width+1+'px';
     scene.canvas.style.height= scene.height+1+'px';  
    }
@@ -163,6 +157,10 @@ nextJ2dsGameStep= (function(){
    scene.context= scene.canvas.getContext('2d');
    scene.width= scene.canvas.width;
    scene.height= scene.canvas.height;  
+   
+   scene.canvas.style.position= 'fixed';
+   scene.canvas.style.top= '0px';
+   scene.canvas.style.left= '0px';   
    
    scene.canvas.style.WebkitTransform= 'translate3d(0,0,0)';
    scene.canvas.style.WebkitTransform= 'tranlsateZ(0)';
