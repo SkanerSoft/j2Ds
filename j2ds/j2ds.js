@@ -4,10 +4,32 @@ var j2ds= {
  sceneStartTime : 0,
  sceneSkipTime : 0,
  FDT : 0,
- engine : false
+ engine : false,
+ redy : false,
+ scripts : {},
+ root : 'j2ds/'
 } 
 
 /* функции */
+
+
+j2ds.loaded= function(_id) {
+ j2ds.scripts[_id]= true; 
+}
+
+j2ds.include= function(_path) {
+ var _id= _path.replace(/\//g, ''); 
+ if (j2ds.scripts[_id]) return;
+ 
+ var reader = new XMLHttpRequest();  
+ reader.open('GET', j2ds.root+_path+'.js', false);
+ reader.send(null);
+ var sourceCode= reader.responseText;
+ 
+ j2ds.loaded(_id); 
+  
+ eval(sourceCode); 
+}
 
 // старт игры
 j2ds.start= function(_engine, _framelimit) {
@@ -331,12 +353,9 @@ var addBaseNode= function(_pos, _size) {
 
  o.drawBox= function()
  {
-  if (this.visible  && this.isLookScene())
-  {  
    var newX= (this.parent?this.parent.pos.x:0);
    var newY= (this.parent?this.parent.pos.y:0); 
- 
-   
+
    if (scene.context.strokeStyle != 'black') scene.context.strokeStyle= 'black';  
 
    scene.context.beginPath();
@@ -354,8 +373,6 @@ var addBaseNode= function(_pos, _size) {
    -2+newY+this.pos.y-scene.view.y, 
    this.size.x+4, this.size.y+4);
    scene.context.stroke(); 
-    
-  }
  } 
 
  return (o);
@@ -570,4 +587,6 @@ var addSpriteNode= function(_pos, _size, _animation) {
 
 
 
-
+var j2dsRedy= (function(){
+/* redyGo */
+})();

@@ -1,6 +1,7 @@
+j2ds.loaded('input');
 // Массивы состояний клавиш
 
- var input= {
+ input= {
  /* Gеременные */
  pos : {x:0, y:0},
  x : 0,
@@ -18,7 +19,7 @@
 
 // Константы клавиш
 
-var jKey= {
+jKey= {
  LEFT       : 37,
  RIGHT      : 39,
  UP         : 38,
@@ -40,7 +41,7 @@ input.getPosition= function()
 }
 
 
-function _input_keyEvent(e) {
+_input_keyEvent= function(e) {
  input.keyDown[e.keyCode] = (e.type == 'keydown')&&(!input.canceled);
  input.anyKey= e.keyCode; 
  return false;
@@ -73,7 +74,7 @@ input.upd= function() {
 }
 
 
-function _input_cursorPosition(e) {
+_input_cursorPosition= function(e) {
  if (!input.touch)
  {
   if (document.all)  { 
@@ -89,7 +90,7 @@ function _input_cursorPosition(e) {
 }
 
 
-function _input_onClick(e) {
+_input_onClick= function(e) {
  if (!e.which && e.button) {
    if (e.button & 1) e.which = 1;
    else if (e.button & 4) e.which = 2;
@@ -102,7 +103,7 @@ function _input_onClick(e) {
  return false; 
 }
 
-function _input_onTouch(e) {
+_input_onTouch= function(e) {
  e.preventDefault();
  input.abs.x= e.touches[0].pageX;
  input.abs.y= e.touches[0].pageY;
@@ -112,7 +113,7 @@ function _input_onTouch(e) {
  return false;
 }
 
-function _input_falseInput() { 
+_input_falseInput= function() { 
 	 input.lClick= 
 	  input.mClick= 
 	   input.rClick= false;

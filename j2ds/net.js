@@ -1,4 +1,6 @@
-function startajax(){
+j2ds.loaded('net');
+
+startajax= function(){
   var xmlhttp;
   try {
     xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
@@ -16,7 +18,7 @@ function startajax(){
 } 
 
 
-function getAjax(_ajax, _script, _function)
+getAjax= function(_ajax, _script, _function)
 { 
  _ajax.open('GET', _script);  
  _ajax.onreadystatechange = function ()   

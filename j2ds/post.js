@@ -1,4 +1,6 @@
-function createPost(){
+j2ds.loaded('post');
+
+createPost= function(){
  var o= {};
  /*Свойства*/
  o.blurFrames= [];
@@ -17,7 +19,7 @@ function createPost(){
 }
 
 
-function _PE_mirror(_x, _y) {
+_PE_mirror= function(_x, _y) {
  var img= scene.context.createPattern(scene.canvas, 'no-repeat');
  
  scene.clear(); 
@@ -33,7 +35,7 @@ function _PE_mirror(_x, _y) {
 }
 
 
-function _PE_alphaBlur(_vol) {
+_PE_alphaBlur= function(_vol) {
  _vol= Math.ceil(_vol);
  this.blurFrames.push(scene.context.createPattern(scene.canvas, 'no-repeat'));
  
@@ -58,7 +60,7 @@ function _PE_alphaBlur(_vol) {
 }
 
 
-function _PE_motionBlur(_vol) {
+_PE_motionBlur= function(_vol) {
  _vol= Math.ceil(_vol);
  this.blurFrames.push(scene.context.createPattern(scene.canvas, 'no-repeat'));
  
@@ -82,7 +84,7 @@ function _PE_motionBlur(_vol) {
 
 
 
-function _PE_lightness(_vol) {
+_PE_lightness= function(_vol) {
  _vol= _vol || 10;
  var img= scene.context.getImageData(0, 0, 
                                           scene.width, 
@@ -98,7 +100,7 @@ function _PE_lightness(_vol) {
 
 
 
-function _PE_blurBETA(_vol) {
+_PE_blurBETA= function(_vol) {
  var img= scene.context.getImageData(0, 0, 
                                           scene.width, 
                                           scene.height);	
@@ -138,7 +140,7 @@ function _PE_blurBETA(_vol) {
 
 
 
-function _PE_flip(_angle) {
+_PE_flip= function(_angle) {
  var img= scene.context.createPattern(scene.canvas, 'no-repeat');
  
  scene.clear(); 
@@ -150,7 +152,7 @@ function _PE_flip(_angle) {
 
 
 
-function _PE_setRotation(_angle) {
+_PE_setRotation= function(_angle) {
  var img= scene.context.createPattern(scene.canvas, 'no-repeat');
  
  scene.clear(); 
@@ -167,7 +169,7 @@ function _PE_setRotation(_angle) {
 }
 
 
-function _PE_invert() {
+_PE_invert= function() {
  var img= scene.context.getImageData(0, 0, 
                                           scene.width, 
                                           scene.height);	
@@ -181,7 +183,7 @@ function _PE_invert() {
 }
 
 
-function _PE_sepia(_vol) {
+_PE_sepia= function(_vol) {
  _vol= _vol || 0;
  var img= scene.context.getImageData(0, 0, 
                                           scene.width, 

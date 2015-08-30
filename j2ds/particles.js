@@ -1,7 +1,8 @@
+j2ds.loaded('particles');
 /* В этом файле представленны базовые объекты для 
    организации частиц */
 
-function newParticlesFire(
+newParticlesFire= function(
                            _pos, // позиция {x:10, y:10}
                            _size, // размер {x:10, y:10}
                            _color1, // Цвет основания [0,0,0]

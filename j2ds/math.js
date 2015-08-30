@@ -1,22 +1,24 @@
-function vec2df(_x, _y) { return { x: _x, y: _y }; }
+j2ds.loaded('math');
 
-function vec2di(_x, _y) { return { x: Math.ceil(_x), y: Math.ceil(_y) }; }
+vec2df= function(_x, _y) { return { x: _x, y: _y }; }
+
+vec2di= function(_x, _y) { return { x: Math.ceil(_x), y: Math.ceil(_y) }; }
 
 
-function Random(min, max) { 
+Random= function(min, max) { 
  return Math.ceil(Math.random() * (max - min) + min);
 }
 
-function Rad(_num) {
+Rad= function(_num) {
  return _num * (Math.PI / 180);
 }
 
-function Grad(_num) {
+Grad= function(_num) {
  return (Math.PI / 180) / _num;
 }
 
 
-function norm2df(_pos) {
+norm2df= function(_pos) {
 var len = Math.sqrt(_pos.x * _pos.x + _pos.y * _pos.y);
  if (len) {
      _pos.x /= len;
