@@ -120,6 +120,10 @@ var scene= {
    scene.context.fillText(_text, _pos.x, _pos.y); 
   },
  
+  drawImage : function(_map, _pos) { 
+   scene.context.drawImage(_map.img, _pos.x, _pos.y);
+  },  
+ 
   // Устанавливает позицию для камеры
   setViewPosition : function(_pos) {
   	scene.view.x= _pos.x - Math.ceil(scene.width/2);
@@ -316,13 +320,42 @@ var addBaseNode= function(_pos, _size) {
  
  	this.angle= Math.atan2(dY, dX);
  
- 	dbg('test function setRotationTo: '+this.angle);
+ 	document.location.href= '#TEST function setRotationTo: '+_to.pos.x;
  }
 
  o.moveDir= function(_speed)
  {
   this.pos.x+= _speed*(Math.cos(Rad(this.angle)));
   this.pos.y+= _speed*(Math.sin(Rad(this.angle))); 
+ } 
+
+ o.drawBox= function()
+ {
+  if (this.visible  && this.isLookScene())
+  {  
+   var newX= (this.parent?this.parent.pos.x:0);
+   var newY= (this.parent?this.parent.pos.y:0); 
+ 
+   
+   if (scene.context.strokeStyle != 'black') scene.context.strokeStyle= 'black';  
+
+   scene.context.beginPath();
+   scene.context.rect(
+   newX+this.pos.x-scene.view.x, 
+   newY+this.pos.y-scene.view.y, 
+   this.size.x, this.size.y);
+   scene.context.stroke(); 
+
+   if (scene.context.strokeStyle != 'white') scene.context.strokeStyle= 'white';
+
+   scene.context.beginPath(); 
+   scene.context.rect(
+   -2+newX+this.pos.x-scene.view.x, 
+   -2+newY+this.pos.y-scene.view.y, 
+   this.size.x+4, this.size.y+4);
+   scene.context.stroke(); 
+    
+  }
  } 
 
  return (o);
@@ -342,7 +375,7 @@ var addCircleNode= function(_pos, _radius, _color)
 
  o.draw= function()
  {
-  if (this.visible  && this.isLookScene(scene))
+  if (this.visible  && this.isLookScene())
   {  
    var newX= (this.parent?this.parent.pos.x:0);
    if (scene.context.fillStyle != this.color) scene.context.fillStyle= this.color;
@@ -381,7 +414,7 @@ var addLineNode= function(_pos, _points, _scale, _color, _width, _fill, _cFill)
 
  o.draw= function()
  {
-  if (this.visible && this.isLookScene(scene))
+  if (this.visible && this.isLookScene())
   { 
    scene.context.strokeStyle= this.color;
    scene.context.lineWidth = this.lineWidth;
@@ -418,7 +451,7 @@ var addRectNode= function(_pos, _size, _color)
  
  o.draw= function()
  {
-  if (this.visible  && this.isLookScene(scene))
+  if (this.visible  && this.isLookScene())
   {  
    var newX= (this.parent?this.parent.pos.x:0);
    var newY= (this.parent?this.parent.pos.y:0); 
@@ -442,7 +475,6 @@ var addRectNode= function(_pos, _size, _color)
 }
 
 /* изображения */
-
 var createImageMap= function(_id) {
  var o= {};
  o.img = $(_id);
@@ -472,12 +504,17 @@ var addSpriteNode= function(_pos, _size, _animation) {
  o.tmpSpeed= 0;
  o.frame= 0;
  o.animation= _animation;
+ o.flip= {x:false, y:false};
  
  /* Функции */
 
+ o.setFlip= function(_x, _y) {
+  o.flip= {x:_x, y:_y};
+ }
+
  // отрисовка всей анимации
  o.drawAnimate= function(_speed) { 
-  if (this.visible && this.isLookScene(scene)) 
+  if (this.visible && this.isLookScene()) 
   {
    _speed= _speed || -1; 
    if (this.frame > this.animation.frameCount) 
@@ -489,12 +526,15 @@ var addSpriteNode= function(_pos, _size, _animation) {
   }
  }
  
+ // отрисовка одного кадра
  o.drawFrame= function(_frame) { 
-  if (this.visible && this.isLookScene(scene))
+  if (this.visible && this.isLookScene())
   {
+   
    scene.context.save();
    scene.context.translate(this.getPosition().x-scene.view.x, this.getPosition().y-scene.view.y);  
    scene.context.rotate(Rad(this.angle));
+   scene.context.scale(this.flip.x ? -1 : 1, this.flip.y ? -1 : 1);
    scene.context.translate(-(this.getPosition().x-scene.view.x), -(this.getPosition().y-scene.view.y));
    
    _frame= _frame?(_frame-1):0;

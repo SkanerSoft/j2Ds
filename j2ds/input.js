@@ -1,6 +1,6 @@
 // Массивы состояний клавиш
 
- input= {
+ var input= {
  /* Gеременные */
  pos : {x:0, y:0},
  x : 0,
@@ -17,14 +17,21 @@
 }
 
 // Константы клавиш
-key= {
- LEFT : 37,
- RIGHT : 39,
- UP : 38,
- DOWN : 40,
- SPACE : 32,
- ESC : 27
+
+var jKey= {
+ LEFT       : 37,
+ RIGHT      : 39,
+ UP         : 38,
+ DOWN       : 40,
+ SPACE      : 32,
  
+ 
+ ESC        : 27
+}
+
+input.isKeyDown= function(_code)
+{
+ return this.keyDown[_code];
 }
 
 input.getPosition= function()

@@ -30,7 +30,6 @@ function _PE_mirror(_x, _y) {
  scene.context.fillRect(0, 0, scene.width, scene.height); 
  
  scene.context.restore(); 
- delete img;
 }
 
 
@@ -79,8 +78,6 @@ function _PE_motionBlur(_vol) {
   }
  } 
  scene.context.globalAlpha = 1; 
-
- delete img;
 }
 
 
@@ -97,7 +94,6 @@ function _PE_lightness(_vol) {
   pixels[i+2] += _vol;  
  }
 	scene.context.putImageData(img, 0, 0);
-	delete img;
 }
 
 
@@ -136,7 +132,6 @@ function _PE_blurBETA(_vol) {
 
 
 	scene.context.putImageData(img, 0, 0);
-	delete img;
 }
 
 
@@ -150,8 +145,6 @@ function _PE_flip(_angle) {
 
  scene.context.fillStyle = img;
  scene.context.fillRect(scene.width, 0, -scene.width, scene.height); 
-
- delete img;
 }
 
 
@@ -171,7 +164,6 @@ function _PE_setRotation(_angle) {
  scene.context.fillRect(0, 0, scene.width, scene.height); 
  
  scene.context.restore(); 
- delete img;
 }
 
 
@@ -186,7 +178,6 @@ function _PE_invert() {
    pixels[i+2] = 255 - pixels[i+2];
  }
 	scene.context.putImageData(img, 0, 0);
-	delete img;
 }
 
 
@@ -205,7 +196,6 @@ function _PE_sepia(_vol) {
   pixels[i + 2] = (r * 0.272)+(g * 0.534)+(b * 0.131)+_vol; // blue
  }
 	scene.context.putImageData(img, 0, 0);
-	delete img;
 }
 
 

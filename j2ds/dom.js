@@ -1,7 +1,7 @@
 function $(id){ return document.getElementById(id); }
 
 function dbg(_text) {
-	scene.drawText(vec2di(10, 10), _text)
+ console.log(_text);
 }
 
 function device() {

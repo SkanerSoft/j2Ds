@@ -100,7 +100,7 @@ function GameNew()
  // Обновление позиции мыши относительно сцены
  input.upd();
  
- if (input.keyDown[key.UP] || input.lClick) {
+ if (input.isKeyDown(jKey.UP) || input.lClick) {
   CreateGame();
   scene.setEngine(Engine); 
  }
@@ -120,7 +120,7 @@ function GameOver()
  // Обновление позиции мыши относительно сцены
  input.upd();
  
- if (input.keyDown[key.UP] || (input.lClick)) {
+ if (input.isKeyDown(jKey.UP) || (input.lClick)) {
   CreateGame();
   scene.setEngine(Engine); 
  }
@@ -172,7 +172,7 @@ function Engine() {
     if (a.isCollision(arr[i])) {
      if (a.getPosition().y+a.size.y/2-3 < arr[i].getPosition().y-arr[i].size.y/2 && a.pos.x+a.size.x > arr[i].pos.x) {
        a.setRotation(0); grav= 0;
-       if (input.keyDown[key.UP] || input.lClick) grav= 5; 
+       if (input.isKeyDown(jKey.UP) || input.lClick) grav= 5; 
      } else { 
       a.color= 'red'; 
       d2Y= -60; 
@@ -217,7 +217,8 @@ function Engine() {
  // Выводим текст
  scene.drawText(vec2df(10, 5), 'Счет: '+score+' | Рекорд: '+maxScore); 
  
- post.alphaBlur(2); 
+ post.alphaBlur(2);
+ 
 }  
 
 // Запускаем игру с 30 FPS
