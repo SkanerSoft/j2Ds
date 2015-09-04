@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html> 
  <head>
-  <script type="text/javascript" src="../j2ds/math.js"></script>
-  <script type="text/javascript" src="../j2ds/input.js"></script>   
-  <script type="text/javascript" src="../j2ds/dom.js"></script>
-  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <script type="text/javascript" src="../j2ds/j2ds.js">
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />  
   <title>Demo J2ds. Физика</title>
@@ -16,6 +13,15 @@
 <div id="hint"></div>
 
 <script type="text/javascript">
+
+j2ds.root= '../j2ds/';
+j2ds.include('math');
+j2ds.include('dom');
+j2ds.include('net');
+j2ds.include('input');
+j2ds.include('post');
+j2ds.include('particles'); 
+
 // Создаем сцену
 scene.init('iCanvas', '#ceeeee');
 

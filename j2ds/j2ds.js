@@ -1,3 +1,217 @@
+/*----------- DOM ---------------*/
+var $= function(id){ return document.getElementById(id); };
+
+var device= function() {
+	var o= {};
+	o.width=  (parseInt(document.documentElement.clientWidth) < parseInt(screen.width))   ? parseInt(document.documentElement.clientWidth):parseInt(screen.width);
+	o.height= (parseInt(document.documentElement.clientHeight) < parseInt(screen.height)) ? parseInt(document.documentElement.clientHeight) : parseInt(screen.height);
+	return o;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*----------------- INPUT -------------------*/
+var input= {
+ /* Gеременные */
+ pos : {x:0, y:0},
+ x : 0,
+ y : 0,
+ abs : {x:0, y:0},
+ lClick : false,
+ mClick : false,
+ rClick : false,
+ touch : false,
+ keyDown : [],
+ canceled : false,
+ body : false,
+ anyKey : false
+}
+
+// Константы клавиш
+
+var jKey= {
+ LEFT       : 37,
+ RIGHT      : 39,
+ UP         : 38,
+ DOWN       : 40,
+ SPACE      : 32,
+ 
+ 
+ ESC        : 27
+}
+
+input.isKeyDown= function(_code)
+{
+ return this.keyDown[_code];
+}
+
+input.getPosition= function()
+{
+ return vec2df(this.pos.x, this.pos.y);
+}
+
+
+_input_keyEvent= function(e) {
+ input.keyDown[e.keyCode] = (e.type == 'keydown')&&(!input.canceled);
+ input.anyKey= e.keyCode; 
+ return false;
+}
+
+//! системная
+// Вернет true, если мышь назодится над объектом
+input.cancel= function(_id) {
+	input.canceled= true;
+	 _input_falseInput();
+	 input.keyDown= [];
+}
+
+//! системная
+// Вернет true, если мышь назодится над объектом
+input.onNode= function(_id) {
+	return (
+ (this.pos.x > _id.pos.x && this.pos.x < _id.pos.x+_id.size.x)
+  &&
+ (this.pos.y > _id.pos.y && this.pos.y < _id.pos.y+_id.size.y) );
+}
+
+input.upd= function() {
+ var dX= scene.canvas.offsetWidth / scene.width;
+ var dY= scene.canvas.offsetHeight / scene.height;
+ this.x= (this.abs.x/dX);
+ this.y= (this.abs.y/dY);
+ this.pos.x= scene.view.x + this.x;
+ this.pos.y= scene.view.y + this.y;  
+}
+
+
+_input_cursorPosition= function(e) {
+ if (!input.touch)
+ {
+  if (document.all)  { 
+    x = e.x + document.body.scrollLeft; 
+    y = e.y + document.body.scrollTop; 
+  } else {
+    x = e.pageX; // Координата X курсора
+    y = e.pageY; // Координата Y курсора
+  }
+  input.abs.x= x; input.abs.y= y;
+ }
+ e.preventDefault();
+}
+
+
+_input_onClick= function(e) {
+ if (!e.which && e.button) {
+   if (e.button & 1) e.which = 1;
+   else if (e.button & 4) e.which = 2;
+   else if (e.button & 2) e.which = 3;
+ }	
+ input.lClick= (e.which == 1?true:false)&&(!input.canceled);
+ input.mClick= (e.which == 2?true:false)&&(!input.canceled);
+ input.rClick= (e.which == 3?true:false)&&(!input.canceled);
+ input.body.focus();
+ return false; 
+}
+
+_input_onTouch= function(e) {
+ e.preventDefault();
+ input.abs.x= e.touches[0].pageX;
+ input.abs.y= e.touches[0].pageY;
+ input.lClick= true&&(!input.canceled);
+ input.touch= true&&(!input.canceled);
+ input.body.focus();
+ return false;
+}
+
+_input_falseInput= function() { 
+	 input.lClick= 
+	  input.mClick= 
+	   input.rClick= false;
+}
+
+
+input.init= function() {
+ input.body= window;
+ input.body.focus();
+ scene.canvas.ontouchstart= _input_onTouch;
+ scene.canvas.ontouchmove= _input_onTouch;
+ scene.canvas.ontouchend= function() { input.canceled= false; _input_falseInput(); }; 
+ scene.canvas.oncontextmenu= function() { return false; }
+ scene.canvas.onselectstart= scene.canvas.oncontextmenu;
+ scene.canvas.ondragstart= scene.canvas.oncontextmenu;
+ scene.canvas.onmousedown= _input_onClick;
+ scene.canvas.onmouseup= function() { input.canceled= false; _input_falseInput(); }
+ scene.canvas.onmousemove= _input_cursorPosition;
+ input.body.onkeydown= _input_keyEvent;
+ input.body.onkeyup= function(e) { input.canceled= false; _input_keyEvent(e); };
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*------------------- Математика --------------*/
+var vec2df= function(_x, _y) { return { x: _x, y: _y }; }
+
+var vec2di= function(_x, _y) { return { x: Math.ceil(_x), y: Math.ceil(_y) }; }
+
+
+var Random= function(min, max) { 
+ return Math.ceil(Math.random() * (max - min) + min);
+}
+
+var Rad= function(_num) {
+ return _num * (Math.PI / 180);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*------------------ 2D движок --------------------*/
 var j2ds= {
  now : 0,
  framelimit : 60,
@@ -530,7 +744,7 @@ var addSpriteNode= function(_pos, _size, _animation) {
  }
 
  // отрисовка всей анимации
- o.drawAnimate= function(_speed) { 
+ o.draw= function(_speed) { 
   if (this.visible && this.isLookScene()) 
   {
    _speed= _speed || -1; 
@@ -587,6 +801,73 @@ var addSpriteNode= function(_pos, _size, _animation) {
 
 
 
-var j2dsRedy= (function(){
-/* redyGo */
-})();
+
+
+
+
+
+
+
+
+
+
+
+/*--------------- Локальное хранилище ----------------*/
+
+
+
+var createLocal= function(_id) {
+ var o= {};
+ o.id= _id;
+ o.ls= window.localStorage? window.localStorage : false;
+ 
+ if (!o.ls) alert('J2ds ERROR in "createLocal('+_id+')" \n'+
+ 'Объект "localStorage" не поддерживается.'); 
+ /*Свойства*/ 
+ 
+ /*Функции*/
+ o.save= function (_name, _o) {
+  if (!this.ls) return false;
+  this.ls.setItem(this.id+_name, JSON.stringify(_o));
+ };
+
+ o.load= function (_name) {
+  if (!this.ls) return false;
+  var o= {};
+  o.val= this.ls.getItem(this.id+_name);
+  o.int= parseInt(o.val);
+  o.dbl= parseFloat(o.val); 
+  return o;
+ };
+ 
+ o.is= function (_name) {
+  if (!this.ls) return false;
+  return !!(this.ls.getItem(this.id+_name));
+ }
+ o.saveObject= function (_name, _value) {
+  if (!this.ls) return false;
+  this.ls.setItem(this.id+_name, _value);
+ }
+
+ o.loadObject= function (_name) {
+  if (!this.ls) return false;
+  return JSON.parse(this.ls.getItem(this.id+_name));
+ }
+
+ return o;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

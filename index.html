@@ -97,6 +97,7 @@ function CreateGame() {
 dY= -60;
 function GameNew()
 {
+ scene.clear();
  dY+= dY < 0 ? 1 : 0;
  // Обновление позиции мыши относительно сцены
  input.upd();
@@ -117,6 +118,7 @@ function GameNew()
 d2Y= -60;
 function GameOver()
 {
+ scene.clear();
  d2Y+= d2Y < 0 ? 1 : 0;
  // Обновление позиции мыши относительно сцены
  input.upd();
@@ -138,7 +140,7 @@ function GameOver()
 
 // Инициализируем игровой цикл
 function Engine() {
-
+ scene.clear();
  // Обновление позиции мыши относительно сцены
  input.upd();
  
