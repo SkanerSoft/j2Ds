@@ -88,7 +88,7 @@ scene.clearDraw(); // В качестве параметра можно
 
 // Создание "базового объекта", не имеет функций отрисовки,
 // но имеет все описанные ниже функции
-a= addBaseNode(vec2df(x, y), vec2df(Width, Height));
+var a= addBaseNode(vec2df(x, y), vec2df(Width, Height));
 
 
 // Вращение объекта
@@ -163,16 +163,17 @@ all = true - лбой вариант столкнокения
 
 // Потомок базового объекта
 // Создает прямоугольник
-a= addRectNode( 
+var a= addRectNode( 
                vec2df(x, y), // Положение
                vec2df(x, y), // Размеры
                'rgb(150,100,100)' // Цвет
               );
 
 
-a= addCircleNode(
+// Создает окружность
+var a= addCircleNode(
                  vec2df(x, y), // Позиция
-                 radius,
+                 radius, // радиус
                  color
 );
               
@@ -190,10 +191,10 @@ a.draw(); // scene - объект сцены
 <img id="imageMap" src="image.jpg" alt="">
 
 // Создание карты изображения
-imageMap= createImageMap('imageMap'); // id объекта HTML
+var imageMap= createImageMap('imageMap'); // id объекта HTML
 
 // Создание анимации из имеющейся карты
-anim= imageMap.createAnimation(
+var anim= imageMap.createAnimation(
                  0, 0,   // Начальная позция первого кадра
                  96, 87, // Размер кадра
                  2       // Количество кадров (по горизонтали)
@@ -201,14 +202,14 @@ anim= imageMap.createAnimation(
                
 // Потомок базового объекта
 // Создание спрайта
-a= addSpriteNode(
+var a= addSpriteNode(
     vec2df(x, y), // Позиция в игре
     vec2df(x, y), // Размеры в игре
     anim    // Анимация
    );
 
 // Рисование одного кадра спрайта             
-a.drawFrame(frame); // сцена, номер кадра (1 - первый)
+a.drawFrame(frame); // номер кадра (1 - первый)
 
 // Проигрывать всю анимацию
 a.drawAnimate(speed); // сцена, скорость (чем больше, тем медленнее)
@@ -224,66 +225,8 @@ a.setFlip(x_true, y_true);
 
 
 
-/*-------- enginePostEffects ---------*/
-Основной файл для подключения движка пост обработки
-<script type="text/javascript" src="post.js"></script> 
- 
-post= createPost(); // создает обработчик и привязывает его ко сцене
-
-// Эффект сепии
-post.sepia(vol); // vol - осветление или затемнение (- 0 +)
-
-// Инвертировать цвета
-post.invert(); 
-
-// Наклнить сцену
-post.setRotation(angle); // angle , 0 - 360
-
-// осветлить изи затенить сцену
-post.lightness(vol); 
-
-
-// moution Blur / Размытие при движении
-post.motionBlur(vol);
-
-// Размытие Гаусса
-post.blurBETA(vol);
-
-// Размытие при движении 2
-post.alphaBlur(vol);
-
-// функция преобразования Mirror
-post.mirror(x_true, y_true);
-
-
-
-
-
-
-
-
-/*-------- engineNet ---------*/
-Основной файл для подключения сетевого движка (Не доделан)
-<script type="text/javascript" src="net.js"></script>
-
-// Jткрытие потока для работы с АJAX
-var myAjax= startajax(); 
-
-// Отправить запрос на сервер и обработать
-// результат функцией 
-getAjax(myAjax, // объект АJAX потока
-        script, // адрес скрипта на сервере (напр. 'server.php')
-        func); // Функция, обрабатывающая результат
-
-// Описание функции обработчика
-function func(result){
- alert('Сервер вернул ответ: '+result);
-}
-
-
-
 // Локальное хранилище
-myLocal= createLocal(id); // id - любое уникальное значение (строковое)
+var myLocal= createLocal(id); // id - любое уникальное значение (строковое)
 
 // Сохранение данных
 myLocal.save(id, value); // data.save('name', 'Василий');
@@ -309,11 +252,7 @@ if (myLocal.is(id)) alert('Есть такая переменная');
 
 
 
-/*-------- engineMath ---------*/
-Основной файл для подключения движка 
-Дополнительных математических функций
-<script type="text/javascript" src="math.js"></script> 
- 
+// математика
 // Вернет рандомное число между min и max
 var rnd= Random(min, max);
 
@@ -323,29 +262,14 @@ var rad= Rad(50); // переводит в радианы
 
 
 
-
-
-/*-------- engineDOM ---------*/
-Основной файл для подключение функций работы с DOM
-Деревом документа
-<script type="text/javascript" src="dom.js"></script>
-
 // Функция обращения к объекту по ID
-obj(id); 
+$(id); 
 
 // Функция возвращает размер экрана, доступный для показа
-device().width // Ширина
-device().height // Высота
+j2ds.device().width // Ширина
+j2ds.device().height // Высота
 
 
-
-
-
-
-
-/*-------- engineInput ---------*/
-Основной файл для подключение функций работы с клавиатурой
-<script type="text/javascript" src="input.js"></script>
 
 Для работы с мышью есть следующие функции 
 // Координаты в игровом мире
@@ -383,11 +307,10 @@ input.upd(); // Сцена
 // Вернет true, если курсор над объектом
 input.onNode(a); // Объекь
 
-// Инициализируем клавиатуру для
-// объекта <body> с id="gameBody"
+// Инициализируем клавиатуру
 // Эту функцию нужно поместить сразу после открытия <body>
 // Нужна, только если вы хотите пользоваться клавиатурой
-initInput(scene);
+initInput();
 
 Для проверки нажатий клавиш достаточно использовать
 следующую конструкцию: input.isKeyDown(keyCode), где keyCode - объект клавиши и возвращает сканкод

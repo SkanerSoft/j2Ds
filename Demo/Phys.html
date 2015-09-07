@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html> 
  <head>
-  <script type="text/javascript" src="../j2ds/j2ds.js">
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8;" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />  
   <title>Demo J2ds. Физика</title>
  </head>
@@ -10,32 +10,27 @@
 <body>
 
 <canvas id="iCanvas" width="550" height="300"></canvas>
-<div id="hint"></div>
 
 <script type="text/javascript">
 
-j2ds.root= '../j2ds/';
-j2ds.include('math');
-j2ds.include('dom');
-j2ds.include('net');
-j2ds.include('input');
-j2ds.include('post');
-j2ds.include('particles'); 
+var scene= j2ds.scene;
+var input= j2ds.input;
+
 
 // Создаем сцену
 scene.init('iCanvas', '#ceeeee');
 
-if (device().width < 800)
+if (j2ds.device().width < 800)
  scene.fullScreen(true);
 
 // Инициализируем устройство ввода
 input.init();
 
 // создаем шар A
-a= addCircleNode(vec2df(10, 10), 20, 'green');
+a= scene.addCircleNode(vec2df(10, 10), 20, 'green');
 a.grav= 1; a.speed= 0;
 
-b= addCircleNode(vec2df(300, 250), 20, 'yellow');
+b= scene.addCircleNode(vec2df(300, 250), 20, 'yellow');
 b.grav= 1; b.speed= 0;
 
 a.draw();

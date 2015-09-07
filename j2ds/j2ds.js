@@ -1,163 +1,8 @@
-'use strict';
+'use strict'; 
 
 /*----------- DOM ---------------*/
-var $= function(id){ return document.getElementById(id); };
+var $ = function (id) { return document.getElementById(id); };
 
-var device= function() {
-	var o= {};
-	o.width=  (parseInt(document.documentElement.clientWidth) < parseInt(screen.width))   ? parseInt(document.documentElement.clientWidth):parseInt(screen.width);
-	o.height= (parseInt(document.documentElement.clientHeight) < parseInt(screen.height)) ? parseInt(document.documentElement.clientHeight) : parseInt(screen.height);
-	return o;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*----------------- INPUT -------------------*/
-var input= {
- /* Gеременные */
- pos : {x:0, y:0},
- x : 0,
- y : 0,
- abs : {x:0, y:0},
- lClick : false,
- mClick : false,
- rClick : false,
- touch : false,
- keyDown : [],
- canceled : false,
- body : false,
- anyKey : false
-}
-
-// Константы клавиш
-
-var jKey= {
- LEFT       : 37,
- RIGHT      : 39,
- UP         : 38,
- DOWN       : 40,
- SPACE      : 32,
- 
- 
- ESC        : 27
-}
-
-input.isKeyDown= function(_code) {
- return this.keyDown[_code];
-};
-
-input.getPosition= function() {
- return vec2df(this.pos.x, this.pos.y);
-};
-
-
-input.keyEvent= function(e) {
- input.keyDown[e.keyCode] = (e.type == 'keydown')&&(!input.canceled);
- input.anyKey= e.keyCode; 
- return false;
-};
-
-//! системная
-// Вернет true, если мышь назодится над объектом
-input.cancel= function(_id) {
-	input.canceled= true;
-	 input.falseInput();
-	 input.keyDown= [];
-};
-
-//! системная
-// Вернет true, если мышь назодится над объектом
-input.onNode= function(_id) {
-	return (
- (this.pos.x > _id.pos.x && this.pos.x < _id.pos.x+_id.size.x)
-  &&
- (this.pos.y > _id.pos.y && this.pos.y < _id.pos.y+_id.size.y) );
-};
-
-input.upd= function() {
- var dX= scene.canvas.offsetWidth / scene.width;
- var dY= scene.canvas.offsetHeight / scene.height;
- this.x= (this.abs.x/dX);
- this.y= (this.abs.y/dY);
- this.pos.x= scene.view.x + this.x;
- this.pos.y= scene.view.y + this.y;  
-};
-
-
-input.cursorPosition= function(e) {
- if (!input.touch) {
-  if (document.all) { 
-    var x = e.x + document.body.scrollLeft, 
-        y = e.y + document.body.scrollTop; 
-  } else {
-    var x = e.pageX, // Координата X курсора
-        y = e.pageY; // Координата Y курсора
-  }
-  input.abs.x= x; input.abs.y= y;
- }
- e.preventDefault();
-};
-
-
-input.onClick= function(e) {
- if (!e.which && e.button) {
-   if (e.button & 1) e.which = 1;
-   else if (e.button & 4) e.which = 2;
-   else if (e.button & 2) e.which = 3;
- }	
- input.lClick= (e.which == 1?true:false)&&(!input.canceled);
- input.mClick= (e.which == 2?true:false)&&(!input.canceled);
- input.rClick= (e.which == 3?true:false)&&(!input.canceled);
- input.body.focus();
- return false; 
-};
-
-input.onTouch= function(e) {
- e.preventDefault();
- input.abs.x= e.touches[0].pageX;
- input.abs.y= e.touches[0].pageY;
- input.lClick= true&&(!input.canceled);
- input.touch= true&&(!input.canceled);
- input.body.focus();
- return false;
-};
-
-input.falseInput= function() { 
-	 input.lClick= 
-	  input.mClick= 
-	   input.rClick= false;
-};
-
-
-input.init= function() {
- input.body= window;
- input.body.focus();
- scene.canvas.ontouchstart= input.onTouch;
- scene.canvas.ontouchmove= input.onTouch;
- scene.canvas.ontouchend= function() { input.canceled= false; input.falseInput(); }; 
- scene.canvas.oncontextmenu= function() { return false; }
- scene.canvas.onselectstart= scene.canvas.oncontextmenu;
- scene.canvas.ondragstart= scene.canvas.oncontextmenu;
- scene.canvas.onmousedown= input.onClick;
- scene.canvas.onmouseup= function() { input.canceled= false; input.falseInput(); }
- scene.canvas.onmousemove= input.cursorPosition;
- input.body.onkeydown= input.keyEvent;
- input.body.onkeyup= function(e) { input.canceled= false; input.keyEvent(e); };
-};
 
 
 
@@ -229,6 +74,12 @@ var j2ds= {
 
 /* функции */
 
+j2ds.device= function() {
+	var o= {};
+	o.width=  (parseInt(document.documentElement.clientWidth) < parseInt(screen.width))   ? parseInt(document.documentElement.clientWidth):parseInt(screen.width);
+	o.height= (parseInt(document.documentElement.clientHeight) < parseInt(screen.height)) ? parseInt(document.documentElement.clientHeight) : parseInt(screen.height);
+	return (o);
+};
 
 j2ds.loaded= function(_id) {
  j2ds.scripts[_id]= true; 
@@ -266,7 +117,7 @@ j2ds.gameEngine= function(){
  if (j2ds.now - j2ds.sceneStartTime > j2ds.sceneSkipTime)
  {  
   j2ds.sceneStartTime = Date.now();
-  scene.clear();
+  j2ds.scene.clear();
   j2ds.engine();
  }
  nextJ2dsGameStep(j2ds.gameEngine);
@@ -295,43 +146,198 @@ var nextJ2dsGameStep= (function(){
 
 
 
+/*----------------- INPUT -------------------*/
+j2ds.input= {
+ /* Gеременные */
+ pos : {x:0, y:0},
+ x : 0,
+ y : 0,
+ abs : {x : 0, y : 0},
+ lClick : false,
+ mClick : false,
+ rClick : false,
+ touch : false,
+ keyDown : [],
+ canceled : false,
+ body : false,
+ anyKey : false
+}
+
+// Константы клавиш
+
+j2ds.input.jKey= {
+ 'LEFT'       : 37,
+ 'RIGHT'      : 39,
+ 'UP'         : 38,
+ 'DOWN'       : 40,
+ 'SPACE'      : 32,
+ 
+ 
+ 'ESC'        : 27
+}
+
+j2ds.input.isKeyDown= function(_code) {
+ return this.keyDown[this.jKey[_code]];
+};
+
+j2ds.input.getPosition= function() {
+ return vec2df(this.pos.x, this.pos.y);
+};
+
+
+j2ds.input.keyEvent= function(e) {
+ j2ds.input.keyDown[e.keyCode] = (e.type == 'keydown')&&(!j2ds.input.canceled);
+ j2ds.input.anyKey= e.keyCode; 
+ return false;
+};
+
+//! системная
+// Вернет true, если мышь назодится над объектом
+j2ds.input.cancel= function(_id) {
+ if (!_id) {
+  j2ds.input.canceled= true;
+   j2ds.input.falseInput();
+   j2ds.input.keyDown= [];  
+ }
+ else {
+  j2ds.input.keyDown[j2ds.input.jKey[_id]]= false;	
+ }
+};
+
+//! системная
+// Вернет true, если мышь назодится над объектом
+j2ds.input.onNode= function(_id) {
+  return (
+ (this.pos.x > _id.pos.x && this.pos.x < _id.pos.x+_id.size.x)
+  &&
+ (this.pos.y > _id.pos.y && this.pos.y < _id.pos.y+_id.size.y) );
+};
+
+j2ds.input.upd= function() {
+ var dX= j2ds.scene.canvas.offsetWidth / j2ds.scene.width;
+ var dY= j2ds.scene.canvas.offsetHeight / j2ds.scene.height;
+ this.x= (this.abs.x/dX);
+ this.y= (this.abs.y/dY);
+ this.pos.x= j2ds.scene.view.x + this.x;
+ this.pos.y= j2ds.scene.view.y + this.y;  
+};
+
+
+j2ds.input.cursorPosition= function(e) {
+ if (!j2ds.input.touch) {
+  if (document.all) { 
+    var x = e.x + document.body.scrollLeft, 
+        y = e.y + document.body.scrollTop; 
+  } else {
+    var x = e.pageX, // Координата X курсора
+        y = e.pageY; // Координата Y курсора
+  }
+  j2ds.input.abs.x= x; j2ds.input.abs.y= y;
+ }
+ e.preventDefault();
+};
+
+
+j2ds.input.onClick= function(e) {
+ if (!e.which && e.button) {
+   if (e.button & 1) e.which = 1;
+   else if (e.button & 4) e.which = 2;
+   else if (e.button & 2) e.which = 3;
+ }  
+ j2ds.input.lClick= (e.which == 1?true:false)&&(!j2ds.input.canceled);
+ j2ds.input.mClick= (e.which == 2?true:false)&&(!j2ds.input.canceled);
+ j2ds.input.rClick= (e.which == 3?true:false)&&(!j2ds.input.canceled);
+ j2ds.input.body.focus();
+ return false; 
+};
+
+j2ds.input.onTouch= function(e) {
+ e.preventDefault();
+ j2ds.input.abs.x= e.touches[0].pageX;
+ j2ds.input.abs.y= e.touches[0].pageY;
+ j2ds.input.lClick= true&&(!j2ds.input.canceled);
+ j2ds.input.touch= true&&(!j2ds.input.canceled);
+ j2ds.input.body.focus();
+ return false;
+};
+
+j2ds.input.falseInput= function() { 
+   j2ds.input.lClick= 
+    j2ds.input.mClick= 
+     j2ds.input.rClick= false;
+};
+
+
+j2ds.input.init= function() {
+ j2ds.input.body= window;
+ j2ds.input.body.focus();
+ j2ds.scene.canvas.ontouchstart= j2ds.input.onTouch;
+ j2ds.scene.canvas.ontouchmove= j2ds.input.onTouch;
+ j2ds.scene.canvas.ontouchend= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); }; 
+ j2ds.scene.canvas.oncontextmenu= function() { return false; }
+ j2ds.scene.canvas.onselectstart= j2ds.scene.canvas.oncontextmenu;
+ j2ds.scene.canvas.ondragstart= j2ds.scene.canvas.oncontextmenu;
+ j2ds.scene.canvas.onmousedown= j2ds.input.onClick;
+ j2ds.scene.canvas.onmouseup= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); }
+ j2ds.scene.canvas.onmousemove= j2ds.input.cursorPosition;
+ j2ds.input.body.onkeydown= j2ds.input.keyEvent;
+ j2ds.input.body.onkeyup= function(e) { j2ds.input.canceled= false; j2ds.input.keyEvent(e); };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* сцена */
 
-var scene= {};
+j2ds.scene= {};
  
 /*функции*/
-scene.setEngine= function(_engine) {
+j2ds.scene.setEngine= function(_engine) {
  j2ds.setActivEngine(_engine);
 }; 
 
-scene.start= function(_engine, _framelimit) {
+j2ds.scene.start= function(_engine, _framelimit) {
  j2ds.start(_engine, _framelimit);
 };
 
-scene.fullScreen= function(_true) {
+j2ds.scene.fullScreen= function(_true) {
  if (_true) {
-  scene.canvas.style.width= device().width+'px';
-  scene.canvas.style.height= device().height+'px';  
+  j2ds.scene.canvas.style.width= j2ds.device().width+'px';
+  j2ds.scene.canvas.style.height= j2ds.device().height+'px';  
  } else { 
-  scene.canvas.style.width= scene.width+1+'px';
-  scene.canvas.style.height= scene.height+1+'px';  
+  j2ds.scene.canvas.style.width= j2ds.scene.width+1+'px';
+  j2ds.scene.canvas.style.height= j2ds.scene.height+1+'px';  
  }
 };
 
 // вывод текста
-scene.drawText= function(_pos, _text) {
- if (scene.fillStyle != scene.context.fillStyle) scene.context.fillStyle= scene.fillStyle;
- scene.context.strokeStyle= scene.strokeStyle;
- scene.context.textBaseline= 'top';
- scene.context.font= scene.font;
- scene.context.lineWidth= 2; 
+j2ds.scene.drawText= function(_pos, _text) {
+ if (j2ds.scene.fillStyle != j2ds.scene.context.fillStyle) j2ds.scene.context.fillStyle= j2ds.scene.fillStyle;
+ j2ds.scene.context.strokeStyle= j2ds.scene.strokeStyle;
+ j2ds.scene.context.textBaseline= 'top';
+ j2ds.scene.context.font= j2ds.scene.font;
+ j2ds.scene.context.lineWidth= 2; 
  
- scene.context.strokeText(_text, _pos.x, _pos.y);
- scene.context.fillText(_text, _pos.x, _pos.y); 
+ j2ds.scene.context.strokeText(_text, _pos.x, _pos.y);
+ j2ds.scene.context.fillText(_text, _pos.x, _pos.y); 
 };
 
 // вывод текста с параметрами
-scene.drawTextOpt= function(_pos,
+j2ds.scene.drawTextOpt= function(_pos,
                       _text, // Сам текст
                       _font,   // [ Шрифт (CSS) ]
                       _colorF, // [ Цвет текста ]
@@ -339,87 +345,87 @@ scene.drawTextOpt= function(_pos,
                       _lineWidth, // [ Толщина линий обводки ]
                       _baseLine // Начало отсчета пикслей
                       ) {
- scene.context.textBaseline= _baseLine || 'top';
- if (_font) scene.context.font= _font;
+ j2ds.scene.context.textBaseline= _baseLine || 'top';
+ if (_font) j2ds.scene.context.font= _font;
 
  if (_colorS) {
-  scene.context.lineWidth= _lineWidth || 1;
-  scene.context.strokeStyle= _colorS;
-  scene.context.strokeText(_text, _pos.x, _pos.y);
+  j2ds.scene.context.lineWidth= _lineWidth || 1;
+  j2ds.scene.context.strokeStyle= _colorS;
+  j2ds.scene.context.strokeText(_text, _pos.x, _pos.y);
  } 
  
- if (_colorF != scene.context.fillStyle) scene.context.fillStyle= _colorF || '#000';
- scene.context.fillText(_text, _pos.x, _pos.y); 
+ if (_colorF != j2ds.scene.context.fillStyle) j2ds.scene.context.fillStyle= _colorF || '#000';
+ j2ds.scene.context.fillText(_text, _pos.x, _pos.y); 
 };
 
-scene.drawImage= function(_map, _pos) { 
- scene.context.drawImage(_map.img, _pos.x, _pos.y);
+j2ds.scene.drawImage= function(_map, _pos) { 
+ j2ds.scene.context.drawImage(_map.img, _pos.x, _pos.y);
 };  
 
 // Устанавливает позицию для камеры
-scene.setViewPosition= function(_pos) {
-	scene.view.x= _pos.x - Math.ceil(scene.width/2);
-	scene.view.y= _pos.y - Math.ceil(scene.height/2);	
+j2ds.scene.setViewPosition= function(_pos) {
+	j2ds.scene.view.x= _pos.x - Math.ceil(j2ds.scene.width/2);
+	j2ds.scene.view.y= _pos.y - Math.ceil(j2ds.scene.height/2);	
 };
 
 //! Движение "камеры" вслед за объектом
-scene.setViewFocus= function(_id, _d) {
+j2ds.scene.setViewFocus= function(_id, _d) {
  var _dX= _d.x || 0, _dY= _d.y || 0;
-	scene.view.x= _id.getPosition().x - Math.ceil(scene.width/2)+_dX;
-	scene.view.y= _id.getPosition().y - Math.ceil(scene.height/2)+_dY;	
+	j2ds.scene.view.x= _id.getPosition().x - Math.ceil(j2ds.scene.width/2)+_dX;
+	j2ds.scene.view.y= _id.getPosition().y - Math.ceil(j2ds.scene.height/2)+_dY;	
 };
 
 //! Движение "камеры" или же вида
-scene.viewMove= function(_pos) {
-	scene.view.x+=_pos.x;
-	scene.view.y+=_pos.y;	
+j2ds.scene.viewMove= function(_pos) {
+	j2ds.scene.view.x+=_pos.x;
+	j2ds.scene.view.y+=_pos.y;	
 };
 
 //! Очистка отрисованного предыдущего кадра сцены
-scene.clear= function(_color) {
- if (!scene.cancelClear) {
-  if (scene.context.fillStyle != _color) scene.context.fillStyle= _color || scene.colorClear;
-  scene.context.fillRect(0, 0, scene.width, scene.width);   
-  scene.cancelClear= false; 
+j2ds.scene.clear= function(_color) {
+ if (!j2ds.scene.cancelClear) {
+  if (j2ds.scene.context.fillStyle != _color) j2ds.scene.context.fillStyle= _color || j2ds.scene.colorClear;
+  j2ds.scene.context.fillRect(0, 0, j2ds.scene.width, j2ds.scene.width);   
+  j2ds.scene.cancelClear= false; 
  }          
 };
 
 // инициализация сцены
-scene.init= function(_canvas, _color) {
-	scene.canvas= $(_canvas);
- scene.context= scene.canvas.getContext('2d');
- scene.width= scene.canvas.width;
- scene.height= scene.canvas.height;  
+j2ds.scene.init= function(_canvas, _color) {
+	j2ds.scene.canvas= $(_canvas);
+ j2ds.scene.context= j2ds.scene.canvas.getContext('2d');
+ j2ds.scene.width= j2ds.scene.canvas.width;
+ j2ds.scene.height= j2ds.scene.canvas.height;  
  
- scene.canvas.style.position= 'fixed';
- scene.canvas.style.top= '0px';
- scene.canvas.style.left= '0px';   
+ j2ds.scene.canvas.style.position= 'fixed';
+ j2ds.scene.canvas.style.top= '0px';
+ j2ds.scene.canvas.style.left= '0px';   
  
- scene.canvas.style.WebkitTransform= 'translate3d(0,0,0)';
- scene.canvas.style.WebkitTransform= 'tranlsateZ(0)';
- scene.canvas.style.WebkitTransform= 'scale3d(1,1,1)';
- scene.canvas.style.WebkitTransform= 'scale3dZ(1)'; 
- scene.canvas.style.transform= 'translate3d(0,0,0)';
+ j2ds.scene.canvas.style.WebkitTransform= 'translate3d(0,0,0)';
+ j2ds.scene.canvas.style.WebkitTransform= 'tranlsateZ(0)';
+ j2ds.scene.canvas.style.WebkitTransform= 'scale3d(1,1,1)';
+ j2ds.scene.canvas.style.WebkitTransform= 'scale3dZ(1)'; 
+ j2ds.scene.canvas.style.transform= 'translate3d(0,0,0)';
  
- scene.canvas.style.width=  scene.width+'px';
- scene.canvas.style.height=  scene.height+'px';
+ j2ds.scene.canvas.style.width=  j2ds.scene.width+'px';
+ j2ds.scene.canvas.style.height=  j2ds.scene.height+'px';
  
- scene.colorClear= _color || '#fff';
- scene.font= '14px sens-serif'; 
- scene.fillStyle= '#000';
- scene.strokeStyle= '#fff';
- scene.angle= 0;
- scene.cancelClear= false;
+ j2ds.scene.colorClear= _color || '#fff';
+ j2ds.scene.font= '14px sens-serif'; 
+ j2ds.scene.fillStyle= '#000';
+ j2ds.scene.strokeStyle= '#fff';
+ j2ds.scene.angle= 0;
+ j2ds.scene.cancelClear= false;
  
   /* Вид "камеры" */
- scene.view= vec2df(0,0);
+ j2ds.scene.view= vec2df(0,0);
 };
 
 
 
 /*базовый объект*/
 
-var addBaseNode= function(_pos, _size) {
+j2ds.scene.addBaseNode= function(_pos, _size) {
  var o= { // begin
   visible : true,
   pos        : _pos,
@@ -428,13 +434,6 @@ var addBaseNode= function(_pos, _size) {
   angle      : 0
  };
  
- o.keyControl= function(_speed) {
-  if (input.keyDown[key.DOWN]) { this.move(vec2df(0, _speed)); }
-  if (input.keyDown[key.UP]) { this.move(vec2df(0, -_speed)); }
-  if (input.keyDown[key.LEFT]) { this.move(vec2df(-_speed, 0)); }
-  if (input.keyDown[key.RIGHT]) { this.move(vec2df(_speed, 0)); }
- };
-
  o.setVisible= function(_visible) {
   this.visible= _visible;
  };
@@ -496,10 +495,10 @@ var addBaseNode= function(_pos, _size) {
 
  o.isLookScene= function() {
  	var yes= true;
- 	if ((this.pos.x > scene.view.x+scene.width 
- 	|| this.pos.x+this.size.x < scene.view.x) ||
- 	  (this.pos.y > scene.view.y+scene.height 
- 	|| this.pos.y+this.size.y < scene.view.y)) yes= false;	
+ 	if ((this.pos.x > j2ds.scene.view.x+j2ds.scene.width 
+ 	|| this.pos.x+this.size.x < j2ds.scene.view.x) ||
+ 	  (this.pos.y > j2ds.scene.view.y+j2ds.scene.height 
+ 	|| this.pos.y+this.size.y < j2ds.scene.view.y)) yes= false;	
  	return yes;
  };
 
@@ -517,17 +516,17 @@ var addBaseNode= function(_pos, _size) {
  o.isCollisionScene= function() {
  	var o= {};
  	
- 	if (this.pos.x+this.size.x >= scene.view.x+scene.width) o.x= 1;
- 	else	if (this.pos.x <= scene.view.x) o.x= -1;
+ 	if (this.pos.x+this.size.x >= j2ds.scene.view.x+j2ds.scene.width) o.x= 1;
+ 	else	if (this.pos.x <= j2ds.scene.view.x) o.x= -1;
  	     else o.x= 0;
  	
- 	if (this.pos.y+this.size.y >= scene.view.y+scene.height) o.y= 1;
- 	else	if (this.pos.y <= scene.view.y) o.y= -1;
+ 	if (this.pos.y+this.size.y >= j2ds.scene.view.y+j2ds.scene.height) o.y= 1;
+ 	else	if (this.pos.y <= j2ds.scene.view.y) o.y= -1;
  	     else  o.y= 0;
  	
  	o.all= (o.x || o.y);
  	
- 	return o;
+ 	return (o);
  };
 
  o.setRotationTo= function(_to) {
@@ -548,23 +547,23 @@ var addBaseNode= function(_pos, _size) {
    var newX= (this.parent?this.parent.pos.x:0);
    var newY= (this.parent?this.parent.pos.y:0); 
 
-   if (scene.context.strokeStyle != 'black') scene.context.strokeStyle= 'black';  
+   if (j2ds.scene.context.strokeStyle != 'black') j2ds.scene.context.strokeStyle= 'black';  
 
-   scene.context.beginPath();
-   scene.context.rect(
-   newX+this.pos.x-scene.view.x, 
-   newY+this.pos.y-scene.view.y, 
+   j2ds.scene.context.beginPath();
+   j2ds.scene.context.rect(
+   newX+this.pos.x-j2ds.scene.view.x, 
+   newY+this.pos.y-j2ds.scene.view.y, 
    this.size.x, this.size.y);
-   scene.context.stroke(); 
+   j2ds.scene.context.stroke(); 
 
-   if (scene.context.strokeStyle != 'white') scene.context.strokeStyle= 'white';
+   if (j2ds.scene.context.strokeStyle != 'white') j2ds.scene.context.strokeStyle= 'white';
 
-   scene.context.beginPath(); 
-   scene.context.rect(
-   -2+newX+this.pos.x-scene.view.x, 
-   -2+newY+this.pos.y-scene.view.y, 
+   j2ds.scene.context.beginPath(); 
+   j2ds.scene.context.rect(
+   -2+newX+this.pos.x-j2ds.scene.view.x, 
+   -2+newY+this.pos.y-j2ds.scene.view.y, 
    this.size.x+4, this.size.y+4);
-   scene.context.stroke(); 
+   j2ds.scene.context.stroke(); 
  }; 
 
  return (o);
@@ -573,8 +572,8 @@ var addBaseNode= function(_pos, _size) {
 
 /* окружность */
 
-var addCircleNode= function(_pos, _radius, _color) {
- var o= addBaseNode(_pos, vec2df(_radius*2, _radius*2));
+j2ds.scene.addCircleNode= function(_pos, _radius, _color) {
+ var o= j2ds.scene.addBaseNode(_pos, vec2df(_radius*2, _radius*2));
  /*Свойства*/
  o.color= _color; 
  o.radius= _radius;
@@ -584,27 +583,27 @@ var addCircleNode= function(_pos, _radius, _color) {
  o.draw= function() {
   if (this.visible  && this.isLookScene()) {  
    var newX= (this.parent?this.parent.pos.x:0);
-   if (scene.context.fillStyle != this.color) scene.context.fillStyle= this.color;
+   if (j2ds.scene.context.fillStyle != this.color) j2ds.scene.context.fillStyle= this.color;
  
  
    var newY= (this.parent?this.parent.pos.y:0); 
    
-   scene.context.beginPath();
-   scene.context.arc(newX+this.pos.x-scene.view.x+this.radius, 
-                      newY+this.pos.y-scene.view.y+this.radius, 
+   j2ds.scene.context.beginPath();
+   j2ds.scene.context.arc(newX+this.pos.x-j2ds.scene.view.x+this.radius, 
+                      newY+this.pos.y-j2ds.scene.view.y+this.radius, 
                       this.radius, 0, 2*Math.PI,true);
-   scene.context.stroke();  
-   scene.context.fill();  
+   j2ds.scene.context.stroke();  
+   j2ds.scene.context.fill();  
   }
  };
 
- return o;
+ return (o);
 }
 
 
 /* линии */
-var addLineNode= function(_pos, _points, _scale, _color, _width, _fill, _cFill) {
- var o= addBaseNode(_pos, vec2df(0,0));
+j2ds.scene.addLineNode= function(_pos, _points, _scale, _color, _width, _fill, _cFill) {
+ var o= j2ds.scene.addBaseNode(_pos, vec2df(0,0));
  
  /*Свойства*/
  o.color= _color; 
@@ -619,33 +618,33 @@ var addLineNode= function(_pos, _points, _scale, _color, _width, _fill, _cFill) 
 
  o.draw= function() {
   if (this.visible && this.isLookScene()) { 
-   scene.context.strokeStyle= this.color;
-   scene.context.lineWidth = this.lineWidth;
+   j2ds.scene.context.strokeStyle= this.color;
+   j2ds.scene.context.lineWidth = this.lineWidth;
    
-   scene.context.beginPath();
-   scene.context.moveTo(this.pos.x-scene.view.x, 
-                           this.pos.y-scene.view.y);
+   j2ds.scene.context.beginPath();
+   j2ds.scene.context.moveTo(this.pos.x-j2ds.scene.view.x, 
+                           this.pos.y-j2ds.scene.view.y);
    
    for (var i=0, len= this.points.length; i<len; i+=1) {
-    scene.context.lineTo(
-      this.pos.x+this.points[i][0]*this.scale-scene.view.x, 
-      this.pos.y+this.points[i][1]*this.scale-scene.view.y);   
+    j2ds.scene.context.lineTo(
+      this.pos.x+this.points[i][0]*this.scale-j2ds.scene.view.x, 
+      this.pos.y+this.points[i][1]*this.scale-j2ds.scene.view.y);   
    }
-   scene.context.stroke(); 
+   j2ds.scene.context.stroke(); 
    if (this.fill) {  
-    if (scene.context.fillStyle != this.cFill) scene.context.fillStyle= this.cFill;
-    scene.context.fill(); 
+    if (j2ds.scene.context.fillStyle != this.cFill) j2ds.scene.context.fillStyle= this.cFill;
+    j2ds.scene.context.fill(); 
    }
   }
  };
 
- return o;
+ return (o);
 }
 
 
 /*прямоугольники*/
-var addRectNode= function(_pos, _size, _color) {
- var o= addBaseNode(_pos, _size);
+j2ds.scene.addRectNode= function(_pos, _size, _color) {
+ var o= j2ds.scene.addBaseNode(_pos, _size);
  /*Свойства*/
  o.color= _color; 
  
@@ -656,26 +655,26 @@ var addRectNode= function(_pos, _size, _color) {
    var newX= (this.parent?this.parent.pos.x:0);
    var newY= (this.parent?this.parent.pos.y:0); 
  
-   scene.context.save();
-   scene.context.translate(this.getPosition().x-scene.view.x, this.getPosition().y-scene.view.y);  
-   scene.context.rotate(Rad(this.angle));
-   scene.context.translate(-(this.getPosition().x-scene.view.x), -(this.getPosition().y-scene.view.y));
+   j2ds.scene.context.save();
+   j2ds.scene.context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);  
+   j2ds.scene.context.rotate(Rad(this.angle));
+   j2ds.scene.context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
  
-   if (scene.context.fillStyle != this.color) scene.context.fillStyle= this.color;
-   scene.context.fillRect(
-   newX+this.pos.x-scene.view.x, 
-   newY+this.pos.y-scene.view.y, 
+   if (j2ds.scene.context.fillStyle != this.color) j2ds.scene.context.fillStyle= this.color;
+   j2ds.scene.context.fillRect(
+   newX+this.pos.x-j2ds.scene.view.x, 
+   newY+this.pos.y-j2ds.scene.view.y, 
    this.size.x, this.size.y);
  
-   scene.context.restore();      
+   j2ds.scene.context.restore();      
   }
  }; 
  
- return o;
+ return (o);
 }
 
 /* изображения */
-var createImageMap= function(_id) {
+j2ds.scene.createImageMap= function(_id) {
  var o= {};
  o.img = $(_id);
  o.img.onload= function() { o.img.style.display= 'none'; };
@@ -692,15 +691,15 @@ var createImageMap= function(_id) {
    sourceH : _sourceH,
    frameCount : _frameCount-1
   };
-  return o;
+  return (o);
  }
 
- return o; 
+ return (o); 
 }
 
-var addSpriteNode= function(_pos, _size, _animation) {
+j2ds.scene.addSpriteNode= function(_pos, _size, _animation) {
                        
- var o= addBaseNode(_pos, _size);
+ var o= j2ds.scene.addBaseNode(_pos, _size);
  o.tmpSpeed= 0;
  o.frame= 0;
  o.animation= _animation;
@@ -737,21 +736,21 @@ var addSpriteNode= function(_pos, _size, _animation) {
  o.drawFrame= function(_frame) { 
   if (this.visible && this.isLookScene()) {
    
-   scene.context.save();
-   scene.context.translate(this.getPosition().x-scene.view.x, this.getPosition().y-scene.view.y);  
-   scene.context.rotate(Rad(this.angle));
-   scene.context.scale(this.flip.x ? -1 : 1, this.flip.y ? -1 : 1);
-   scene.context.translate(-(this.getPosition().x-scene.view.x), -(this.getPosition().y-scene.view.y));
+   j2ds.scene.context.save();
+   j2ds.scene.context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);  
+   j2ds.scene.context.rotate(Rad(this.angle));
+   j2ds.scene.context.scale(this.flip.x ? -1 : 1, this.flip.y ? -1 : 1);
+   j2ds.scene.context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
    
    _frame= _frame?(_frame-1):0;
-   scene.context.drawImage(
+   j2ds.scene.context.drawImage(
    this.animation.imageMap.img, 
    (this.animation.sourceX+this.animation.sourceW*_frame), this.animation.sourceY, 
    this.animation.sourceW, this.animation.sourceH,
-   this.pos.x-scene.view.x, this.pos.y-scene.view.y, 
+   this.pos.x-j2ds.scene.view.x, this.pos.y-j2ds.scene.view.y, 
    this.size.x, this.size.y);
    
-   scene.context.restore();  
+   j2ds.scene.context.restore();  
   }
  }; 
  
@@ -761,7 +760,7 @@ var addSpriteNode= function(_pos, _size, _animation) {
  	}
  };
 
- return o;
+ return (o);
 }
 
 
@@ -792,7 +791,7 @@ var addSpriteNode= function(_pos, _size, _animation) {
 
 
 
-var createLocal= function(_id) {
+j2ds.createLocal= function(_id) {
  var o= {};
  o.id= _id;
  o.ls= window.localStorage? window.localStorage : false;
@@ -813,7 +812,7 @@ var createLocal= function(_id) {
   o.val= this.ls.getItem(this.id+_name);
   o.int= parseInt(o.val);
   o.dbl= parseFloat(o.val); 
-  return o;
+  return (o);
  };
  
  o.is= function (_name) {
@@ -830,7 +829,7 @@ var createLocal= function(_id) {
   return JSON.parse(this.ls.getItem(this.id+_name));
  }
 
- return o;
+ return (o);
 }
 
 
