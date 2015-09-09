@@ -30,7 +30,7 @@ var vec2df= function(_x, _y) {
 };
 
 var vec2di= function(_x, _y) { 
- return { x: Math.ceil(_x), y: Math.ceil(_y) }; 
+ return { x: (_x >> 0), y: (_y >> 0) }; 
 };
 
 
@@ -62,6 +62,7 @@ var Rad= function(_num) {
 /*------------------ 2D движок --------------------*/
 var j2ds= {
  now : 0,
+ dt : 0,
  framelimit : 60,
  sceneStartTime : 0,
  sceneSkipTime : 0,
@@ -103,7 +104,7 @@ j2ds.include= function(_path) {
 j2ds.start= function(_engine, _framelimit) {
  j2ds.engine= _engine || function() { document.body.innerHTML= 'Пожалуйста, инициализируйте игровую функцию!'; };;
  j2ds.framelimit= _framelimit || 60;
- j2ds.sceneSkipTime= 1000 / j2ds.framelimit;
+ j2ds.sceneSkipTime= 1000.0 / j2ds.framelimit;
 	nextJ2dsGameStep(j2ds.gameEngine);
 };
 
@@ -111,14 +112,18 @@ j2ds.start= function(_engine, _framelimit) {
 j2ds.setActivEngine= function(_engine) {
 	j2ds.engine= _engine;
 };
- 
+
 j2ds.gameEngine= function(){
  j2ds.now= Date.now();
  if (j2ds.now - j2ds.sceneStartTime > j2ds.sceneSkipTime)
- {  
+ {
+  j2ds.input.upd();
+  j2ds.dt = (j2ds.now - j2ds.lastTime) / 100.0;
   j2ds.sceneStartTime = Date.now();
-  j2ds.scene.clear();
   j2ds.engine();
+  j2ds.input.keyPress= [];
+  j2ds.input.keyUp= [];  
+  j2ds.lastTime= j2ds.now;
  }
  nextJ2dsGameStep(j2ds.gameEngine);
 };
@@ -158,6 +163,10 @@ j2ds.input= {
  rClick : false,
  touch : false,
  keyDown : [],
+ keyPress : [],
+ keyPressed : [],
+ keyUp : [],
+ keyUped : false,
  canceled : false,
  body : false,
  anyKey : false
@@ -180,13 +189,34 @@ j2ds.input.isKeyDown= function(_code) {
  return this.keyDown[this.jKey[_code]];
 };
 
+j2ds.input.isKeyPress= function(_code) {
+ return this.keyPress[this.jKey[_code]];
+};
+
+j2ds.input.isKeyUp= function(_code) {
+ return this.keyUp[this.jKey[_code]];
+};
+
+
 j2ds.input.getPosition= function() {
  return vec2df(this.pos.x, this.pos.y);
 };
 
 
 j2ds.input.keyEvent= function(e) {
+ 
+ if ((e.type == 'keydown') && !j2ds.input.keyPressed[e.keyCode]) {
+  j2ds.input.keyPress[e.keyCode] = true; 
+  j2ds.input.keyPressed[e.keyCode]= true;
+ } else if ((e.type == 'keyup') && j2ds.input.keyPressed[e.keyCode]) {
+  j2ds.input.keyPress[e.keyCode] = false; 
+  j2ds.input.keyPressed[e.keyCode]= false;
+  j2ds.input.keyUp[e.keyCode] = true; 
+  j2ds.input.keyUped= true;
+ }
+
  j2ds.input.keyDown[e.keyCode] = (e.type == 'keydown')&&(!j2ds.input.canceled);
+  
  j2ds.input.anyKey= e.keyCode; 
  return false;
 };
@@ -234,7 +264,6 @@ j2ds.input.cursorPosition= function(e) {
   }
   j2ds.input.abs.x= x; j2ds.input.abs.y= y;
  }
- e.preventDefault();
 };
 
 
@@ -247,7 +276,7 @@ j2ds.input.onClick= function(e) {
  j2ds.input.lClick= (e.which == 1?true:false)&&(!j2ds.input.canceled);
  j2ds.input.mClick= (e.which == 2?true:false)&&(!j2ds.input.canceled);
  j2ds.input.rClick= (e.which == 3?true:false)&&(!j2ds.input.canceled);
- j2ds.input.body.focus();
+ j2ds.window.focus();
  return false; 
 };
 
@@ -257,7 +286,7 @@ j2ds.input.onTouch= function(e) {
  j2ds.input.abs.y= e.touches[0].pageY;
  j2ds.input.lClick= true&&(!j2ds.input.canceled);
  j2ds.input.touch= true&&(!j2ds.input.canceled);
- j2ds.input.body.focus();
+ j2ds.window.focus();
  return false;
 };
 
@@ -269,19 +298,19 @@ j2ds.input.falseInput= function() {
 
 
 j2ds.input.init= function() {
- j2ds.input.body= window;
- j2ds.input.body.focus();
- j2ds.scene.canvas.ontouchstart= j2ds.input.onTouch;
- j2ds.scene.canvas.ontouchmove= j2ds.input.onTouch;
- j2ds.scene.canvas.ontouchend= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); }; 
- j2ds.scene.canvas.oncontextmenu= function() { return false; }
- j2ds.scene.canvas.onselectstart= j2ds.scene.canvas.oncontextmenu;
- j2ds.scene.canvas.ondragstart= j2ds.scene.canvas.oncontextmenu;
- j2ds.scene.canvas.onmousedown= j2ds.input.onClick;
- j2ds.scene.canvas.onmouseup= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); }
- j2ds.scene.canvas.onmousemove= j2ds.input.cursorPosition;
- j2ds.input.body.onkeydown= j2ds.input.keyEvent;
- j2ds.input.body.onkeyup= function(e) { j2ds.input.canceled= false; j2ds.input.keyEvent(e); };
+ j2ds.window= window;
+ j2ds.window.focus();
+ j2ds.window.ontouchstart= j2ds.input.onTouch;
+ j2ds.window.ontouchmove= j2ds.input.onTouch;
+ j2ds.window.ontouchend= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); }; 
+ j2ds.window.oncontextmenu= function() { return false; }
+ j2ds.window.onselectstart= j2ds.window.oncontextmenu;
+ j2ds.window.ondragstart= j2ds.window.oncontextmenu;
+ j2ds.window.onmousedown= j2ds.input.onClick;
+ j2ds.window.onmouseup= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); }
+ j2ds.window.onmousemove= j2ds.input.cursorPosition;
+ j2ds.window.onkeydown= j2ds.input.keyEvent; 
+ j2ds.window.onkeyup= function(e) { j2ds.input.canceled= false; j2ds.input.keyEvent(e); };
 };
 
 
@@ -298,6 +327,59 @@ j2ds.input.init= function() {
 
 
 
+/* слои */
+
+j2ds.layers= {};
+j2ds.layers.list= [];
+
+j2ds.layers.add= function (_index) {
+	var o= {};
+	o.canvas= document.createElement('canvas');
+	o.canvas.width= j2ds.scene.width;
+	o.canvas.height= j2ds.scene.height;
+	o.width= j2ds.scene.width;
+	o.height= j2ds.scene.height;	
+	o.context= o.canvas.getContext('2d');
+ o.canvas.style.zIndex= 1000+_index;
+ o.canvas.style.position= 'fixed';
+ o.canvas.style.left= '0px';
+ o.canvas.style.top= '0px';
+ 
+ o.fill= function (_color) {
+ 	this.context.fillStyle= _color;
+ 	this.context.fillRect(0, 0, this.width, this.height);
+ }; 
+  
+ o.setIndex= function (_index) {
+ 	this.canvas.style.zIndex= _index;
+ };  
+  
+ o.drawText= function (_pos, _text) {
+ 	this.context.fillText(_text, _pos.x, _pos.y);
+ } 
+  
+ o.drawImage= function (_pos, _size, _anim, _frame) {
+  _frame= _frame?(_frame-1):0;
+ 	this.context.drawImage(
+   _anim.imageMap.img, 
+   _anim.sourceX+(_anim.sourceW*_frame), _anim.sourceY, _anim.sourceW, _anim.sourceH,
+   _pos.x, _pos.y, _size.x, _size.y);
+ };
+  
+ o.setStyle= function (_fill, _stroke, _width) {
+ 	this.context.fillStyle= _fill;
+ 	this.context.strokeStyle= _stroke;
+ 	this.context.lineWidth= _width;
+ };  
+
+ o.clear= function () {
+ 	this.context.clearRect(0, 0, this.width, this.height);
+ }  
+  
+	j2ds.layers.list.push(o);
+
+ document.body.appendChild(o.canvas);
+}
 
 
 
@@ -311,6 +393,7 @@ j2ds.scene.setEngine= function(_engine) {
 }; 
 
 j2ds.scene.start= function(_engine, _framelimit) {
+ j2ds.input.init();
  j2ds.start(_engine, _framelimit);
 };
 
@@ -354,7 +437,7 @@ j2ds.scene.drawTextOpt= function(_pos,
   j2ds.scene.context.strokeText(_text, _pos.x, _pos.y);
  } 
  
- if (_colorF != j2ds.scene.context.fillStyle) j2ds.scene.context.fillStyle= _colorF || '#000';
+ j2ds.scene.context.fillStyle= _colorF || '#000';
  j2ds.scene.context.fillText(_text, _pos.x, _pos.y); 
 };
 
@@ -384,14 +467,15 @@ j2ds.scene.viewMove= function(_pos) {
 //! Очистка отрисованного предыдущего кадра сцены
 j2ds.scene.clear= function(_color) {
  if (!j2ds.scene.cancelClear) {
-  if (j2ds.scene.context.fillStyle != _color) j2ds.scene.context.fillStyle= _color || j2ds.scene.colorClear;
-  j2ds.scene.context.fillRect(0, 0, j2ds.scene.width, j2ds.scene.width);   
+  j2ds.scene.context.clearRect(0, 0, j2ds.scene.width, j2ds.scene.width);   
   j2ds.scene.cancelClear= false; 
  }          
 };
 
 // инициализация сцены
 j2ds.scene.init= function(_canvas, _color) {
+ 
+ 
 	j2ds.scene.canvas= $(_canvas);
  j2ds.scene.context= j2ds.scene.canvas.getContext('2d');
  j2ds.scene.width= j2ds.scene.canvas.width;
@@ -399,7 +483,8 @@ j2ds.scene.init= function(_canvas, _color) {
  
  j2ds.scene.canvas.style.position= 'fixed';
  j2ds.scene.canvas.style.top= '0px';
- j2ds.scene.canvas.style.left= '0px';   
+ j2ds.scene.canvas.style.left= '0px';  
+ j2ds.scene.canvas.style.zIndex= '1000';    
  
  j2ds.scene.canvas.style.WebkitTransform= 'translate3d(0,0,0)';
  j2ds.scene.canvas.style.WebkitTransform= 'tranlsateZ(0)';
@@ -407,8 +492,8 @@ j2ds.scene.init= function(_canvas, _color) {
  j2ds.scene.canvas.style.WebkitTransform= 'scale3dZ(1)'; 
  j2ds.scene.canvas.style.transform= 'translate3d(0,0,0)';
  
- j2ds.scene.canvas.style.width=  j2ds.scene.width+'px';
- j2ds.scene.canvas.style.height=  j2ds.scene.height+'px';
+ j2ds.scene.canvas.style.width=  j2ds.scene.width+1+'px';
+ j2ds.scene.canvas.style.height=  j2ds.scene.height+1+'px';
  
  j2ds.scene.colorClear= _color || '#fff';
  j2ds.scene.font= '14px sens-serif'; 
@@ -544,15 +629,12 @@ j2ds.scene.addBaseNode= function(_pos, _size) {
  };
 
  o.drawBox= function() {
-   var newX= (this.parent?this.parent.pos.x:0);
-   var newY= (this.parent?this.parent.pos.y:0); 
-
    if (j2ds.scene.context.strokeStyle != 'black') j2ds.scene.context.strokeStyle= 'black';  
 
    j2ds.scene.context.beginPath();
    j2ds.scene.context.rect(
-   newX+this.pos.x-j2ds.scene.view.x, 
-   newY+this.pos.y-j2ds.scene.view.y, 
+   this.pos.x-j2ds.scene.view.x, 
+   this.pos.y-j2ds.scene.view.y, 
    this.size.x, this.size.y);
    j2ds.scene.context.stroke(); 
 
@@ -560,8 +642,8 @@ j2ds.scene.addBaseNode= function(_pos, _size) {
 
    j2ds.scene.context.beginPath(); 
    j2ds.scene.context.rect(
-   -2+newX+this.pos.x-j2ds.scene.view.x, 
-   -2+newY+this.pos.y-j2ds.scene.view.y, 
+   -2+this.pos.x-j2ds.scene.view.x, 
+   -2+this.pos.y-j2ds.scene.view.y, 
    this.size.x+4, this.size.y+4);
    j2ds.scene.context.stroke(); 
  }; 
@@ -582,15 +664,11 @@ j2ds.scene.addCircleNode= function(_pos, _radius, _color) {
 
  o.draw= function() {
   if (this.visible  && this.isLookScene()) {  
-   var newX= (this.parent?this.parent.pos.x:0);
-   if (j2ds.scene.context.fillStyle != this.color) j2ds.scene.context.fillStyle= this.color;
+   j2ds.scene.context.fillStyle= this.color;
  
- 
-   var newY= (this.parent?this.parent.pos.y:0); 
-   
    j2ds.scene.context.beginPath();
-   j2ds.scene.context.arc(newX+this.pos.x-j2ds.scene.view.x+this.radius, 
-                      newY+this.pos.y-j2ds.scene.view.y+this.radius, 
+   j2ds.scene.context.arc(this.pos.x-j2ds.scene.view.x+this.radius, 
+                      this.pos.y-j2ds.scene.view.y+this.radius, 
                       this.radius, 0, 2*Math.PI,true);
    j2ds.scene.context.stroke();  
    j2ds.scene.context.fill();  
@@ -632,7 +710,7 @@ j2ds.scene.addLineNode= function(_pos, _points, _scale, _color, _width, _fill, _
    }
    j2ds.scene.context.stroke(); 
    if (this.fill) {  
-    if (j2ds.scene.context.fillStyle != this.cFill) j2ds.scene.context.fillStyle= this.cFill;
+    j2ds.scene.context.fillStyle= this.cFill;
     j2ds.scene.context.fill(); 
    }
   }
@@ -652,21 +730,23 @@ j2ds.scene.addRectNode= function(_pos, _size, _color) {
  
  o.draw= function() {
   if (this.visible  && this.isLookScene()) {  
-   var newX= (this.parent?this.parent.pos.x:0);
-   var newY= (this.parent?this.parent.pos.y:0); 
+
+   if (this.angle)
+   {
+    j2ds.scene.context.save();
+    j2ds.scene.context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);  
+    j2ds.scene.context.rotate(Rad(this.angle));
+    j2ds.scene.context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
+   }
  
-   j2ds.scene.context.save();
-   j2ds.scene.context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);  
-   j2ds.scene.context.rotate(Rad(this.angle));
-   j2ds.scene.context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
- 
-   if (j2ds.scene.context.fillStyle != this.color) j2ds.scene.context.fillStyle= this.color;
+   j2ds.scene.context.fillStyle= this.color;
+   
    j2ds.scene.context.fillRect(
-   newX+this.pos.x-j2ds.scene.view.x, 
-   newY+this.pos.y-j2ds.scene.view.y, 
+   this.pos.x-j2ds.scene.view.x, 
+   this.pos.y-j2ds.scene.view.y, 
    this.size.x, this.size.y);
  
-   j2ds.scene.context.restore();      
+   if (this.angle) j2ds.scene.context.restore();      
   }
  }; 
  
@@ -691,6 +771,8 @@ j2ds.scene.createImageMap= function(_id) {
    sourceH : _sourceH,
    frameCount : _frameCount-1
   };
+
+  
   return (o);
  }
 
@@ -736,11 +818,14 @@ j2ds.scene.addSpriteNode= function(_pos, _size, _animation) {
  o.drawFrame= function(_frame) { 
   if (this.visible && this.isLookScene()) {
    
-   j2ds.scene.context.save();
-   j2ds.scene.context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);  
-   j2ds.scene.context.rotate(Rad(this.angle));
-   j2ds.scene.context.scale(this.flip.x ? -1 : 1, this.flip.y ? -1 : 1);
-   j2ds.scene.context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
+   if (this.angle || this.flip.x || this.flip.y)
+   {
+    j2ds.scene.context.save();
+    j2ds.scene.context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);  
+    j2ds.scene.context.rotate(Rad(this.angle));
+    j2ds.scene.context.scale(this.flip.x ? -1 : 1, this.flip.y ? -1 : 1);
+    j2ds.scene.context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
+   }
    
    _frame= _frame?(_frame-1):0;
    j2ds.scene.context.drawImage(
@@ -750,7 +835,7 @@ j2ds.scene.addSpriteNode= function(_pos, _size, _animation) {
    this.pos.x-j2ds.scene.view.x, this.pos.y-j2ds.scene.view.y, 
    this.size.x, this.size.y);
    
-   j2ds.scene.context.restore();  
+   if (this.angle || this.flip.x || this.flip.y) j2ds.scene.context.restore();  
   }
  }; 
  
@@ -831,7 +916,6 @@ j2ds.createLocal= function(_id) {
 
  return (o);
 }
-
 
 
 

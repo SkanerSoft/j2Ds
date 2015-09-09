@@ -1,3 +1,4 @@
+<pre>
 /*
 
  J2ds - 2D движок для взаимодействия с API HTML5
@@ -19,6 +20,7 @@ API системы распределено по отдельным файлам
 Основной файл для подключение графического движка
 <script type="text/javascript" src="j2ds.js"></script>
 
+var scene= j2ds.scene;
 
 // Cтарт игры
 scene.start(GameState, fps);
@@ -35,8 +37,7 @@ scene.setEngine(newGameState);
 
 
 // Создание сцены на основе сanvas
-scene.init('idCanvas', // Первый агрумент - id объекта Сanvas
-           '#dddddd'); // Второй агрумент - цвет фона
+scene.init('idCanvas');
 
 //Развернуть игру на весь экран
 scene.fullScreen(true);
@@ -44,6 +45,9 @@ scene.fullScreen(true);
 //Не растягивать на весь экран
 scene.fullScreen(false);
 
+
+// Для очистки сцецы используйте команду:
+scene.clear();
 
 
 
@@ -83,12 +87,27 @@ scene.clearDraw(); // В качестве параметра можно
 
 
 
+После инициализации сцены есть возможность создавать слои спереди и позади основной сцены
+
+var layers= j2ds.layer; // Берем ссылку на объект слоев
+layers.add(name, index); // index - глубина отдаление или приближения name - наименование слоя
+
+Для обращения к словям используется объект list:
+layers.list[name].clear(); // ОЧистка словя
+ fill( (string) color) - заполнение каким-либо цветом
+ drawText( (vec2df) position, (string | number) text) - вывод текста
+ drawImage( (vec2df) position, (vec2df) size, (animation) animation, (number) frame )
+
+
+
+
+
 Объекты
 
 
 // Создание "базового объекта", не имеет функций отрисовки,
 // но имеет все описанные ниже функции
-var a= addBaseNode(vec2df(x, y), vec2df(Width, Height));
+var a= scene.addBaseNode(vec2df(x, y), vec2df(Width, Height));
 
 
 // Вращение объекта
@@ -163,7 +182,7 @@ all = true - лбой вариант столкнокения
 
 // Потомок базового объекта
 // Создает прямоугольник
-var a= addRectNode( 
+var a= scene.addRectNode( 
                vec2df(x, y), // Положение
                vec2df(x, y), // Размеры
                'rgb(150,100,100)' // Цвет
@@ -171,7 +190,7 @@ var a= addRectNode(
 
 
 // Создает окружность
-var a= addCircleNode(
+var a= scene.addCircleNode(
                  vec2df(x, y), // Позиция
                  radius, // радиус
                  color
@@ -180,7 +199,7 @@ var a= addCircleNode(
               
               
 // Рисование
-a.draw(); // scene - объект сцены
+a.draw();
 
 
 
@@ -191,7 +210,7 @@ a.draw(); // scene - объект сцены
 <img id="imageMap" src="image.jpg" alt="">
 
 // Создание карты изображения
-var imageMap= createImageMap('imageMap'); // id объекта HTML
+var imageMap= scene.createImageMap('imageMap'); // id объекта HTML
 
 // Создание анимации из имеющейся карты
 var anim= imageMap.createAnimation(
@@ -202,7 +221,7 @@ var anim= imageMap.createAnimation(
                
 // Потомок базового объекта
 // Создание спрайта
-var a= addSpriteNode(
+var a= scene.addSpriteNode(
     vec2df(x, y), // Позиция в игре
     vec2df(x, y), // Размеры в игре
     anim    // Анимация
@@ -212,13 +231,13 @@ var a= addSpriteNode(
 a.drawFrame(frame); // номер кадра (1 - первый)
 
 // Проигрывать всю анимацию
-a.drawAnimate(speed); // сцена, скорость (чем больше, тем медленнее)
+a.draw(speed); // замедление (чем больше, тем медленнее)
 
 // Установить анимацию спрайту
 a.setAnimation(anim); // объект анимации
 
 // отразить спрайт по вертикали или горизонтали
-a.setFlip(x_true, y_true); 
+a.setFlip(horizontal, vertical); 
 
 
 
@@ -226,7 +245,7 @@ a.setFlip(x_true, y_true);
 
 
 // Локальное хранилище
-var myLocal= createLocal(id); // id - любое уникальное значение (строковое)
+var myLocal= j2ds.createLocal(id); // id - любое уникальное значение (строковое)
 
 // Сохранение данных
 myLocal.save(id, value); // data.save('name', 'Василий');
@@ -297,29 +316,25 @@ input.mClick
 
 
 
-input - Основной объект ввода
-
-// Чтобы указанные выше координаты обрабатывались корректно
-// Нужно функцию поместить в начало игрового цикла
-// Обновление координат мыши
-input.upd(); // Сцена
+var input= j2ds.input; // - Основной объект ввода
 
 // Вернет true, если курсор над объектом
 input.onNode(a); // Объекь
 
-// Инициализируем клавиатуру
-// Эту функцию нужно поместить сразу после открытия <body>
-// Нужна, только если вы хотите пользоваться клавиатурой
-initInput();
+Для проверки удержания нажатия клавиш достаточно использовать
+следующую конструкцию: input.isKeyDown('Имя клавиши'),
 
-Для проверки нажатий клавиш достаточно использовать
-следующую конструкцию: input.isKeyDown(keyCode), где keyCode - объект клавиши и возвращает сканкод
-if (input.isKeyDown(jKey.LEFT)) dbg('Нажата клавиша ЛЕВО');
+if (input.isKeyDown('LEFT')) dbg('Нажата клавиша ЛЕВО');
 
 
+Соответственно, события:
+// При нажатии
+input.isKeyPress('LEFT')
 
+// При отпускании
+input.isKeyUp('LEFT')
 
-
+</pre>
 
 
 
