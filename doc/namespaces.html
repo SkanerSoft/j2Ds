@@ -81,8 +81,9 @@ scene.setViewFocus(a, vec2df(100, 0));  // Сместит взгляд по ос
 scene.viewMove(vec3df(x, y));
 
 // Очистка игрового окна
-scene.clearDraw(); // В качестве параметра можно
+scene.clear(); // В качестве параметра можно
 // передать альтернативный цвет scene.clearDraw('red');
+
 
 
 
@@ -93,11 +94,15 @@ var layers= j2ds.layer; // Берем ссылку на объект слоев
 layers.add(name, index); // index - глубина отдаление или приближения name - наименование слоя
 
 Для обращения к словям используется объект list:
-layers.list[name].clear(); // ОЧистка словя
+layers.layer(name).
+ clear(); // Очистка словя
  fill( (string) color) - заполнение каким-либо цветом
  drawText( (vec2df) position, (string | number) text) - вывод текста
  drawImage( (vec2df) position, (vec2df) size, (animation) animation, (number) frame )
-
+ setPosition( (vec2di) position) - смещение слоя
+ getPosition() - вернет vec2di
+ clearNode( (node) id) - очистит область прорисовки, где был объект
+ clearRect( (vec2di) position, (vec2di) size) - очистка области прорисовки
 
 
 
@@ -141,8 +146,12 @@ a.getPosition();
 // Установить новые размеры изображения
 a.setScale(vec2df(x, y));
 
-// Добавить "ребенка"
-a.addChild(b);
+// Изменить текущий слой отрисовки можно командой:
+a.setLayer('myLayer');
+по-умолчанию используется основной слой - сцена.
+
+
+a.getLayer(); - вернет наименование слоя, за которым закреплен объект
 
 
 // Получить расстояние между "a" и "b"
@@ -162,7 +171,19 @@ a.isCollision(b);
 // Вернет true, если "a" и "b" стулкнутся
 // Проверка идет по эллипсоиду, описывающую 
 // контур объекта
-a.collisionRadius(b);
+a.isCollisionRadius(b);
+
+// Проверить вхождение BoundingBox'а одного объекта в другой
+a.isIntersect(b)
+
+// Чтобы изменить размер bounding-box'а:
+a.resizeBox( (vec2df) offset, (vec2df) size )
+offset - смещение по X и Y коордаинатам
+size - прибавление (или отнимание) к текущему размеру
+
+
+// Чтобы отобразить bounding-box:
+a.drawBox();
 
 
 
@@ -333,6 +354,11 @@ input.isKeyPress('LEFT')
 
 // При отпускании
 input.isKeyUp('LEFT')
+
+
+Отладочные данные:
+j2ds.countDrawNodes // переменная, содержащая количество отрисованных объектов на сцене на текущем кадре
+
 
 </pre>
 
