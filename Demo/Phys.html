@@ -12,13 +12,14 @@
 <canvas id="iCanvas" width="550" height="300"></canvas>
 
 <script type="text/javascript">
-
 var scene= j2ds.scene;
 var input= j2ds.input;
 
-
 // Создаем сцену
-scene.init('iCanvas', '#ceeeee');
+scene.init('iCanvas');
+
+j2ds.layers.add('back', -1);
+j2ds.layers.layer('back').fill('#ceeeee');
 
 if (j2ds.device().width < 800)
  scene.fullScreen(true);
@@ -37,7 +38,8 @@ a.draw();
 
 // Описываем игровое состояние Game
 function Game() {
- input.upd();
+
+ scene.clear();
 
  if (input.lClick) 
  {
