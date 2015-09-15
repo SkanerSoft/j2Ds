@@ -353,6 +353,14 @@ j2ds.layers.add= function (_id, _index) {
  	this.context.fillRect(0, 0, this.width, this.height);
  };
 
+ o.setVisible= function (_visible) {
+ 	if (_visible) {
+ 	 this.canvas.style.display= 'block';
+  } else {
+  	this.canvas.style.display= 'none';
+  }
+ };
+
  o.setIndex= function (_index) {
  	this.canvas.style.zIndex= _index;
  };
@@ -366,7 +374,10 @@ j2ds.layers.add= function (_id, _index) {
  	return vec2di(parseInt(this.canvas.style.left), parseInt(this.canvas.style.top));
  };
 
- o.drawText= function (_pos, _text) {
+ o.drawText= function (_pos, _text, _color) {
+  if (_color) {
+   this.context.fillStyle= _color;
+  }
  	this.context.fillText(_text, _pos.x, _pos.y);
  }
 
@@ -453,15 +464,16 @@ j2ds.scene.fullScreen= function(_true) {
 };
 
 // вывод текста
-j2ds.scene.drawText= function(_pos, _text) {
- j2ds.scene.context.fillStyle= j2ds.scene.fillStyle;
- j2ds.scene.context.strokeStyle= j2ds.scene.strokeStyle;
- j2ds.scene.context.textBaseline= 'top';
- j2ds.scene.context.font= j2ds.scene.font;
- j2ds.scene.context.lineWidth= 2;
-
- j2ds.scene.context.strokeText(_text, _pos.x, _pos.y);
+j2ds.scene.drawText= function(_pos, _text, _color) {
+ if (_color) {
+  j2ds.scene.context.fillStyle= _color;
+ }
  j2ds.scene.context.fillText(_text, _pos.x, _pos.y);
+};
+
+j2ds.scene.fill= function (_color) {
+ 	j2ds.scene.context.fillStyle= _color;
+ 	j2ds.scene.context.fillRect(0, 0, j2ds.scene.width, j2ds.scene.height);
 };
 
 // вывод текста с параметрами

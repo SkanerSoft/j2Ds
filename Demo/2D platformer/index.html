@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <script type="text/javascript" src="../../j2ds/j2ds.js"></script> 
+  <script type="text/javascript" src="createMap.js"></script>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width,user-scalable=no" />  
+  <title></title>
+ </head>
+<body>
+<canvas id="iCanvas" width="550" height="300"></canvas>
+
+<img id="map1" src="img/map1.png"/>
+
+<script type="text/javascript">
+
+var input= j2ds.input;
+var scene= j2ds.scene;
+var layers= j2ds.layers;
+var score= 0;
+var level= 1;
+var maxRespawn= 4;
+
+// Создаем рабочую сцену
+scene.init('iCanvas');
+
+layers.add('back', -1);
+layers.layer('back').fill('#95C2DD');
+
+layers.add('front', 1);
+
+layers.add('pause', 2);
+layers.layer('pause').fill('#929292');
+layers.layer('pause').setVisible(false);
+
+// Создание тайлсета
+var imageMap= scene.createImageMap('map1');
+
+var tiles= createTiles(imageMap);
+
+// Создание сетки из тайлов ширина и высота одного тайла это XY переменные
+var maps= [];
+
+maps[1]= {
+ x : 40, y : 20,
+ map : [
+ '','','','','','','','',
+ ' M  AA Z  DDDDDDDDDDDD   Z  C',
+ 'LGGGGGGGGGGGGGGGGGGGGGGGGGGGGGR'
+ ]
+};
+
+maps[2]= {
+ x : 40, y : 20,
+ map : [
+ '','','','','','','','',
+ '                    C',
+ '              Z G',
+ '            ZLGGGGR',
+ ' M  AA Z  LGGGGGGGGGGR    A',
+ 'LGGGGGGGGGGGGGGGGGGGGGGGGGGGGGR'
+ ]
+};
+
+// создаем объект "me" - главный персонаж и привязываем к нему переменные с анимациями
+var me= createMe();
+me.resizeBox(vec2df(5, 5), vec2df(-12, -5));
+
+var apple= scene.addSpriteNode(vec2df(20, 20), vec2df(15, 15), tiles.apple);
+apple.setVisible(false); 
+apple.resizeBox(vec2df(3, 3), vec2df(-6, -6));
+apple.dx= 0;
+apple.dy= -5;
+
+// создаем объекты окружающего мира
+var block= [];
+var apples= [];
+var zombie= [];
+createMap(maps[level], tiles);
+
+var Pause= function () {
+
+ layers.layer('pause').fill('#929292');
+
+	layers.layer('pause').drawText(vec2di(scene.width/2-25, 20), 'ПАУЗА!', 'black');
+	
+ layers.layer('pause').drawText(vec2di(20, 50), 'Уровень: '+level);	
+ layers.layer('pause').drawText(vec2di(20, 80), 'Яблок: '+apples.length);	
+
+	if (input.isKeyPress('ESC')) {
+	 layers.layer('pause').setVisible(false);
+	 scene.setEngine(Game);
+	}
+};
+
+
+var StartMenu= function () {
+
+ scene.fill('#929292');
+
+ scene.drawTextOpt( 
+                   vec2di(scene.width/2-100, 120), // Позиция
+                  '2D Платформер!', // Текст
+                  '20px sans-serif', // Шрифт (аналогично CSS)
+                  'black' // Цвет текста
+                  ); 
+
+	if (input.anyKey) {
+	 scene.setEngine(Game);
+	}
+};
+
+var Attack= function () {
+ apple.setPosition(me.getPosition());
+	apple.setVisible(true);
+}
+
+var Game= function () {
+
+ if (input.isKeyPress('ESC')) {
+  layers.layer('pause').setVisible(true);
+  scene.setEngine(Pause);
+ }
+
+ scene.clear();
+ layers.layer('front').clear();
+
+ collisionBlock();
+ collisionApple(); 
+ collisionZombie(); 
+ collisionAttack();
+ keyMe();
+ 
+ // двигаем персонажа в соответствии с его dx и dy
+ me.move(vec2df(me.dx, me.dy)); 
+ 
+ // следим за персонажем
+ scene.setViewFocus(me, vec2df(50, -50));  
+ 
+ animateMe();
+ 
+ scene.drawTextOpt( 
+                   vec2di(10, 10), // Позиция
+                  'Яблоки: '+score, // Текст
+                  '15px sans-serif', // Шрифт (аналогично CSS)
+                  '#FF1B1B' // Цвет текста
+                  ); 
+}
+
+scene.start(StartMenu, 30);
+</script>
+
+</body>
+</html>
