@@ -4,6 +4,18 @@
 
 [Лицензия и описание](https://github.com/SkanerSoft/J2ds/wiki)
 
+Автор движка: Skaner (Нагель Петр)
+
+E-mail: skaner0@yandex.ru
+
+vk: vk.com/skaner.sof
+
+youtube: youtube.com/skanersoft
+
+Сайты: nagel-petr.ru, skanersoft.ru
+
+
+
 # Содержание:
 
 1. [DOM](#dom)
