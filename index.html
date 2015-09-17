@@ -44,6 +44,7 @@ var Game= function () {
  	if (ob2[i].isCollisionScene().x < 0) {
  	 ob2[i].pos.x= scene.width;
   }
+  
  	ob2[i].move(vec2df(ob2[i].dx, 0));
  	ob2[i].draw();
 
@@ -57,7 +58,7 @@ var Game= function () {
 
 };
 
-scene.start(Game, 30);
+scene.start(Game, 60);
 
 </script>
 

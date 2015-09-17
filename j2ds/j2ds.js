@@ -1,9 +1,11 @@
 'use strict';
 
 /*----------- DOM ---------------*/
-var $id= function (id) {return document.getElementById(id); };
+var $id= function (_id) {return document.getElementById(_id); };
 
+var $name= function (_id) {return document.getElementsByName(_id); };
 
+var $tag= function (_id) {return document.getElementsByTagName(_id); };
 
 
 

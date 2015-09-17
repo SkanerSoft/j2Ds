@@ -8,7 +8,7 @@
 
 E-mail: skaner0@yandex.ru
 
-vk: vk.com/skaner.sof
+vk: vk.com/skaner.soft
 
 youtube: youtube.com/skanersoft
 
