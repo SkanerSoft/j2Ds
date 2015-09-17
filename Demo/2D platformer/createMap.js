@@ -107,6 +107,9 @@ var collisionBlock= function () {
    // если цель
    if (block[i].type == 'cell') {
     level+= 1;
+    if (level > maps.length-1) {
+     level= 1;
+    } 
     createMap(maps[level], tiles);
     layers.layer('pause').setVisible(1);
     scene.setEngine(Pause);

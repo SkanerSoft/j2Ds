@@ -1,7 +1,7 @@
 'use strict';
 
 /*----------- DOM ---------------*/
-var $= function (id) {return document.getElementById(id); };
+var $id= function (id) {return document.getElementById(id); };
 
 
 
@@ -32,6 +32,10 @@ var vec2df= function (_x, _y) {
 var vec2di= function (_x, _y) {
  return {x: (_x >> 0), y: (_y >> 0) };
 };
+
+var toInt= function (_number) {
+	return (_number >> 0);
+}
 
 var Random= function (min, max) {
  return Math.ceil(Math.random() * (max - min) + min);
@@ -67,7 +71,7 @@ var j2ds= {
  sceneSkipTime : 0,
  FDT : 0,
  engine : false,
- redy : false,
+ ready : false,
  scripts : {},
  root : 'j2ds/',
  countDrawNodes : 0,
@@ -75,6 +79,10 @@ var j2ds= {
 };
 
 /* функции */
+
+j2ds.setWindow= function (_window) {
+	j2ds.window= _window ? _window : window;
+};
 
 j2ds.device= function() {
 	var o= {};
@@ -106,7 +114,9 @@ j2ds.start= function(_engine, _framelimit) {
  j2ds.engine= _engine || function() { document.body.innerHTML= 'Пожалуйста, инициализируйте игровую функцию!'; };
  j2ds.framelimit= _framelimit || 60;
  j2ds.sceneSkipTime= 1000.0 / j2ds.framelimit;
- nextJ2dsGameStep(j2ds.gameEngine);
+ j2ds.lastTime= Date.now();
+ j2ds.dt= 0;
+ j2ds.gameEngine();
 };
 
 // установка активного игрового состояния
@@ -290,8 +300,8 @@ j2ds.input.onTouch= function(e) {
 };
 
 j2ds.input.falseInput= function() {
- j2ds.input.lClick= 
- j2ds.input.mClick= 
+ j2ds.input.lClick= false;
+ j2ds.input.mClick= false;
  j2ds.input.rClick= false;
 };
 
@@ -534,7 +544,7 @@ j2ds.scene.clear= function(_color) {
 
 // инициализация сцены
 j2ds.scene.init= function(_canvas, _color) {
- j2ds.scene.canvas= $(_canvas);
+ j2ds.scene.canvas= $id(_canvas);
  j2ds.scene.context= j2ds.scene.canvas.getContext('2d');
  j2ds.scene.width= j2ds.scene.canvas.width;
  j2ds.scene.height= j2ds.scene.canvas.height;
@@ -613,7 +623,8 @@ j2ds.scene.addBaseNode= function(_pos, _size) {
  };
 
  o.move= function(_pos) {
-  this.pos= vec2df(this.pos.x+_pos.x, this.pos.y+_pos.y);
+  this.pos.x+= _pos.x;
+  this.pos.y+= _pos.y;
  };
  
  o.getPosition= function() {
@@ -775,7 +786,7 @@ j2ds.scene.addCircleNode= function(_pos, _radius, _color) {
 
  o.draw= function() {
   var context= this.layer.context;
-  if (this.visible  && this.isLookScene()) { 
+  if (this.visible && this.isLookScene()) { 
    context.fillStyle= this.color;
 
    context.beginPath();
@@ -872,7 +883,7 @@ j2ds.scene.addRectNode= function(_pos, _size, _color) {
 /* изображения */
 j2ds.scene.createImageMap= function(_id) {
  var o= {};
- o.img= $(_id);
+ o.img= $id(_id);
  o.img.onload= function() { o.img.style.display= 'none'; };
  /* Свойства */ 
 
@@ -910,7 +921,7 @@ var o= j2ds.scene.addBaseNode(_pos, _size);
 // отрисовка всей анимации
 o.draw= function(_speed) {
  if (this.visible && this.isLookScene()) {
-  _speed= _speed || -1;
+  _speed= _speed || 1;
 
   if (this.frame > this.animation.frameCount) {
    this.frame= 0;
@@ -918,7 +929,8 @@ o.draw= function(_speed) {
   this.drawFrame(this.frame+1);
 
   if (this.tmpSpeed > _speed) {
-   this.frame+=1;this.tmpSpeed= 0;
+   this.frame+=1;
+   this.tmpSpeed= 0;
   }
   else {
    this.tmpSpeed+=1;
@@ -960,7 +972,7 @@ o.setAnimation= function(_id) {
 };
 
 return (o);
-}
+};
 
 
 
@@ -993,24 +1005,20 @@ return (o);
 j2ds.createLocal= function(_id) {
 var o= {};
 o.id= _id;
-o.ls= window.localStorage? window.localStorage : false;
+o.ls= j2ds.window.localStorage ? j2ds.window.localStorage : false;
 
 if (!o.ls) alert('J2ds ERROR in "createLocal('+_id+')" \n' + 'Объект "localStorage" не поддерживается.');
 /*Свойства*/ 
 
 /*Функции*/
-o.save= function (_name, _o) {
+o.saveNode= function (_name, _o) {
  if (!this.ls) return false;
   this.ls.setItem(this.id+_name, JSON.stringify(_o));
  };
 
  o.load= function (_name) {
   if (!this.ls) { return (false); }
-  var o= {};
-  o.val= this.ls.getItem(this.id+_name);
-  o.int= parseInt(o.val);
-  o.dbl= parseFloat(o.val);
-  return (o);
+  return (this.ls.getItem(this.id+_name));
  };
 
  o.is= function (_name) {
@@ -1018,15 +1026,15 @@ o.save= function (_name, _o) {
   return !!(this.ls.getItem(this.id+_name));
  }
 
- o.saveObject= function (_name, _value) {
+ o.save= function (_name, _value) {
   if (!this.ls) { return (false); }
   this.ls.setItem(this.id+_name, _value);
  }
 
- o.loadObject= function (_name) {
+ o.loadNode= function (_name) {
  if (!this.ls) { return (false); }
   return JSON.parse(this.ls.getItem(this.id+_name));
  }
  
  return (o);
-}
+};

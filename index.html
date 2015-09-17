@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="j2ds/j2ds.js"></script>
+  <title>html5 page</title>
+ </head>
+ <body>
+
+<canvas id="testCanvas" width="900" height="300"></canvas>
+
+<script type="text/javascript">
+
+var dvc= j2ds.device();
+var scene= j2ds.scene;
+var io= j2ds.input;
+
+$id('testCanvas').width= dvc.width;
+$id('testCanvas').height= dvc.height;
+
+scene.init('testCanvas');
+
+var max= 1000; // количество указанное тут умножается на два
+
+for (var i= 0, ob= []; i < max; i+=1) {
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), Random(80, scene.height-80)), vec2df(7, 7), 'green');
+ o.dx= Random(1, 5);
+ ob.push(o);
+}
+
+for (var i= 0, ob2= []; i < max; i+=1) {
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), Random(100, scene.height-100)), vec2df(5, 5), 'black');
+ o.dx= -Random(1, 5);
+ ob2.push(o);
+}
+
+
+var Game= function () {
+	
+ scene.clear();	
+	
+ for (var i= 0; i < max; i+=1) {
+
+ 	if (ob2[i].isCollisionScene().x < 0) {
+ 	 ob2[i].pos.x= scene.width;
+  }
+ 	ob2[i].move(vec2df(ob2[i].dx, 0));
+ 	ob2[i].draw();
+
+ 	if (ob[i].isCollisionScene().x) {
+ 	 ob[i].pos.x= 0;
+  }
+  
+ 	ob[i].move(vec2df(ob[i].dx, 0));
+  ob[i].draw();
+ }
+
+};
+
+scene.start(Game, 30);
+
+</script>
+
+
+
+<!--// end of HTML-doc //-->
+ </body>
+</html>
