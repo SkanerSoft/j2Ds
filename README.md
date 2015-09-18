@@ -13,11 +13,11 @@
 
 E-mail: skaner0@yandex.ru
 
-vk: [vk.com/skaner.soft](vk.com/skaner.soft)
+vk: [vk.com/skaner.soft](http://vk.com/skaner.soft)
 
-youtube: [youtube.com/skanersoft](youtube.com/skanersoft)
+youtube: [youtube.com/skanersoft](http://youtube.com/skanersoft)
 
-Сайты: [nagel-petr.ru](nagel-petr.ru), [skanersoft.ru](skanersoft.ru)
+Сайты: [nagel-petr.ru](http://nagel-petr.ru), [skanersoft.ru](http://skanersoft.ru)
 
 
 
@@ -216,47 +216,47 @@ j2ds - Глобальный объект, дающий доступ к API дв�
 1. Функция, описывающая игровое состояние
 
 Код ниже представляет минимально необходимый код:
+```html
+<!DOCTYPE html>
+<html> 
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="j2ds/j2ds.js"></script>
+  <title>Пример игрового кода</title>
+ </head>
+ <body>
 
-    <!DOCTYPE html>
-    <html> 
-     <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <script type="text/javascript" src="j2ds/j2ds.js"></script>
-      <title>Пример игрового кода</title>
-     </head>
-     <body>
-    
-    <canvas id="testCanvas" width="500" height="300"></canvas>
-    
-    <script type="text/javascript">
-    
-    // Объект сцены для быстрого доступа
-    var scene = j2ds.scene;
-    
-    // вектор для быстрого доступа
-    var vec2di = j2ds.vector.vec2di;
-    
-    // инициализация сцены
-    scene.init('testCanvas'); // id холста
-    
-    // Игровое состояние Game
-    var Game = function () {
-     // Очищаем сцену
-     scene.clear(); 
-     
-     // Рисуем текст черным цветом в координатах 50 по x и 100 по y
-     scene.drawText(vec2di(50, 100), 'Пример игрового приложения', 'black');
-    };
-    
-    // После описания игрового состояния, оно не будет выполняться, пока игра не будет запущена.
-    // Для этого используется команда start:
-    scene.start(Game, 30); // Второй параметр - FPS
-    
-    </script>
-    
-     </body>
-    </html>
+<canvas id="testCanvas" width="500" height="300"></canvas>
 
+<script type="text/javascript">
+
+// Объект сцены для быстрого доступа
+var scene = j2ds.scene;
+
+// вектор для быстрого доступа
+var vec2di = j2ds.vector.vec2di;
+
+// инициализация сцены
+scene.init('testCanvas'); // id холста
+
+// Игровое состояние Game
+var Game = function () {
+ // Очищаем сцену
+ scene.clear(); 
+ 
+ // Рисуем текст черным цветом в координатах 50 по x и 100 по y
+ scene.drawText(vec2di(50, 100), 'Пример игрового приложения', 'black');
+};
+
+// После описания игрового состояния, оно не будет выполняться, пока игра не будет запущена.
+// Для этого используется команда start:
+scene.start(Game, 30); // Второй параметр - FPS
+
+</script>
+
+ </body>
+</html>
+```
 
 
 ## <a name="fps"></a> FPS
@@ -976,72 +976,127 @@ j2ds - Глобальный объект, дающий доступ к API дв�
 
 ## <a name="example"></a> Более сложный пример:
 
-    <!DOCTYPE html>
-    <html> 
-     <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <script type="text/javascript" src="j2ds/j2ds.js"></script>
-      <title>html5 page</title>
-     </head>
-     <body>
-    
-    <canvas id="testCanvas" width="900" height="300"></canvas>
-    
-    <script type="text/javascript">
-    
-    var dvc= j2ds.device();
-    var scene= j2ds.scene;
-    
-    $id('testCanvas').width= dvc.width;
-    $id('testCanvas').height= dvc.height;
-    
-    scene.init('testCanvas');
-    
-    var max= 1000; 
-    
-    for (var i= 0, ob= []; i < max; i+=1) {
-     var o= scene.addRectNode(vec2df(Random(0, scene.width-10), Random(80, scene.height-80)), vec2df(7, 7), 'green');
-     o.dx= Random(1, 5);
-     ob.push(o);
-    }
-    
-    for (var i= 0, ob2= []; i < max; i+=1) {
-     var o= scene.addRectNode(vec2df(Random(0, scene.width-10), Random(100, scene.height-100)), vec2df(5, 5), 'black');
-     o.dx= -Random(1, 5);
-     ob2.push(o);
-    }
-    
-    
-    var Game= function () {
-     
-     scene.clear(); 
-     
-     for (var i= 0; i < max; i+=1) {
-    
-      if (ob2[i].isCollisionScene().x < 0) {
-       ob2[i].pos.x= scene.width;
-      }
-      ob2[i].move(vec2df(ob2[i].dx, 0));
-      ob2[i].draw();
-    
-      if (ob[i].isCollisionScene().x > 0) {
-       ob[i].pos.x= 0;
-      }
-      
-      ob[i].move(vec2df(ob[i].dx, 0));
-      ob[i].draw();
-     }
-    
-    };
-    
-    scene.start(Game, 30);
-    
-    </script>
-    
-    
-    
-    <!--// end of HTML-doc //-->
-     </body>
-    </html>
+```html
+<!DOCTYPE html>
+<html> 
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="j2ds/j2ds.js"></script>
+  <title>html5 page</title>
+ </head>
+ <body>
 
-    
+<img src="Demo/Base/j2Ds-Logo.png" id="jLogo" alt="">
+
+<canvas id="testCanvas" width="900" height="300"></canvas>
+
+<script type="text/javascript">
+
+var dvc= j2ds.device();
+var scene= j2ds.scene;
+var input= j2ds.input;
+
+var layers= scene.layers;
+
+var vec2df= j2ds.vector.vec2df;
+var vec2di= j2ds.vector.vec2di;
+var Random= j2ds.math.random;
+
+$id('testCanvas').width= dvc.width;
+$id('testCanvas').height= dvc.height;
+
+scene.init('testCanvas');
+
+layers.add('back', -1);
+layers.layer('back').fillGradientR(vec2df(scene.width/2, scene.height/4), 0,
+                                   vec2df(scene.width/2, scene.height/2), scene.height*1.5,
+                                   ['black', 'rgba(0,0,0,0)']);
+                                   
+layers.add('front', 1);
+layers.layer('front').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
+
+layers.add('logo', 1);
+//layers.layer('logo').setAlpha(0.4);
+
+var jLogoMap= scene.createImageMap('jLogo');
+
+var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
+
+var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(634, 314), jAnim);
+jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
+jLogo.setAlpha(0);
+jLogo.setLayer('logo');
+
+var max= 1000;
+
+for (var i= 0, ob= []; i < max; i+=1) {
+ var dy= Random(80, scene.height-80);
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(5, 5), '#E9E9E9');
+ o.dx= Random(1, 5)*(dy*0.002);
+ ob.push(o);
+}
+
+for (var i= 0, ob2= []; i < max; i+=1) {
+ var dy= Random(80, scene.height-80);
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(5, 5), 'black');
+ o.dx= -Random(1, 5)*(dy*0.002);
+ ob2.push(o);
+}
+
+var Game= function () {
+ 
+ scene.clear(); 
+ 
+ for (var i= 0; i < max; i+=1) {
+
+  if (ob2[i].isCollisionScene().x < 0) {
+   ob2[i].pos.x= scene.width;
+  }
+
+  if (ob[i].isCollisionScene().x) {
+   ob[i].pos.x= 0;
+  }
+  
+  ob2[i].move(vec2df(ob2[i].dx*j2ds.dt, 0)); 
+  ob[i].move(vec2df(ob[i].dx*j2ds.dt, 0));
+
+  ob2[i].draw(); 
+ }
+
+ if (!input.lClick) {
+  if (jLogo.alpha <= 1) {
+   jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
+  }
+ } else {
+  layers.layer('logo').clear();
+  jLogo.setAlpha(0);  
+ }
+
+ jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
+
+ jLogo.draw();
+
+ for (var i= 0; i < max; i+=1) {
+  //  if (ob[i].isIntersect(jLogo)) {
+  //   scene.context.shadowOffsetX = 5;
+  //   scene.context.shadowOffsetY = 5;
+  //   scene.context.shadowColor = "black";
+  //   scene.context.shadowBlur = 2;
+  //  } else {
+  //   scene.context.shadowOffsetX = 0;
+  //   scene.context.shadowOffsetY = 0;
+  //   scene.context.shadowBlur = 0;
+  //  }
+  ob[i].draw();
+ }
+
+};
+
+scene.start(Game, 60);
+
+</script>
+
+
+ </body>
+</html>```
+
