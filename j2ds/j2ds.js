@@ -525,8 +525,8 @@ j2ds.scene.start= function(_engine, _framelimit, _func) {
    document.body.appendChild(j2ds.layers.layer(i).canvas);
   }
   j2ds.input.init();
-  j2ds.start(_engine, _framelimit);
   if (_func) { _func(); };
+  j2ds.start(_engine, _framelimit);
  }
 };
 

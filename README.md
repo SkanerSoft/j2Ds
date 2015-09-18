@@ -1,8 +1,5 @@
 # j2Ds - игровой HTML5 движок 
 
-![j2Ds Logo](http://s1.uploadpics.ru/images/-11yPdPEBl.png)
-
-
 ![j2Ds Demo](http://cs627318.vk.me/v627318778/14db8/1_gQygZQ2LY.jpg)
 
 [Лицензия и описание](https://github.com/SkanerSoft/J2ds/wiki)
@@ -319,7 +316,17 @@ scene.start(Game, 30); // Второй параметр - FPS
 ### Старт
 Чтобы начать игровой процесс, используется команда:
 
-    scene.start(GameState, 25); // 25 fps
+    scene.start(GameState, 25 [, userFunction]); // 25 fps
+
+, где [, userFunction] - необязательый аргумент, являющийся функцией для выполнения в момент старта сцены.
+
+Пример:
+
+    scene.start(GameState, 25 function() {
+     alert('Сцена стартовала на 25 FPS.');
+    });
+
+> Примечание: [, userFunction] выполнится лишь один раз за всю игру
 
 ### Смена игрового состояния
 Для смены текущего игрового состояния на любое другое:
