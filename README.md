@@ -2,6 +2,9 @@
 
 ![j2Ds Logo](http://s1.uploadpics.ru/images/-11yPdPEBl.png)
 
+
+![j2Ds Demo](http://cs627318.vk.me/v627318778/14db8/1_gQygZQ2LY.jpg)
+
 [Лицензия и описание](https://github.com/SkanerSoft/J2ds/wiki)
 
 Автор движка: Skaner (Нагель Петр)
