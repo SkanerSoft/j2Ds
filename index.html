@@ -7,33 +7,62 @@
  </head>
  <body>
 
+<img src="Demo/Base/j2Ds-Logo.png" id="jLogo" alt="">
+
 <canvas id="testCanvas" width="900" height="300"></canvas>
 
 <script type="text/javascript">
 
 var dvc= j2ds.device();
 var scene= j2ds.scene;
-var io= j2ds.input;
+var input= j2ds.input;
+
+var layers= scene.layers;
+
+var vec2df= j2ds.vector.vec2df;
+var vec2di= j2ds.vector.vec2di;
+var Random= j2ds.math.random;
 
 $id('testCanvas').width= dvc.width;
 $id('testCanvas').height= dvc.height;
 
 scene.init('testCanvas');
 
-var max= 1000; // количество указанное тут умножается на два
+layers.add('back', -1);
+layers.layer('back').fillGradientR(vec2df(scene.width/2, scene.height/4), 0,
+                                   vec2df(scene.width/2, scene.height/2), scene.height*1.5,
+                                   ['black', 'rgba(0,0,0,0)']);
+                                   
+layers.add('front', 1);
+layers.layer('front').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
+
+layers.add('logo', 1);
+//layers.layer('logo').setAlpha(0.4);
+
+var jLogoMap= scene.createImageMap('jLogo');
+
+var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
+
+var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(634, 314), jAnim);
+jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
+jLogo.setAlpha(0);
+jLogo.setLayer('logo');
+
+var max= 1000;
 
 for (var i= 0, ob= []; i < max; i+=1) {
- var o= scene.addRectNode(vec2df(Random(0, scene.width-10), Random(80, scene.height-80)), vec2df(7, 7), 'green');
- o.dx= Random(1, 5);
+ var dy= Random(80, scene.height-80);
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(5, 5), '#E9E9E9');
+ o.dx= Random(1, 5)*(dy*0.002);
  ob.push(o);
 }
 
 for (var i= 0, ob2= []; i < max; i+=1) {
- var o= scene.addRectNode(vec2df(Random(0, scene.width-10), Random(100, scene.height-100)), vec2df(5, 5), 'black');
- o.dx= -Random(1, 5);
+ var dy= Random(80, scene.height-80);
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(5, 5), 'black');
+ o.dx= -Random(1, 5)*(dy*0.002);
  ob2.push(o);
 }
-
 
 var Game= function () {
 	
@@ -44,15 +73,41 @@ var Game= function () {
  	if (ob2[i].isCollisionScene().x < 0) {
  	 ob2[i].pos.x= scene.width;
   }
-  
- 	ob2[i].move(vec2df(ob2[i].dx, 0));
- 	ob2[i].draw();
 
  	if (ob[i].isCollisionScene().x) {
  	 ob[i].pos.x= 0;
   }
   
- 	ob[i].move(vec2df(ob[i].dx, 0));
+ 	ob2[i].move(vec2df(ob2[i].dx*j2ds.dt, 0)); 
+ 	ob[i].move(vec2df(ob[i].dx*j2ds.dt, 0));
+
+  ob2[i].draw(); 
+ }
+
+ if (!input.lClick) {
+  if (jLogo.alpha <= 1) {
+   jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
+  }
+ } else {
+  layers.layer('logo').clear();
+  jLogo.setAlpha(0);  
+ }
+
+ jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
+
+ jLogo.draw();
+
+ for (var i= 0; i < max; i+=1) {
+  //  if (ob[i].isIntersect(jLogo)) {
+  //   scene.context.shadowOffsetX = 5;
+  //   scene.context.shadowOffsetY = 5;
+  //   scene.context.shadowColor = "black";
+  //   scene.context.shadowBlur = 2;
+  //  } else {
+  //   scene.context.shadowOffsetX = 0;
+  //   scene.context.shadowOffsetY = 0;
+  //   scene.context.shadowBlur = 0;
+  //  }
   ob[i].draw();
  }
 
@@ -63,7 +118,5 @@ scene.start(Game, 60);
 </script>
 
 
-
-<!--// end of HTML-doc //-->
  </body>
 </html>

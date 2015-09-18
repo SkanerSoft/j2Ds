@@ -8,18 +8,20 @@
 
  <body>
 <!--// this is body of HTML-doc //-->
-<canvas id="fpsTest" width="400" height="400"></canvas>
+<canvas id="fpsTest" width="800" height="400"></canvas>
 
 <script type="text/javascript">
 // объявление объектов
 var scene= j2ds.scene;
 var input= j2ds.input;
+var vec2df= j2ds.vector.vec2df;
+var Random= j2ds.math.random;
 
 // инициализация сцены
 scene.init('fpsTest');
 
 // если требуется развернуть сцену на весь экран
-//scene.fullScreen(true);
+scene.fullScreen(true);
 
 // кол-во прямоугольников
 var nodesCount= 0;
@@ -35,7 +37,7 @@ var fpsTest= function () {
  if (input.lClick) {
   for (var n= 0; n<10; n+=1) {
    // Добавляем зеленый прямоугольник
-   var o= scene.addRectNode(input.pos, vec2df(10, 10), 'green');
+   var o= scene.addRectNode(vec2df(input.pos.x, input.pos.y), vec2df(5, 5), 'rgb('+Random(0, 255)+', '+Random(0, 255)+', '+Random(0, 255)+')');
    // устанавливаем ему скорость смещения
    o.dx= 6-Random(0, 12); o.dy= 6-Random(0, 12);
    // пушим его в массив прямоугольников
@@ -48,24 +50,17 @@ var fpsTest= function () {
  // обработка прямоугольников
  for (var i= 0; i < nodesCount; i+=1) {
   // двигаем прямоугольник в соответствии с его переменными скоростей
-  nodes[i].move(vec2di(nodes[i].dx, nodes[i].dy));
+  nodes[i].move(vec2df(nodes[i].dx*j2ds.dt, nodes[i].dy*j2ds.dt));
   // рисуем прямоугольник
   nodes[i].draw();
   // если нельзя позволить прямоугольнику выйти за пределы сцены
-  //if (nodes[i].isCollisionScene().x) nodes[i].dx*= (-1);
-  //if (nodes[i].isCollisionScene().y) nodes[i].dy*= (-1);
+  if (nodes[i].isCollisionScene().x) nodes[i].dx*= (-1);
+  if (nodes[i].isCollisionScene().y) nodes[i].dy*= (-1);
   // Если произошло столкновение с границей сцены в любом месте
-  if (nodes[i].isCollisionScene().all) {
-   // уничтожаем 1 прямоугольник, который столкнулся
-   nodes.splice(i, 1);
-   // и обновляем счетчик
-   nodesCount= nodes.length;
-   // переходим к обработке след. прямоугольника
-   continue;
-  }
+
  } 
  // Выводим количество прямоугольников
- scene.drawText(vec2di(10, 10), 'Прямоугольники: '+ nodesCount);
+ scene.drawTextOpt(vec2df(10, 10), 'Прямоугольники: '+ nodesCount, 'bold 50px Arial', 'black', 'white', 2);
 };
 
 // После объъявления всех функций стартуем сцену
