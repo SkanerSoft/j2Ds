@@ -9,13 +9,15 @@
 
 Автор движка: Skaner (Нагель Петр)
 
+Главный помощник: Алексей
+
 E-mail: skaner0@yandex.ru
 
-vk: vk.com/skaner.soft
+vk: [vk.com/skaner.soft](vk.com/skaner.soft)
 
-youtube: youtube.com/skanersoft
+youtube: [youtube.com/skanersoft](youtube.com/skanersoft)
 
-Сайты: nagel-petr.ru, skanersoft.ru
+Сайты: [nagel-petr.ru](nagel-petr.ru), [skanersoft.ru](skanersoft.ru)
 
 
 
