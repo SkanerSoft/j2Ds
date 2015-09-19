@@ -1000,22 +1000,20 @@ j2ds.scene.addRectNode= function(_pos, _size, _color) {
 }
 
 /* изображения */
-j2ds.scene.createImageMap= function(_id) {
+j2ds.scene.createImageMap= function(path) {
  var o= {
-  img : 0,
+  img : null,
   width : 0,
   height : 0,
   loaded : false
  };
 
- o.img= $id(_id);
+ o.img= document.createElement('img');
+ o.img.src= path;
  o.img.onload= function() {
-
   o.width= o.img.width;
   o.height= o.img.height;
   o.loaded= true;
-
-  o.img.style.display= 'none';
  };
  /* Свойства */
 
