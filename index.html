@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html> 
+<html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script type="text/javascript" src="j2ds/j2ds.js"></script>
   <title>html5 page</title>
  </head>
  <body>
-
-<img src="Demo/Base/j2Ds-Logo.png" id="jLogo" alt="">
 
 <canvas id="testCanvas" width="900" height="300"></canvas>
 
@@ -35,14 +33,14 @@ layers.layer('space').fill('#212121');
 layers.layer('space').fillGradientR(vec2df(scene.width/2, scene.height/2), 0,
                                    vec2df(scene.width/2, scene.height/2), scene.height/3,
                                    ['white', 'white', 'rgba(0,0,0,0)']);
-                                   
+
 layers.add('back', 1);
 layers.layer('back').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
 
 layers.add('logo', 0);
 //layers.layer('logo').setAlpha(0.4);
 
-var jLogoMap= scene.createImageMap('jLogo');
+var jLogoMap= scene.createImageMap('Demo/Base/j2Ds-Logo.png');
 
 var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
 
@@ -78,9 +76,9 @@ for (var i= 0, ob2= []; i < max; i+=1) {
 var tmpTime= Date.now();
 
 var Game= function () {
-	
- scene.clear();	
-	
+
+ scene.clear();
+
  for (var i= 0; i < max; i+=1) {
 
  	if (ob2[i].isCollisionScene().x < 0) {
@@ -90,11 +88,11 @@ var Game= function () {
  	if (ob[i].isCollisionScene().x) {
  	 ob[i].pos.x= 0;
   }
-  
- 	ob2[i].move(vec2df(ob2[i].dx*j2ds.dt, 0)); 
+
+ 	ob2[i].move(vec2df(ob2[i].dx*j2ds.dt, 0));
  	ob[i].move(vec2df(ob[i].dx*j2ds.dt, 0));
 
-  ob2[i].draw(); 
+  ob2[i].draw();
  }
 
  if (Date.now() - tmpTime > 5000)
@@ -106,7 +104,7 @@ var Game= function () {
   } else {
    layers.layer('logo').clear();
    jLogo.setAlpha(0);
-   tmpTime= Date.now();  
+   tmpTime= Date.now();
   }
  }
 

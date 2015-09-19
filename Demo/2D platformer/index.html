@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html> 
+<html>
  <head>
-  <script type="text/javascript" src="../../j2ds/j2ds.js"></script> 
+  <script type="text/javascript" src="../../j2ds/j2ds.js"></script>
   <script type="text/javascript" src="createMap.js"></script>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <meta name="viewport" content="width=device-width,user-scalable=no" />  
+  <meta name="viewport" content="width=device-width,user-scalable=no" />
   <title></title>
  </head>
 <body>
 <canvas id="iCanvas" width="550" height="300"></canvas>
 
-<img id="map1" src="img/map1.png"/>
-
 <script type="text/javascript">
 
+var vec2df= j2ds.vector.vec2df;
+var vec2di= j2ds.vector.vec2di;
+var Random= j2ds.math.random;
 var input= j2ds.input;
 var scene= j2ds.scene;
 var layers= j2ds.layers;
@@ -34,7 +35,7 @@ layers.layer('pause').fill('#929292');
 layers.layer('pause').setVisible(false);
 
 // Создание тайлсета
-var imageMap= scene.createImageMap('map1');
+var imageMap= scene.createImageMap('img/map1.png');
 
 var tiles= createTiles(imageMap);
 
@@ -67,7 +68,7 @@ var me= createMe();
 me.resizeBox(vec2df(5, 5), vec2df(-12, -5));
 
 var apple= scene.addSpriteNode(vec2df(20, 20), vec2df(15, 15), tiles.apple);
-apple.setVisible(false); 
+apple.setVisible(false);
 apple.resizeBox(vec2df(3, 3), vec2df(-6, -6));
 apple.dx= 0;
 apple.dy= -5;
@@ -83,9 +84,9 @@ var Pause= function () {
  layers.layer('pause').fill('#929292');
 
 	layers.layer('pause').drawText(vec2di(scene.width/2-25, 20), 'ПАУЗА!', 'black');
-	
- layers.layer('pause').drawText(vec2di(20, 50), 'Уровень: '+level);	
- layers.layer('pause').drawText(vec2di(20, 80), 'Яблок: '+apples.length);	
+
+ layers.layer('pause').drawText(vec2di(20, 50), 'Уровень: '+level);
+ layers.layer('pause').drawText(vec2di(20, 80), 'Яблок: '+apples.length);
 
  layers.layer('pause').drawText(vec2di(scene.width/2-50, 160), 'Нажми клавишу ESC');
 
@@ -100,12 +101,12 @@ var StartMenu= function () {
 
  scene.fill('#929292');
 
- scene.drawTextOpt( 
+ scene.drawTextOpt(
                    vec2di(scene.width/2-100, 120), // Позиция
                   '2D Платформер!', // Текст
                   '20px sans-serif', // Шрифт (аналогично CSS)
                   'black' // Цвет текста
-                  ); 
+                  );
 
  scene.drawText(vec2di(scene.width/2-125, 160), 'Нажми любую клавишу');
 
@@ -130,31 +131,31 @@ var Game= function () {
  layers.layer('front').clear();
 
  collisionBlock();
- collisionApple(); 
- collisionZombie(); 
+ collisionApple();
+ collisionZombie();
  collisionAttack();
  keyMe();
- 
+
  // двигаем персонажа в соответствии с его dx и dy
- me.move(vec2df(me.dx, me.dy)); 
- 
+ me.move(vec2df(me.dx, me.dy));
+
  // следим за персонажем
- scene.setViewFocus(me, vec2df(50, -50));  
- 
+ scene.setViewFocus(me, vec2df(50, -50));
+
  animateMe();
- 
- scene.drawTextOpt( 
+
+ scene.drawTextOpt(
                    vec2di(10, 10), // Позиция
                   'Яблоки: '+score, // Текст
                   '15px sans-serif', // Шрифт (аналогично CSS)
                   '#FF1B1B' // Цвет текста
-                  ); 
- scene.drawTextOpt( 
+                  );
+ scene.drawTextOpt(
                    vec2di(10, 30), // Позиция
                   'Уровень: '+level, // Текст
                   '13px sans-serif', // Шрифт (аналогично CSS)
                   'black' // Цвет текста
-                  ); 
+                  );
 }
 
 scene.start(StartMenu, 30);
