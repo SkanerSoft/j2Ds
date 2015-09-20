@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <title>html5 page</title>
+ </head>
+ <body>
+
+<script type="text/javascript">
+
+var dvc= j2ds.device();
+var scene= j2ds.scene;
+var input= j2ds.input;
+
+var layers= scene.layers;
+
+var vec2df= j2ds.vector.vec2df;
+var vec2di= j2ds.vector.vec2di;
+var Random= j2ds.math.random;
+var rndColor= j2ds.math.rndColor;
+
+scene.init(700, 400);
+
+layers.add('space', -1);
+layers.layer('space').fill('#212121');
+layers.layer('space').fillGradientR(vec2df(scene.width/2, scene.height/2), 0,
+                                   vec2df(scene.width/2, scene.height/2), scene.height/3,
+                                   ['white', 'white', 'rgba(0,0,0,0)']);
+
+layers.add('back', 1);
+layers.layer('back').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
+
+layers.add('logo', 0);
+//layers.layer('logo').setAlpha(0.4);
+
+scene.fullScreen(true);
+
+var jLogoMap= scene.createImageMap('Base/j2Ds-Logo.png');
+
+var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
+
+var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/2, scene.height/2), jAnim);
+jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
+jLogo.setAlpha(0);
+jLogo.setLayer('logo');
+
+var max= 1000;
+
+var fullShow= false;
+
+for (var i= 0, ob= []; i < max; i+=1) {
+ var dy= Random(80, scene.height);
+ var color= rndColor(200, 255, 1);
+ 
+ if (dy > scene.height-80) {
+  dy= Random(scene.height/3, scene.height/1.5);
+ }
+
+ var r= Random(1, 3);
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r*0.5, r*0.5), color);
+ o.dx= Random(1, 10)*0.05*r/5;
+ o.rnd= (Random(0, 50) == 1);
+ ob.push(o);
+}
+
+for (var i= 0, ob2= []; i < max; i+=1) {
+ var dy= Random(80, scene.height);
+ var color= rndColor(200, 255, 1);
+
+ if (dy > scene.height-80) {
+  dy= Random(scene.height/3, scene.height/1.5);
+ }
+
+ var r= Random(1, 3);
+ var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r*0.5, r*0.5), color);
+ o.dx= -Random(1, 10)*0.05*r/5;
+ ob2.push(o);
+}
+
+var tmpTime= Date.now();
+
+var Game= function () {
+
+ scene.clear();
+
+ for (var i= 0; i < max; i+=1) {
+
+ 	if (ob2[i].isCollisionScene().x < 0) {
+ 	 ob2[i].pos.x= scene.width;
+  }
+
+ 	if (ob[i].isCollisionScene().x) {
+ 	 ob[i].pos.x= 0;
+  }
+
+ 	ob2[i].move(vec2df(ob2[i].dx*j2ds.dt, 0));
+ 	ob[i].move(vec2df(ob[i].dx*j2ds.dt, 0));
+
+  ob2[i].draw();
+ }
+
+
+ if (j2ds.now - tmpTime > 5000 && j2ds.now - tmpTime < 20000)
+ {
+  if (jLogo.alpha <= 1) {
+   jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
+  }
+ }
+
+ jLogo.draw();
+
+ for (var i= 0; i < max; i+=1) {
+  if (ob[i].rnd) {
+   ob[i].color= rndColor(150, 255, 1);
+  }
+  ob[i].draw();
+ }
+
+};
+
+scene.ready(function () {
+	scene.start(Game, 25);
+});
+
+</script>
+
+
+ </body>
+</html>

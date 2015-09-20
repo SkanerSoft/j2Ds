@@ -1,17 +1,21 @@
 'use strict';
 
 /*----------- DOM ---------------*/
-var $id= function (_id) {return document.getElementById(_id); };
+var $id= function (_id) {
+ return document.getElementById(_id);
+};
 
-var $name= function (_id) {return document.getElementsByName(_id); };
+var $name= function (_id) {
+ return document.getElementsByName(_id);
+};
 
-var $tag= function (_id) {return document.getElementsByTagName(_id); };
+var $tag= function (_id) {
+ return document.getElementsByTagName(_id);
+};
 
-
-
-
-
-
+var goURL= function (_url) {
+	document.location.href= _url;
+};
 
 
 /*------------------ 2D движок --------------------*/
@@ -40,21 +44,24 @@ j2ds.vector.vec2df= function (_x, _y) {
 };
 
 j2ds.vector.vec2di= function (_x, _y) {
- return {x: (_x >> 0), y: (_y >> 0) };
+ return { x: (_x >> 0), y: (_y >> 0) };
 };
 
 j2ds.math.toInt= function (_number) {
-	return (_number >> 0);
+	return ( _number >> 0 );
+};
+
+j2ds.math.rndColor= function (_min, _max, _alpha) {
+ return ( 'rgba('+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+_alpha+')' );
 };
 
 j2ds.math.random= function (min, max) {
- return Math.ceil(Math.random() * (max - min) + min);
+ return (Math.floor(Math.random() * (max - min + 1) + min));
 };
 
 j2ds.math.rad= function (_num) {
  return _num * (Math.PI / 180);
 };
-
 
 /* функции */
 
@@ -263,24 +270,39 @@ return (j2ds.vector.vec2df(this.pos.x, this.pos.y));
 
 
 j2ds.input.keyEvent= function(e) {
- if ((e.type== 'keydown') && !j2ds.input.keyPressed[e.keyCode]) {
-  j2ds.input.keyPress[e.keyCode]= true;
-  j2ds.input.keyPressed[e.keyCode]= true;
- } else if ((e.type== 'keyup') && j2ds.input.keyPressed[e.keyCode]) {
-  j2ds.input.keyPress[e.keyCode]= false;
-  j2ds.input.keyPressed[e.keyCode]= false;
-  j2ds.input.keyUp[e.keyCode]= true;
-  j2ds.input.keyUped= true;
+ if (e.type == 'keydown') {
+  if (!j2ds.input.keyPressed[e.keyCode]) {
+   //e.preventDefault();
+   j2ds.input.keyPress[e.keyCode]= true;
+   j2ds.input.keyPressed[e.keyCode]= true;
+   j2ds.input.write("");
+  }
+ } else if (e.type == 'keyup') {
+  if (j2ds.input.keyPressed[e.keyCode]) {
+   j2ds.input.keyPress[e.keyCode]= false;
+   j2ds.input.keyPressed[e.keyCode]= false;
+   j2ds.input.keyUp[e.keyCode]= true;
+   j2ds.input.keyUped= true;
+  }
+ } else if (e.type == 'keypress') {
+  var _char;
+  if (e.which != 0 && e.charCode != 0) { 
+   if (e.which < 32) {
+    _char= '';
+   } else { 
+    _char= String.fromCharCode(e.which);
+   }
+  }
+ 	j2ds.input.write(_char);
  }
 
  j2ds.input.keyDown[e.keyCode]= (e.type== 'keydown')&&(!j2ds.input.canceled);
-
  j2ds.input.anyKey= e.keyCode;
  return (false);
 };
 
 //! системная
-// Вернет true, если мышь назодится над объектом
+// Вернет true, если мышь наxодится над объектом
 j2ds.input.cancel= function(_id) {
  if (!_id) {
   j2ds.input.canceled= true;
@@ -352,20 +374,28 @@ j2ds.input.falseInput= function() {
  j2ds.input.rClick= false;
 };
 
+j2ds.input.write= function () {
+	
+};
+
+j2ds.input.readKey= function (_func) {
+	j2ds.input.write= _func;
+};
 
 j2ds.input.init= function() {
  j2ds.window.focus();
  j2ds.window.ontouchstart= j2ds.input.onTouch;
  j2ds.window.ontouchmove= j2ds.input.onTouch;
- j2ds.window.ontouchend= function() { j2ds.input.canceled= false;j2ds.input.falseInput(); };
+ j2ds.window.ontouchend= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); };
  j2ds.window.oncontextmenu= function() { return (false); }
  j2ds.window.onselectstart= j2ds.window.oncontextmenu;
  j2ds.window.ondragstart= j2ds.window.oncontextmenu;
  j2ds.window.onmousedown= j2ds.input.onClick;
- j2ds.window.onmouseup= function() { j2ds.input.canceled= false;j2ds.input.falseInput(); }
+ j2ds.window.onmouseup= function() { j2ds.input.canceled= false; j2ds.input.falseInput(); };
  j2ds.window.onmousemove= j2ds.input.cursorPosition;
- j2ds.window.onkeydown= j2ds.input.keyEvent;
- j2ds.window.onkeyup= function(e) { j2ds.input.canceled= false;j2ds.input.keyEvent(e); };
+ j2ds.window.onkeydown= function(e) { j2ds.input.keyEvent(e); };
+ j2ds.window.onkeyup= function(e) { j2ds.input.canceled= false; j2ds.input.keyEvent(e); };
+ j2ds.window.onkeypress= function(e) { j2ds.input.keyEvent(e); e.preventDefault(); };
 };
 
 
@@ -519,15 +549,23 @@ j2ds.scene.setEngine= function(_engine) {
  j2ds.setActivEngine(_engine);
 };
 
-j2ds.scene.start= function(_engine, _framelimit, _func) {
+j2ds.scene.ready= function(_func) {
  j2ds.window.onload= function () {
  	for (var i in j2ds.layers.list) {
    document.body.appendChild(j2ds.layers.layer(i).canvas);
   }
-  j2ds.input.init();
-  if (_func) { _func(); };
-  j2ds.start(_engine, _framelimit);
+  if (_func) {
+   _func();
+  }
  }
+};
+
+j2ds.scene.start= function (_engine, _framelimit, _func) {
+ j2ds.input.init();
+ if (_func) {
+  _func();
+ };
+ j2ds.start(_engine, _framelimit);
 };
 
 j2ds.scene.fullScreen= function(_true) {
@@ -624,11 +662,17 @@ j2ds.scene.clear= function(_color) {
 };
 
 // инициализация сцены
-j2ds.scene.init= function(_canvas, _color) {
- j2ds.scene.canvas= $id(_canvas);
- j2ds.scene.context= j2ds.scene.canvas.getContext('2d');
- j2ds.scene.width= j2ds.scene.canvas.width;
- j2ds.scene.height= j2ds.scene.canvas.height;
+j2ds.scene.init= function(_w, _h) {
+	j2ds.scene.layerName= 'sceneNode';
+	j2ds.scene.canvas= document.createElement('canvas');
+	j2ds.scene.canvas.width= _w;
+	j2ds.scene.canvas.height= _h;
+	j2ds.scene.width= _w;
+	j2ds.scene.height= _h;
+	j2ds.scene.context= j2ds.scene.canvas.getContext('2d');
+ j2ds.scene.alpha= 1;
+
+ j2ds.layers.list['sceneNode']= j2ds.scene;
 
  j2ds.scene.canvas.style.position= 'fixed';
  j2ds.scene.canvas.style.top= '0px';
@@ -644,7 +688,6 @@ j2ds.scene.init= function(_canvas, _color) {
  j2ds.scene.canvas.style.width= j2ds.scene.width+1+'px';
  j2ds.scene.canvas.style.height= j2ds.scene.height+1+'px';
 
- j2ds.scene.colorClear= _color || '#fff';
  j2ds.scene.font= '14px sens-serif';
  j2ds.scene.fillStyle= '#000';
  j2ds.scene.strokeStyle= '#fff';

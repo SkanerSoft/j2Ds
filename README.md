@@ -39,6 +39,7 @@ youtube: [youtube.com/skanersoft](http://youtube.com/skanersoft)
 1. [Линия](#addLineNode)
 1. [Спрайт-карта и анимация](#createImageMap)
 1. [Анимированные объекты](#addSpriteNode)
+1. [Ввод текста, символов](#inputMode)
 1. [Более сложный пример](#example)
 
 
@@ -91,11 +92,21 @@ youtube: [youtube.com/skanersoft](http://youtube.com/skanersoft)
 
 Для Рандомизации числа:
 
-    var num= j2ds.math.random(0, 5);
+    var num = j2ds.math.random(0, 5);
 
 Для Рандомизации к примеру от -15 до 15:
 
-    var num= -15+Random(0, 30);
+    var num = -15+Random(0, 30);
+
+Есть возможность получить рандомный цвет стандартными средствами:
+
+    var min = 200, // минимальная граница
+        max = 255, // максимальная граница
+        alpha = 1; // прозрачность от 0 до 1
+
+        var color = j2ds.math.rndColor(min, max, alpha);
+
+
 
 Для перевода градусов в радианы:
 
@@ -223,8 +234,6 @@ j2ds - Глобальный объект, дающий доступ к API дв�
  </head>
  <body>
 
-<canvas id="testCanvas" width="500" height="300"></canvas>
-
 <script type="text/javascript">
 
 // Объект сцены для быстрого доступа
@@ -234,7 +243,7 @@ var scene = j2ds.scene;
 var vec2di = j2ds.vector.vec2di;
 
 // инициализация сцены
-scene.init('testCanvas'); // id холста
+scene.init(640, 480);
 
 // Игровое состояние Game
 var Game = function () {
@@ -247,8 +256,9 @@ var Game = function () {
 
 // После описания игрового состояния, оно не будет выполняться, пока игра не будет запущена.
 // Для этого используется команда start:
-scene.start(Game, 30); // Второй параметр - FPS
-
+scene.ready(function() {
+ scene.start(Game, 30); // Второй параметр - FPS
+});
 </script>
 
  </body>
@@ -297,7 +307,9 @@ scene.start(Game, 30); // Второй параметр - FPS
     };
 
     // Стартуем сцену с игровым состоянием 1
-    j2ds.scene.start(GameState1, 25); // 25 fps
+    j2ds.scene.ready( function () {
+     j2ds.scene.start(GameState1, 25); // 25 fps
+    });
 
 
 
@@ -311,14 +323,21 @@ scene.start(Game, 30); // Второй параметр - FPS
 ### Инициализация
 Чтобы инициализировать сцену и привязать ее к canvas-элементу, используется команда:
 
-    scene.init('idCanvas');
+    var width = 640,  // ширина
+        height = 480; // высота
+    scene.init(width, height);
 
 ### Старт
-Чтобы начать игровой процесс, используется команда:
+Чтобы начать игровой процесс, используется команда j2ds.scene.ready(), единственным аргументом которой является
+функция для выполнения. Это условие обусловлено тем, что на момент старта сцены документ должен быть полностью
+сформированным, и, как только это произойдет, выполнятся все команды в ready:
 
-    scene.start(GameState, 25 [, userFunction]); // 25 fps
-
-, где [, userFunction] - необязательый аргумент, являющийся функцией для выполнения в момент старта сцены.
+    scene.ready( function () {
+     scene.start(GameState, 25 [, userFunction]); // 25 fps
+    } );
+    
+, где [, userFunction] - необязательый аргумент, являющийся функцией для выполнения в момент старта сцены перед запуском
+игрового цикла.
 
 Пример:
 
@@ -976,129 +995,41 @@ scene.start(Game, 30); // Второй параметр - FPS
 
 
 
+## <a name="inputMode"></a> Чтение клавиатуры
+
+Допустим ситацию, что в вашей игре есть таблица рекордов, и по окончанию игры пользователю предлагается ввести свое имя.
+Для этого есть специальная возможность считывать вводимые с клавиатуры символы:
+
+    var textBuffer = ''; // буффер для текста
+
+    input.readKey(function (symbol) {
+     // дописываем введенный символ 
+     textBuffer += symbol;
+     // если нажали клавигу "Backspace", то удаляем последний символ (коррекция ввода)
+     if (io.isKeyPress('BACKSPACE')) {
+      textBuffer= textBuffer.substring(0, textBuffer.length - 1);
+     }
+     // если нажали "Enter" - отправляем имя на сервер
+     if (io.isKeyPress('ENTER') && textBuffer) {
+      console.log(textBuffer);
+      textBuffer= '';
+     }
+    });
+
+, где - input.readKey() - функция, необходимая для назначения обработчика ввода текста.
+Основное и единственный аргумент - это функция, которая тоже принимает единственный аргумент - введенный символ.
+Называться он может как угодно.
+
+За один вызов функции-обработчика передается один символ. Поэтому для ввода желательно использовать какоу-нибудь
+буфер или переменную.
+
+
+
 ## <a name="example"></a> Более сложный пример:
 
 ```html
-<!DOCTYPE html>
-<html> 
- <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <script type="text/javascript" src="j2ds/j2ds.js"></script>
-  <title>html5 page</title>
- </head>
- <body>
-
-<img src="Demo/Base/j2Ds-Logo.png" id="jLogo" alt="">
-
-<canvas id="testCanvas" width="900" height="300"></canvas>
-
-<script type="text/javascript">
-
-var dvc= j2ds.device();
-var scene= j2ds.scene;
-var input= j2ds.input;
-
-var layers= scene.layers;
-
-var vec2df= j2ds.vector.vec2df;
-var vec2di= j2ds.vector.vec2di;
-var Random= j2ds.math.random;
-
-$id('testCanvas').width= dvc.width;
-$id('testCanvas').height= dvc.height;
-
-scene.init('testCanvas');
-
-layers.add('back', -1);
-layers.layer('back').fillGradientR(vec2df(scene.width/2, scene.height/4), 0,
-                                   vec2df(scene.width/2, scene.height/2), scene.height*1.5,
-                                   ['black', 'rgba(0,0,0,0)']);
-                                   
-layers.add('front', 1);
-layers.layer('front').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
-
-layers.add('logo', 1);
-//layers.layer('logo').setAlpha(0.4);
-
-var jLogoMap= scene.createImageMap('jLogo');
-
-var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
-
-var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(634, 314), jAnim);
-jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
-jLogo.setAlpha(0);
-jLogo.setLayer('logo');
-
-var max= 1000;
-
-for (var i= 0, ob= []; i < max; i+=1) {
- var dy= Random(80, scene.height-80);
- var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(5, 5), '#E9E9E9');
- o.dx= Random(1, 5)*(dy*0.002);
- ob.push(o);
-}
-
-for (var i= 0, ob2= []; i < max; i+=1) {
- var dy= Random(80, scene.height-80);
- var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(5, 5), 'black');
- o.dx= -Random(1, 5)*(dy*0.002);
- ob2.push(o);
-}
-
-var Game= function () {
- 
- scene.clear(); 
- 
- for (var i= 0; i < max; i+=1) {
-
-  if (ob2[i].isCollisionScene().x < 0) {
-   ob2[i].pos.x= scene.width;
-  }
-
-  if (ob[i].isCollisionScene().x) {
-   ob[i].pos.x= 0;
-  }
-  
-  ob2[i].move(vec2df(ob2[i].dx*j2ds.dt, 0)); 
-  ob[i].move(vec2df(ob[i].dx*j2ds.dt, 0));
-
-  ob2[i].draw(); 
- }
-
- if (!input.lClick) {
-  if (jLogo.alpha <= 1) {
-   jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
-  }
- } else {
-  layers.layer('logo').clear();
-  jLogo.setAlpha(0);  
- }
-
- jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
-
- jLogo.draw();
-
- for (var i= 0; i < max; i+=1) {
-  //  if (ob[i].isIntersect(jLogo)) {
-  //   scene.context.shadowOffsetX = 5;
-  //   scene.context.shadowOffsetY = 5;
-  //   scene.context.shadowColor = "black";
-  //   scene.context.shadowBlur = 2;
-  //  } else {
-  //   scene.context.shadowOffsetX = 0;
-  //   scene.context.shadowOffsetY = 0;
-  //   scene.context.shadowBlur = 0;
-  //  }
-  ob[i].draw();
- }
-
-};
-
-scene.start(Game, 60);
-
-</script>
 
 
- </body>
-</html>```
+
+```
 

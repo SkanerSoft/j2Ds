@@ -1,137 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html> 
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script type="text/javascript" src="j2ds/j2ds.js"></script>
-  <title>html5 page</title>
+  <title>Пример игрового кода</title>
  </head>
  <body>
 
-<canvas id="testCanvas" width="900" height="300"></canvas>
+<div id="chatRoom" style="z-index: 2000; 
+                          position: fixed; 
+                          left: 800px; 
+                          width: 200px; 
+                          border: 1px solid;
+                          padding: 5px:"></div>
 
 <script type="text/javascript">
 
-var dvc= j2ds.device();
-var scene= j2ds.scene;
-var input= j2ds.input;
+var scene = j2ds.scene;
+var io = j2ds.input;
 
-var layers= scene.layers;
+var textBuffer = '';
 
-var vec2df= j2ds.vector.vec2df;
-var vec2di= j2ds.vector.vec2di;
-var Random= j2ds.math.random;
-
-$id('testCanvas').width= dvc.width;
-$id('testCanvas').height= dvc.height;
-
-scene.init('testCanvas');
-
-scene.fullScreen(true);
-
-layers.add('space', -1);
-layers.layer('space').fill('#212121');
-layers.layer('space').fillGradientR(vec2df(scene.width/2, scene.height/2), 0,
-                                   vec2df(scene.width/2, scene.height/2), scene.height/3,
-                                   ['white', 'white', 'rgba(0,0,0,0)']);
-
-layers.add('back', 1);
-layers.layer('back').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
-
-layers.add('logo', 0);
-//layers.layer('logo').setAlpha(0.4);
-
-var jLogoMap= scene.createImageMap('Demo/Base/j2Ds-Logo.png');
-
-var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
-
-var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(634, 314), jAnim);
-jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
-jLogo.setAlpha(0);
-jLogo.setLayer('logo');
-
-var max= 1000;
-
-for (var i= 0, ob= []; i < max; i+=1) {
- var dy= Random(80, scene.height);
- if (dy > scene.height-80) {
-  dy= Random(scene.height/3, scene.height/1.5);
+io.readKey(function (symbol) {
+	textBuffer += symbol;
+	
+	if (io.isKeyPress('BACKSPACE')) {
+	 textBuffer= textBuffer.substring(0, textBuffer.length - 1);
  }
- var r= Random(1, 3);
- var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r, r), '#E9E9E9');
- o.dx= Random(1, 8)*0.2*r/5;
- ob.push(o);
-}
 
-for (var i= 0, ob2= []; i < max; i+=1) {
- var dy= Random(80, scene.height);
- if (dy > scene.height-80) {
-  dy= Random(scene.height/3, scene.height/1.5);
+	if (io.isKeyPress('ENTER') && textBuffer) {
+	 $id('chatRoom').innerHTML += '<b>You Say:</b> ' + textBuffer + '<br /><br />';
+	 textBuffer= '';
  }
- var r= Random(1, 3);
- var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r, r), '#E9E9E9');
- o.dx= -Random(1, 8)*0.2*r/5;
- ob2.push(o);
-}
+ 
+});
 
-var tmpTime= Date.now();
+// вектор для быстрого доступа
+var vec2di = j2ds.vector.vec2di;
 
-var Game= function () {
+// инициализация сцены
+scene.init(800, 600); // id холста
 
+// Игровое состояние Game
+var Game = function () {
  scene.clear();
 
- for (var i= 0; i < max; i+=1) {
+ scene.drawText(vec2di(10, 10), 'Enter - отправить текст в консоль!', 'red');
 
- 	if (ob2[i].isCollisionScene().x < 0) {
- 	 ob2[i].pos.x= scene.width;
-  }
-
- 	if (ob[i].isCollisionScene().x) {
- 	 ob[i].pos.x= 0;
-  }
-
- 	ob2[i].move(vec2df(ob2[i].dx*j2ds.dt, 0));
- 	ob[i].move(vec2df(ob[i].dx*j2ds.dt, 0));
-
-  ob2[i].draw();
- }
-
- if (Date.now() - tmpTime > 5000)
- {
-  if (!input.lClick) {
-   if (jLogo.alpha <= 1) {
-    jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
-   }
-  } else {
-   layers.layer('logo').clear();
-   jLogo.setAlpha(0);
-   tmpTime= Date.now();
-  }
- }
-
- jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
-
- jLogo.draw();
-
- for (var i= 0; i < max; i+=1) {
-  //  if (ob[i].isIntersect(jLogo)) {
-  //   scene.context.shadowOffsetX = 5;
-  //   scene.context.shadowOffsetY = 5;
-  //   scene.context.shadowColor = "black";
-  //   scene.context.shadowBlur = 2;
-  //  } else {
-  //   scene.context.shadowOffsetX = 0;
-  //   scene.context.shadowOffsetY = 0;
-  //   scene.context.shadowBlur = 0;
-  //  }
-  ob[i].draw();
- }
-
+ scene.drawText(vec2di(10, 50), 'Введите текст: ' + textBuffer, 'black');
 };
 
-scene.start(Game, 25);
+// После описания игрового состояния, оно не будет выполняться, пока игра не будет запущена.
+// Для этого используется команда start:
+scene.ready( function() {
+ scene.start(Game, 30); // Второй параметр - FPS
+});
 
 </script>
-
 
  </body>
 </html>
