@@ -7,54 +7,92 @@
  </head>
  <body>
 
+
+<div id="chatMess" style="z-index: 2000; 
+                          position: fixed; 
+                          left: 800px;
+                          top: 0px;
+                          width: 200px;
+                          height: 100px;
+                          border: 1px solid;
+                          padding: 5px;"
+                          onclick="inputChat= true; $id('textBuffer').innerHTML= ''; io.setWriteMode(true);">
+<div id="textBuffer"> Введите текст! </div>
+                          </div>
+
 <div id="chatRoom" style="z-index: 2000; 
                           position: fixed; 
-                          left: 800px; 
-                          width: 200px; 
+                          left: 800px;
+                          top: 100px;
                           border: 1px solid;
-                          padding: 5px:"></div>
+                          width: 200px; 
+                          padding: 5px;"></div>
 
 <script type="text/javascript">
 
 var scene = j2ds.scene;
 var io = j2ds.input;
+var lr = scene.layers;
 
-var textBuffer = '';
+var vec2df= j2ds.vector.vec2df;
+
+var inputChat= false;
 
 io.readKey(function (symbol) {
-	textBuffer += symbol;
+ if (!inputChat) return (0);
+	$id('textBuffer').innerHTML += symbol;
+	
+ if (io.isKeyPress('ESC')) {
+  io.setWriteMode(false);
+  $id('textBuffer').innerHTML= 'Введите текст!';
+  inputChat= false;
+ }
 	
 	if (io.isKeyPress('BACKSPACE')) {
-	 textBuffer= textBuffer.substring(0, textBuffer.length - 1);
+	 $id('textBuffer').innerHTML= $id('textBuffer').innerHTML.substring(0, $id('textBuffer').innerHTML.length - 1);
  }
 
-	if (io.isKeyPress('ENTER') && textBuffer) {
-	 $id('chatRoom').innerHTML += '<b>You Say:</b> ' + textBuffer + '<br /><br />';
-	 textBuffer= '';
+	if (io.isKeyPress('ENTER') && $id('textBuffer').innerHTML != '') {
+	 $id('chatRoom').innerHTML += '<b>You Say:</b> ' + $id('textBuffer').innerHTML + '<br /><br />';
+	 $id('textBuffer').innerHTML= 'Введите текст!';
+	 io.setWriteMode(false);
+	 inputChat= false;
  }
- 
+ io.cancel();
 });
 
 // вектор для быстрого доступа
 var vec2di = j2ds.vector.vec2di;
 
 // инициализация сцены
-scene.init(800, 600); // id холста
+scene.init(640, 380, function () {
+	$id('chatRoom').style.left= scene.width + 'px';
+	$id('chatMess').style.left= scene.width + 'px';
+	$id('chatRoom').style.height= scene.height - 112 + 'px';	
+	$id('chatRoom').style.backgroundColor= j2ds.math.rndColor(220, 255, 1);
+	$id('chatMess').style.backgroundColor= 'white';
+}); // id холста
+
+lr.add('back', -1);
+lr.layer('back').fill(j2ds.math.rndColor(220, 255, 1));
+
+var a= scene.addRectNode(vec2df(10, 10), vec2df(10, 10), j2ds.math.rndColor(0, 100, 1));
 
 // Игровое состояние Game
 var Game = function () {
  scene.clear();
 
- scene.drawText(vec2di(10, 10), 'Enter - отправить текст в консоль!', 'red');
+ if (io.isKeyDown('W')) a.move(vec2df(0, -1));
+ if (io.isKeyDown('S')) a.move(vec2df(0, 1));
+ if (io.isKeyDown('A')) a.move(vec2df(-1, 0));
+ if (io.isKeyDown('D')) a.move(vec2df(1, 0));
 
- scene.drawText(vec2di(10, 50), 'Введите текст: ' + textBuffer, 'black');
+ a.draw();
+
+ scene.drawText(vec2di(10, 10), 'Enter - отправить текст в чат!', 'red');
 };
 
-// После описания игрового состояния, оно не будет выполняться, пока игра не будет запущена.
-// Для этого используется команда start:
-scene.ready( function() {
- scene.start(Game, 30); // Второй параметр - FPS
-});
+scene.start(Game, 60); // Второй параметр - FPS
 
 </script>
 

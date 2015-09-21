@@ -9,15 +9,13 @@
 
 <body>
 
-<canvas id="iCanvas" width="550" height="300"></canvas>
-
 <script type="text/javascript">
 var scene= j2ds.scene;
 var input= j2ds.input;
 var vec2df= j2ds.vector.vec2df;
 
 // Создаем сцену
-scene.init('iCanvas');
+scene.init(640, 480);
 
 j2ds.layers.add('back', -1);
 j2ds.layers.layer('back').fill('#ceeeee');

@@ -168,7 +168,8 @@ j2ds.input= {
  keyUped : false,
  canceled : false,
  body : false,
- anyKey : false
+ anyKey : false,
+ writeMode : false
 };
 
 // Константы клавиш
@@ -268,16 +269,23 @@ j2ds.input.getPosition= function() {
 return (j2ds.vector.vec2df(this.pos.x, this.pos.y));
 };
 
+j2ds.input.setWriteMode= function (_true) {
+ j2ds.input.writeMode= _true;
+};
 
 j2ds.input.keyEvent= function(e) {
  if (e.type == 'keydown') {
   if (!j2ds.input.keyPressed[e.keyCode]) {
-   //e.preventDefault();
    j2ds.input.keyPress[e.keyCode]= true;
    j2ds.input.keyPressed[e.keyCode]= true;
-   j2ds.input.write("");
+  }
+  if (!j2ds.input.writeMode) {
+   e.preventDefault();
+  } else {
+  	j2ds.input.write('');
   }
  } else if (e.type == 'keyup') {
+  e.preventDefault();
   if (j2ds.input.keyPressed[e.keyCode]) {
    j2ds.input.keyPress[e.keyCode]= false;
    j2ds.input.keyPressed[e.keyCode]= false;
@@ -294,6 +302,7 @@ j2ds.input.keyEvent= function(e) {
    }
   }
  	j2ds.input.write(_char);
+ 	e.preventDefault();
  }
 
  j2ds.input.keyDown[e.keyCode]= (e.type== 'keydown')&&(!j2ds.input.canceled);
@@ -395,7 +404,7 @@ j2ds.input.init= function() {
  j2ds.window.onmousemove= j2ds.input.cursorPosition;
  j2ds.window.onkeydown= function(e) { j2ds.input.keyEvent(e); };
  j2ds.window.onkeyup= function(e) { j2ds.input.canceled= false; j2ds.input.keyEvent(e); };
- j2ds.window.onkeypress= function(e) { j2ds.input.keyEvent(e); e.preventDefault(); };
+ j2ds.window.onkeypress= function(e) { j2ds.input.keyEvent(e); };
 };
 
 
@@ -549,22 +558,8 @@ j2ds.scene.setEngine= function(_engine) {
  j2ds.setActivEngine(_engine);
 };
 
-j2ds.scene.ready= function(_func) {
- j2ds.window.onload= function () {
- 	for (var i in j2ds.layers.list) {
-   document.body.appendChild(j2ds.layers.layer(i).canvas);
-  }
-  if (_func) {
-   _func();
-  }
- }
-};
-
-j2ds.scene.start= function (_engine, _framelimit, _func) {
+j2ds.scene.start= function (_engine, _framelimit) {
  j2ds.input.init();
- if (_func) {
-  _func();
- };
  j2ds.start(_engine, _framelimit);
 };
 
@@ -662,7 +657,7 @@ j2ds.scene.clear= function(_color) {
 };
 
 // инициализация сцены
-j2ds.scene.init= function(_w, _h) {
+j2ds.scene.init= function(_w, _h, _func) {
 	j2ds.scene.layerName= 'sceneNode';
 	j2ds.scene.canvas= document.createElement('canvas');
 	j2ds.scene.canvas.width= _w;
@@ -696,6 +691,17 @@ j2ds.scene.init= function(_w, _h) {
 
  /* Вид "камеры" */
  j2ds.scene.view= j2ds.vector.vec2df(0,0);
+
+ j2ds.window.onload= function () {
+ 	for (var i in j2ds.layers.list) {
+   document.body.appendChild(j2ds.layers.layer(i).canvas);
+  }
+  if (_func) {
+   _func();
+  }
+  j2ds.ready= true;
+ };
+
 };
 
 
