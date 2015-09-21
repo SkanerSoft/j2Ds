@@ -56,6 +56,7 @@ io.readKey(function (symbol) {
  }
 });
 
+
 // вектор для быстрого доступа
 var vec2di = j2ds.vector.vec2di;
 
@@ -66,7 +67,7 @@ scene.init(640, 380, function () {
 	$id('chatRoom').style.height= scene.height - 112 + 'px';	
 	$id('chatRoom').style.backgroundColor= j2ds.math.rndColor(220, 255, 1);
 	$id('chatMess').style.backgroundColor= 'white';
-}); // id холста
+});
 
 lr.add('back', -1);
 
@@ -95,7 +96,7 @@ var Game = function () {
  scene.drawText(vec2di(10, 10), 'Enter - отправить текст в чат!', 'red');
 };
 
-scene.start(Game, 60); // Второй параметр - FPS
+scene.start(Game, 60);
 
 </script>
 

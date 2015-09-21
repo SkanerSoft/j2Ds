@@ -1,5 +1,9 @@
 'use strict';
 
+
+
+
+
 /*----------- DOM ---------------*/
 var $id= function (_id) {
  return document.getElementById(_id);
