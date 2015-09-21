@@ -292,8 +292,8 @@ j2ds.input.keyEvent= function(e) {
    j2ds.input.keyUp[e.keyCode]= true;
    j2ds.input.keyUped= true;
   }
- } else if (e.type == 'keypress') {
-  var _char;
+ } else if (e.type == 'keypress' && (j2ds.input.writeMode)) {
+  var _char= '';
   if (e.which != 0 && e.charCode != 0) { 
    if (e.which < 32) {
     _char= '';
@@ -302,7 +302,7 @@ j2ds.input.keyEvent= function(e) {
    }
   }
  	j2ds.input.write(_char);
- 	e.preventDefault();
+ 	j2ds.input.cancel();
  }
 
  j2ds.input.keyDown[e.keyCode]= (e.type== 'keydown')&&(!j2ds.input.canceled);
