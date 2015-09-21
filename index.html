@@ -16,7 +16,7 @@
                           height: 100px;
                           border: 1px solid;
                           padding: 5px;"
-                          onclick="inputChat= true; $id('textBuffer').innerHTML= ''; io.setWriteMode(true);">
+                          onclick="$id('textBuffer').innerHTML= ''; io.setWriteMode(true);">
 <div id="textBuffer"> Введите текст! </div>
                           </div>
 
@@ -36,16 +36,13 @@ var lr = scene.layers;
 
 var vec2df= j2ds.vector.vec2df;
 
-var inputChat= false;
-
 io.readKey(function (symbol) {
- if (!inputChat) return (0);
+ if (!io.isWriteMode()) return (0);
 	$id('textBuffer').innerHTML += symbol;
 	
  if (io.isKeyPress('ESC')) {
   io.setWriteMode(false);
   $id('textBuffer').innerHTML= 'Введите текст!';
-  inputChat= false;
  }
 	
 	if (io.isKeyPress('BACKSPACE')) {
@@ -56,7 +53,6 @@ io.readKey(function (symbol) {
 	 $id('chatRoom').innerHTML += '<b>You Say:</b> ' + $id('textBuffer').innerHTML + '<br /><br />';
 	 $id('textBuffer').innerHTML= 'Введите текст!';
 	 io.setWriteMode(false);
-	 inputChat= false;
  }
 });
 
@@ -73,7 +69,15 @@ scene.init(640, 380, function () {
 }); // id холста
 
 lr.add('back', -1);
+
 lr.layer('back').fill(j2ds.math.rndColor(220, 255, 1));
+
+for (var i= 0, iStep= scene.width/20; i < scene.width; i+=iStep) {
+ for (var j= 0, jStep= scene.height/20; j < scene.height; j+=jStep) {
+  lr.layer('back').context.fillStyle= j2ds.math.rndColor(220, 255, 1);
+  lr.layer('back').context.fillRect(i, j, iStep, jStep);
+ }  
+}
 
 var a= scene.addRectNode(vec2df(10, 10), vec2df(10, 10), j2ds.math.rndColor(0, 100, 1));
 
@@ -81,10 +85,10 @@ var a= scene.addRectNode(vec2df(10, 10), vec2df(10, 10), j2ds.math.rndColor(0, 1
 var Game = function () {
  scene.clear();
 
- if (io.isKeyDown('W')) a.move(vec2df(0, -1));
- if (io.isKeyDown('S')) a.move(vec2df(0, 1));
- if (io.isKeyDown('A')) a.move(vec2df(-1, 0));
- if (io.isKeyDown('D')) a.move(vec2df(1, 0));
+ if (io.isKeyDown('W') || io.isKeyDown('UP')) a.move(vec2df(0, -1));
+ if (io.isKeyDown('S') || io.isKeyDown('DOWN')) a.move(vec2df(0, 1));
+ if (io.isKeyDown('A') || io.isKeyDown('LEFT')) a.move(vec2df(-1, 0));
+ if (io.isKeyDown('D') || io.isKeyDown('RIGHT')) a.move(vec2df(1, 0));
 
  a.draw();
 

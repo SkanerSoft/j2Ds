@@ -273,6 +273,10 @@ j2ds.input.setWriteMode= function (_true) {
  j2ds.input.writeMode= _true;
 };
 
+j2ds.input.isWriteMode= function () {
+ return (j2ds.input.writeMode);
+};
+
 j2ds.input.keyEvent= function(e) {
  if (e.type == 'keydown') {
   if (!j2ds.input.keyPressed[e.keyCode]) {
@@ -285,19 +289,17 @@ j2ds.input.keyEvent= function(e) {
   	j2ds.input.write('');
   }
  } else if (e.type == 'keyup') {
-  e.preventDefault();
   if (j2ds.input.keyPressed[e.keyCode]) {
    j2ds.input.keyPress[e.keyCode]= false;
    j2ds.input.keyPressed[e.keyCode]= false;
    j2ds.input.keyUp[e.keyCode]= true;
    j2ds.input.keyUped= true;
+   e.preventDefault();
   }
  } else if (e.type == 'keypress' && (j2ds.input.writeMode)) {
   var _char= '';
   if (e.which != 0 && e.charCode != 0) { 
-   if (e.which < 32) {
-    _char= '';
-   } else { 
+   if (e.which >= 32) {
     _char= String.fromCharCode(e.which);
    }
   }
@@ -364,16 +366,17 @@ j2ds.input.onClick= function(e) {
  j2ds.input.mClick= (e.which== 2?true:false)&&(!j2ds.input.canceled);
  j2ds.input.rClick= (e.which== 3?true:false)&&(!j2ds.input.canceled);
  j2ds.window.focus();
+ e.preventDefault();
  return false;
 };
 
 j2ds.input.onTouch= function(e) {
- e.preventDefault();
  j2ds.input.abs.x= e.touches[0].pageX;
  j2ds.input.abs.y= e.touches[0].pageY;
  j2ds.input.lClick= true&&(!j2ds.input.canceled);
  j2ds.input.touch= true&&(!j2ds.input.canceled);
  j2ds.window.focus();
+ e.preventDefault();
  return false;
 };
 
@@ -384,7 +387,7 @@ j2ds.input.falseInput= function() {
 };
 
 j2ds.input.write= function () {
-	
+	/* empty default */
 };
 
 j2ds.input.readKey= function (_func) {
