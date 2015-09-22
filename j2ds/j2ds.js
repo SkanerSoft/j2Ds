@@ -437,7 +437,7 @@ j2ds.on = function (_event, _func) {
 
 j2ds.onEvent = function (_eventType, _args) {
  if (j2ds.events[_eventType]) {
-  j2ds.events[_eventType](_args);
+  j2ds.events[_eventType](_args || '');
  }
 };
 
@@ -696,7 +696,7 @@ j2ds.scene.clear = function(_color) {
 // инициализация сцены
 j2ds.scene.init = function(_w, _h) {
 
-  j2ds.onEvent('scene:beforeInit');
+ j2ds.onEvent('scene:beforeInit');
 
 	j2ds.scene.layerName = 'sceneNode';
 	j2ds.scene.canvas = document.createElement('canvas');
