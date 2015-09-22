@@ -36,7 +36,7 @@ var lr = scene.layers;
 
 var vec2df= j2ds.vector.vec2df;
 
-j2ds.on('writeModeKeyPress', function (symbol) {
+j2ds.on('writeMode:keyPress', function (symbol) {
 	$id('textBuffer').innerHTML += symbol;
 	
  if (io.isKeyPress('ESC')) {
@@ -57,7 +57,7 @@ j2ds.on('writeModeKeyPress', function (symbol) {
 });
 
 
-j2ds.on('loadedDOM', function () {
+j2ds.on('dom:loaded', function () {
 	$id('chatRoom').style.left= scene.width + 'px';
 	$id('chatMess').style.left= scene.width + 'px';
 	$id('chatRoom').style.height= scene.height - 112 + 'px';	

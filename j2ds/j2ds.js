@@ -257,8 +257,8 @@ j2ds.input.jKey = {
  'F12'       : 123
 };
 
-j2ds.input.keyList= function () {
- var o= [];
+j2ds.input.keyList = function () {
+ var o = [];
 	for (var i in j2ds.input.jKey) {
   o.push(i);
 	}
@@ -298,9 +298,7 @@ j2ds.input.keyEvent = function(e) {
   if (!j2ds.input.writeMode) {
    e.preventDefault();
   } else {
-   if (j2ds.events['writeModeKeyPress']) {
-    j2ds.events['writeModeKeyPress']('');
-   }
+   j2ds.onEvent('writeMode:keyPress', _char);
   }
  } else if (e.type == 'keyup') {
   if (j2ds.input.keyPressed[e.keyCode]) {
@@ -317,9 +315,7 @@ j2ds.input.keyEvent = function(e) {
     _char = String.fromCharCode(e.which);
    }
   }
-  if (j2ds.events['writeModeKeyPress']) {
-   j2ds.events['writeModeKeyPress'](_char);
-  }
+  j2ds.onEvent('writeMode:keyPress', _char);
  }
 
  j2ds.input.keyDown[e.keyCode] = (e.type== 'keydown')&&(!j2ds.input.canceled);
@@ -423,19 +419,15 @@ j2ds.input.init = function() {
 };
 
 
-
-
-
-
 // События
 j2ds.events = {
- 'breforeInit' : false,
- 'afterInit' : false,
- 'beforeSceneStart' : false,
- 'afterSceneStart' : false,
- 'writeModeKeyPress' : false,
- 'changedGameState' : false,
- 'loadedDOM' : false
+ 'scene:breforeInit' : false,
+ 'scene:afterInit' : false,
+ 'scene:beforeStart' : false,
+ 'scene:afterStart' : false,
+ 'writeMode:keyPress' : false,
+ 'scene:changedGameState' : false,
+ 'dom:loaded' : false
 };
 
 
@@ -443,6 +435,11 @@ j2ds.on = function (_event, _func) {
 	j2ds.events[_event] = _func;
 };
 
+j2ds.onEvent = function (_eventType, _args) {
+ if (j2ds.events[_eventType]) {
+  j2ds.events[_eventType](_args);
+ }
+};
 
 
 /* слои */
@@ -589,20 +586,14 @@ j2ds.scene.layers = j2ds.layers;
 
 j2ds.scene.setGameState = function(_engine) {
  j2ds.setActivEngine(_engine);
- if (j2ds.events['changedGameState']) {
-  j2ds.events['changedGameState']();
- }
+ j2ds.onEvent('scene:changedGameState');
 };
 
 j2ds.scene.start = function (_engine, _framelimit) {
  j2ds.input.init();
- if (j2ds.events['beforeSceneStart']) {
-  j2ds.events['beforeSceneStart']();
- }
+ j2ds.onEvent('scene:beforeStart');
  j2ds.start(_engine, _framelimit);
- if (j2ds.events['afterSceneStart']) {
-  j2ds.events['afterSceneStart']();
- }
+ j2ds.onEvent('scene:afterStart');
 };
 
 j2ds.scene.fullScreen = function(_true) {
@@ -705,9 +696,7 @@ j2ds.scene.clear = function(_color) {
 // инициализация сцены
 j2ds.scene.init = function(_w, _h) {
 
-  if (j2ds.events['breforeInit']) {
-   j2ds.events['breforeInit']();
-  }
+  j2ds.onEvent('scene:beforeInit');
 
 	j2ds.scene.layerName = 'sceneNode';
 	j2ds.scene.canvas = document.createElement('canvas');
@@ -744,17 +733,13 @@ j2ds.scene.init = function(_w, _h) {
  /* Вид "камеры" */
  j2ds.scene.view = j2ds.vector.vec2df(0,0);
 
- if (j2ds.events['afterInit']) {
-  j2ds.events['afterInit']();
- } 
+ j2ds.onEvent('scene:afterInit');
 
  j2ds.window.onload = function () {
  	for (var i in j2ds.layers.list) {
    document.body.appendChild(j2ds.layers.layer(i).canvas);
   }
-  if (j2ds.events['loadedDOM']) {
-   j2ds.events['loadedDOM']();
-  }
+  j2ds.onEvent('dom:loaded');
   j2ds.ready = true;
  };
 };
