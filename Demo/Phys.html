@@ -15,7 +15,7 @@ var input= j2ds.input;
 var vec2df= j2ds.vector.vec2df;
 
 // Создаем сцену
-scene.init(640, 480);
+scene.init(640, 300);
 
 j2ds.layers.add('back', -1);
 j2ds.layers.layer('back').fill('#ceeeee');
@@ -57,7 +57,7 @@ function Game() {
 
  phys2(a, b);
 
- scene.drawText(vec2df(10, 10), 'Управление: ЛКМ / ПКМ');
+ scene.drawText(vec2df(10, 10), 'Управление: ЛКМ / ПКМ', 'black');
 
 }
 
@@ -118,6 +118,11 @@ function phys(_id)
  // отрисовываем
  _id.draw();
 }
+
+
+j2ds.on('loadedDOM', function () {
+	input.setCursorImage('Base/cursor.png');
+});
 
 
 // Стартуем игру с игровым состоянием Game и FPS 60

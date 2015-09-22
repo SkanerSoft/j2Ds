@@ -26,7 +26,7 @@ layers.add('space', -1);
 layers.layer('space').fill('#212121');
 layers.layer('space').fillGradientR(vec2df(scene.width/2, scene.height/2), 0,
                                    vec2df(scene.width/2, scene.height/2), scene.height/3,
-                                   ['white', 'white', 'rgba(0,0,0,0)']);
+                                   ['white', rndColor(220, 255, 1), 'rgba(0,0,0,0)']);
 
 layers.add('back', 1);
 layers.layer('back').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
@@ -122,7 +122,7 @@ var Game= function () {
 };
 
 
-scene.start(Game, 25);
+scene.start(Game, 120);
 
 
 </script>

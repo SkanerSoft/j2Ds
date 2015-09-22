@@ -402,6 +402,10 @@ j2ds.input.falseInput = function() {
  j2ds.input.rClick = false;
 };
 
+j2ds.input.setCursorImage = function (_curImg) {
+	$tag('body')[0].style.cursor = 'url("'+_curImg+'"), auto';
+};
+
 j2ds.input.init = function() {
  j2ds.window.focus();
  j2ds.window.ontouchstart = j2ds.input.onTouch;
@@ -1109,6 +1113,7 @@ j2ds.scene.createImageMap = function(path) {
  };
 
  o.img = document.createElement('img');
+ o.crossOrigin = 'anonymous';
  o.img.src = path;
  o.img.onload = function() {
   o.width = o.img.width;
@@ -1189,9 +1194,10 @@ o.drawFrame = function(_frame) {
   }
 
   _frame = _frame?(_frame-1):0;
+
   context.drawImage(
   this.animation.imageMap.img,
-  (this.animation.sourceX+this.animation.sourceW*_frame), this.animation.sourceY,
+  (this.animation.sourceX+(this.animation.sourceW*_frame)), this.animation.sourceY,
   this.animation.sourceW, this.animation.sourceH,
   this.pos.x-j2ds.scene.view.x, this.pos.y-j2ds.scene.view.y,
   this.size.x, this.size.y);
