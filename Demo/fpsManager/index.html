@@ -10,19 +10,14 @@
  <body>
 
 <script type="text/javascript">
-// объявление объектов
+
 var scene= j2ds.scene;
 var input= j2ds.input;
 var vec2df= j2ds.vector.vec2df;
 var Random= j2ds.math.random;
 
-// инициализация сцены
 scene.init(800, 400);
 
-// если требуется развернуть сцену на весь экран
-//scene.fullScreen(true);
-
-// кол-во прямоугольников
 var nodesCount= 0;
 var nodes= [];
 
@@ -43,31 +38,22 @@ var fpsTest= function () {
  // если нажата ЛКМ или ТАЧ, создаем прямоугольники
  if (input.lClick) {
   for (var n= 0; n<50; n+=1) {
-   // Добавляем зеленый прямоугольник
-   //var o= scene.addSpriteNode(input.getPosition(), vec2df(27, 21), anim);
    var o= scene.addRectNode(input.getPosition(), vec2df(5, 5), j2ds.math.rndColor(100, 255, 1));   
-   // устанавливаем ему скорость смещения
    o.dx= 6-Random(0, 12); o.dy= 6-Random(0, 12);
-   // пушим его в массив прямоугольников
    nodes.push(o);
-   // увеличиваем счетчик прямоугольников (он равен nodes.length)
    nodesCount= nodes.length; 
   }
  }
 
- // обработка прямоугольников
  for (var i= 0; i < nodesCount; i+=1) {
-  // двигаем прямоугольник в соответствии с его переменными скоростей
   nodes[i].move(vec2df(nodes[i].dx*j2ds.dt, nodes[i].dy*j2ds.dt));
-  // рисуем прямоугольник
   nodes[i].draw();
-  // если нельзя позволить прямоугольнику выйти за пределы сцены
+  
   if (nodes[i].isCollisionScene().x) nodes[i].dx*= (-1);
   if (nodes[i].isCollisionScene().y) nodes[i].dy*= (-1);
-  // Если произошло столкновение с границей сцены в любом месте
 
  } 
- // Выводим количество прямоугольников
+
  scene.drawTextOpt(vec2df(10, 10), 'Прямоугольники: '+ nodesCount, 'bold 50px Arial', 'black', 'white', 2);
   
  fps.end();
@@ -75,7 +61,7 @@ var fpsTest= function () {
  
 };
 
-// После объъявления всех функций стартуем сцену
+
 scene.start(fpsTest, 60);
 </script>
 

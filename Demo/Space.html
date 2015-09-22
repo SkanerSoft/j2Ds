@@ -59,7 +59,7 @@ for (var i= 0, ob= []; i < max; i+=1) {
 
  var r= Random(1, 3);
  var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r*0.5, r*0.5), color);
- o.dx= Random(1, 10)*0.05*r/5;
+ o.dx= Random(1, 40)*0.05*r/5;
  o.rnd= (Random(0, 50) == 1);
  ob.push(o);
 }
@@ -74,7 +74,7 @@ for (var i= 0, ob2= []; i < max; i+=1) {
 
  var r= Random(1, 3);
  var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r*0.5, r*0.5), color);
- o.dx= -Random(1, 10)*0.05*r/5;
+ o.dx= -Random(1, 40)*0.05*r/5;
  ob2.push(o);
 }
 

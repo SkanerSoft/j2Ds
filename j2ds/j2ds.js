@@ -105,6 +105,7 @@ j2ds.start = function(_engine, _framelimit) {
  j2ds.sceneSkipTime = 1000.0 / j2ds.framelimit;
  j2ds.lastTime = Date.now();
  j2ds.dt = 0;
+ j2ds.sceneStartTime = j2ds.lastTime;
  j2ds.gameEngine();
 };
 
@@ -123,11 +124,11 @@ j2ds.gameEngine = function(){
   if (j2ds.dt > j2ds.sceneSkipTime) {
    j2ds.dt = 0;
   }
-  j2ds.sceneStartTime = Date.now();
+  j2ds.sceneStartTime = j2ds.now;
   j2ds.engine();
+  j2ds.lastTime = j2ds.now;
   j2ds.input.keyPress = [];
   j2ds.input.keyUp = [];
-  j2ds.lastTime = j2ds.now;
  }
  nextJ2dsGameStep(j2ds.gameEngine);
 };
@@ -432,7 +433,7 @@ j2ds.input.init = function() {
 
 // События
 j2ds.events = {
- 'scene:breforeInit' : false,
+ 'scene:beforeInit' : false,
  'scene:afterInit' : false,
  'scene:beforeStart' : false,
  'scene:afterStart' : false,
@@ -755,353 +756,363 @@ j2ds.scene.init = function(_w, _h) {
  };
 };
 
-
+j2ds.Object= {
+ inherit : function (_parent, _child) {
+  _child.prototype = Object.create(_parent.prototype);
+  _child.prototype.constructor = _child;
+ }
+};
 
 /*базовый объект*/
 
-j2ds.scene.addBaseNode = function(_pos, _size) {
- var o = {
-  visible : true,
-  alpha : 1,
-  pos        : _pos,
-  size       : _size,
-  parent     : false,
-  angle      : 0,
-  layer      : j2ds.scene,
- 	box       : {
-	              offset : {x : 0, y : 0},
-	              size : {x : 0, y : 0}
-	             }
+j2ds.scene.addBaseNode= function (_pos, _size) {
+	return new j2ds.scene.BaseNode(_pos, _size);
+};
+
+j2ds.scene.BaseNode = function(_pos, _size) {
+  this.visible  = true;
+  this.alpha    = 1;
+  this.pos      = _pos;
+  this.size     = _size;
+  this.parent   = false;
+  this.angle    = 0;
+  this.layer    = j2ds.scene;
+ 	this.box      = {
+	                  offset : {x : 0, y : 0},
+	                  size : {x : 0, y : 0}
+	                 };
+};
+
+j2ds.scene.BaseNode.prototype.resizeBox = function (_offset, _size) {
+	this.box.offset = _offset;
+	this.box.size = _size;
+};
+
+j2ds.scene.BaseNode.prototype.setLayer = function (_layer) {
+	this.layer = _layer ? j2ds.layers.layer(_layer) : j2ds.scene;
+};
+
+j2ds.scene.BaseNode.prototype.getLayer = function () {
+	return (this.layer);
+};
+
+j2ds.scene.BaseNode.prototype.setVisible = function(_visible) {
+ this.visible = _visible;
+};
+
+j2ds.scene.BaseNode.prototype.setAlpha = function(_alpha) {
+ if (_alpha < 0) _alpha = 0;
+ if (_alpha > 1) _alpha = 1;
+ this.alpha = _alpha;
+};
+
+j2ds.scene.BaseNode.prototype.moveTo = function(_to, _d) {
+ _d = _d || j2ds.vector.vec2df(0,0);
+ _to = _to.getPosition();
+ this.move(j2ds.vector.vec2df(
+ ((_to.x - this.getPosition().x) / 5) + _d.x,
+ ((_to.y - this.getPosition().y) / 5) + _d.y
+ ));
+};
+
+j2ds.scene.BaseNode.prototype.setPosition = function(_pos) {
+ this.pos = j2ds.vector.vec2df(_pos.x-Math.ceil(this.size.x/2), _pos.y-Math.ceil(this.size.y/2) );
+};
+
+j2ds.scene.BaseNode.prototype.move = function(_pos) {
+ this.pos.x+= _pos.x;
+ this.pos.y+= _pos.y;
+};
+
+j2ds.scene.BaseNode.prototype.getPosition = function() {
+ return (j2ds.vector.vec2df(this.pos.x+Math.ceil(this.size.x/2), this.pos.y+Math.ceil(this.size.y/2)));
+};
+
+j2ds.scene.BaseNode.prototype.setSize = function(_size) {
+ this.size = _size;
+};
+
+j2ds.scene.BaseNode.prototype.getSize = function() {
+ return (this.size);
+};
+
+j2ds.scene.BaseNode.prototype.setParent = function(_id) {
+	this.parent = _id;
+};
+
+j2ds.scene.BaseNode.prototype.getDistance = function(_id) {
+	return Math.ceil( Math.sqrt(
+	  Math.pow(_id.getPosition().x - this.getPosition().x, 2)+
+	  Math.pow(_id.getPosition().y - this.getPosition().y, 2)
+	                  )
+	       );
+};
+
+j2ds.scene.BaseNode.prototype.getDistanceXY = function(_id) {
+	return j2ds.vector.vec2df(Math.abs(_id.getPosition().x-this.getPosition().x), Math.abs(_id.getPosition().y-this.getPosition().y));
+};
+
+j2ds.scene.BaseNode.prototype.isIntersect = function(_id) {
+ var pos = {
+  x1 : this.pos.x+this.box.offset.x,
+  x2 : _id.pos.x+_id.box.offset.x,
+  y1 : this.pos.y+this.box.offset.y,
+  y2 : _id.pos.y+_id.box.offset.y
  };
 
- o.resizeBox = function (_offset, _size) {
- 	this.box.offset = _offset;
- 	this.box.size = _size;
- }
-
- o.setLayer = function (_layer) {
- 	this.layer = _layer ? j2ds.layers.layer(_layer) : j2ds.scene;
+ var size = {
+  x1 : this.size.x+this.box.size.x,
+  x2 : _id.size.x+_id.box.size.x,
+  y1 : this.size.y+this.box.size.y,
+  y2 : _id.size.y+_id.box.size.y
  };
 
- o.getLayer = function () {
- 	return (this.layer);
- };
+return (
+        (
+         (pos.y1+size.y1 >= pos.y2) &&
+         (pos.x1+size.x1 >= pos.x2)
+        ) && (
+         (pos.x1 < pos.x2+size.x2) &&
+         (pos.y1 < pos.y2+size.y2)
+        )
+       );
+};
 
- o.setVisible = function(_visible) {
-  this.visible = _visible;
- };
+j2ds.scene.BaseNode.prototype.isCollision = function(_id) {
+var result = false;
+ if (
+ (this.getDistanceXY(_id).x < (this.size.x/2 + _id.size.x/2)) &&
+ (this.getDistanceXY(_id).y < (this.size.y/2 + _id.size.y/2))
+ ) {
+    result = true;
+   }
+ return (result);
+};
 
- o.setAlpha = function(_alpha) {
-  if (_alpha < 0) _alpha = 0;
-  if (_alpha > 1) _alpha = 1;
-  this.alpha = _alpha;
- };
+j2ds.scene.BaseNode.prototype.isCollisionRadius = function(_id) {
+var result = false;
+ if (
+ (this.getDistanceXY(_id).x < (this.size.x/2 + _id.size.x/2)) &&
+ (this.getDistanceXY(_id).y < (this.size.y/2 + _id.size.y/2))
+ ) {
+    result = true;
+   }
+ return (result);
+};
 
- o.moveTo = function(_to, _d) {
-  _d = _d || j2ds.vector.vec2df(0,0);
-  _to = _to.getPosition();
-  this.move(j2ds.vector.vec2df(
-  ((_to.x - this.getPosition().x) / 5) + _d.x,
-  ((_to.y - this.getPosition().y) / 5) + _d.y
-  ));
- };
+j2ds.scene.BaseNode.prototype.isLookScene = function() {
+	var yes = true;
+	if ((this.pos.x > j2ds.scene.view.x+j2ds.scene.width ||
+	     this.pos.x+this.size.x < j2ds.scene.view.x) ||
+	  (this.pos.y > j2ds.scene.view.y+j2ds.scene.height ||
+	   this.pos.y+this.size.y < j2ds.scene.view.y)) {
+	    yes = false;
+	   }
+	return (yes);
+};
 
- o.setPosition = function(_pos) {
-  this.pos = j2ds.vector.vec2df(_pos.x-Math.ceil(this.size.x/2), _pos.y-Math.ceil(this.size.y/2) );
- };
+j2ds.scene.BaseNode.prototype.turn = function(_angle) {
+	if (this.angle > 359) { this.angle = 0; }
+	if (this.angle < 0) { this.angle = 359; }
+	this.angle+= _angle;
+};
 
- o.move = function(_pos) {
-  this.pos.x+= _pos.x;
-  this.pos.y+= _pos.y;
- };
+j2ds.scene.BaseNode.prototype.setRotation = function(_angle) {
+	_angle = _angle < 0 ? 360+_angle : (_angle > 359 ? 0 : _angle);
+	this.angle = _angle;
+};
 
- o.getPosition = function() {
-  return (j2ds.vector.vec2df(this.pos.x+Math.ceil(this.size.x/2), this.pos.y+Math.ceil(this.size.y/2)));
- };
+j2ds.scene.BaseNode.prototype.isCollisionScene = function() {
+	var o = {};
 
- o.setSize = function(_size) {
-  this.size = _size;
- };
+	if (this.pos.x+this.size.x >= j2ds.scene.view.x+j2ds.scene.width) o.x = 1;
+	else	if (this.pos.x <= j2ds.scene.view.x) { o.x = -1; }
+	     else { o.x = 0; }
 
- o.getSize = function() {
-  return (this.size);
- };
+	if (this.pos.y+this.size.y >= j2ds.scene.view.y+j2ds.scene.height) o.y = 1;
+	else	if (this.pos.y <= j2ds.scene.view.y) { o.y = -1; }
+	     else { o.y = 0; }
 
- o.setParent = function(_id) {
- 	this.parent = _id;
- };
+	o.all = (o.x || o.y);
 
- o.getDistance = function(_id) {
- 	return Math.ceil( Math.sqrt(
- 	  Math.pow(_id.getPosition().x - this.getPosition().x, 2)+
- 	  Math.pow(_id.getPosition().y - this.getPosition().y, 2)
- 	                  )
- 	       );
- };
+	return (o);
+};
 
- o.getDistanceXY = function(_id) {
- 	return j2ds.vector.vec2df(Math.abs(_id.getPosition().x-this.getPosition().x), Math.abs(_id.getPosition().y-this.getPosition().y));
- };
+j2ds.scene.BaseNode.prototype.moveDir = function(_speed) {
+ this.pos.x+= _speed*(Math.cos(j2ds.math.rad(this.angle)));
+ this.pos.y+= _speed*(Math.sin(j2ds.math.rad(this.angle)));
+};
 
- o.isIntersect = function(_id) {
-  var pos = {
-   x1 : this.pos.x+this.box.offset.x,
-   x2 : _id.pos.x+_id.box.offset.x,
-   y1 : this.pos.y+this.box.offset.y,
-   y2 : _id.pos.y+_id.box.offset.y
-  };
+j2ds.scene.BaseNode.prototype.drawBox = function() {
+ var context = this.layer.context;
+ context.strokeStyle = 'black';
 
-  var size = {
-   x1 : this.size.x+this.box.size.x,
-   x2 : _id.size.x+_id.box.size.x,
-   y1 : this.size.y+this.box.size.y,
-   y2 : _id.size.y+_id.box.size.y
-  };
+ context.beginPath();
+ context.rect(
+ this.pos.x-j2ds.scene.view.x,
+ this.pos.y-j2ds.scene.view.y,
+ this.size.x, this.size.y);
+ context.stroke();
 
- return (
-         (
-          (pos.y1+size.y1 >= pos.y2) &&
-          (pos.x1+size.x1 >= pos.x2)
-         ) && (
-          (pos.x1 < pos.x2+size.x2) &&
-          (pos.y1 < pos.y2+size.y2)
-         )
-        );
- };
+ context.strokeStyle = 'yellow';
 
- o.isCollision = function(_id) {
- var result = false;
-  if (
-  (this.getDistanceXY(_id).x < (this.size.x/2 + _id.size.x/2)) &&
-  (this.getDistanceXY(_id).y < (this.size.y/2 + _id.size.y/2))
-  ) {
-     result = true;
-    }
-  return (result);
- };
+ context.beginPath();
+ context.rect(this.box.offset.x+this.pos.x-j2ds.scene.view.x, this.box.offset.y+this.pos.y-j2ds.scene.view.y,
+              this.box.size.x+this.size.x, this.box.size.y+this.size.y);
+ context.stroke();
+};
 
- o.isCollisionRadius = function(_id) {
- var result = false;
-  if (
-  (this.getDistanceXY(_id).x < (this.size.x/2 + _id.size.x/2)) &&
-  (this.getDistanceXY(_id).y < (this.size.y/2 + _id.size.y/2))
-  ) {
-     result = true;
-    }
-  return (result);
- };
-
- o.isLookScene = function() {
- 	var yes = true;
- 	if ((this.pos.x > j2ds.scene.view.x+j2ds.scene.width ||
- 	     this.pos.x+this.size.x < j2ds.scene.view.x) ||
- 	  (this.pos.y > j2ds.scene.view.y+j2ds.scene.height ||
- 	   this.pos.y+this.size.y < j2ds.scene.view.y)) {
- 	    yes = false;
- 	   }
- 	return (yes);
- };
-
- o.turn = function(_angle) {
- 	if (this.angle > 359) { this.angle = 0; }
- 	if (this.angle < 0) { this.angle = 359; }
- 	this.angle+= _angle;
- };
-
- o.setRotation = function(_angle) {
- 	_angle = _angle < 0 ? 360+_angle : (_angle > 359 ? 0 : _angle);
- 	this.angle = _angle;
- };
-
- o.isCollisionScene = function() {
- 	var o = {};
-
- 	if (this.pos.x+this.size.x >= j2ds.scene.view.x+j2ds.scene.width) o.x = 1;
- 	else	if (this.pos.x <= j2ds.scene.view.x) { o.x = -1; }
- 	     else { o.x = 0; }
-
- 	if (this.pos.y+this.size.y >= j2ds.scene.view.y+j2ds.scene.height) o.y = 1;
- 	else	if (this.pos.y <= j2ds.scene.view.y) { o.y = -1; }
- 	     else { o.y = 0; }
-
- 	o.all = (o.x || o.y);
-
- 	return (o);
- };
-
- o.setRotationTo = function(_to) {
-  var dX = _to.getPosition().x - this.getPosition().x;
-  var dY = _to.getPosition().y - this.getPosition().y;
-
-	 this.angle = Math.atan2(dY, dX);
-
- 	document.location.href = '#TEST function setRotationTo: '+_to.pos.x;
- };
-
- o.moveDir = function(_speed) {
-  this.pos.x+= _speed*(Math.cos(j2ds.math.rad(this.angle)));
-  this.pos.y+= _speed*(Math.sin(j2ds.math.rad(this.angle)));
- };
-
- o.drawBox = function() {
-  var context = this.layer.context;
-  context.strokeStyle = 'black';
-
-  context.beginPath();
-  context.rect(
-  this.pos.x-j2ds.scene.view.x,
-  this.pos.y-j2ds.scene.view.y,
-  this.size.x, this.size.y);
-  context.stroke();
-
-  context.strokeStyle = 'yellow';
-
-  context.beginPath();
-  context.rect(this.box.offset.x+this.pos.x-j2ds.scene.view.x, this.box.offset.y+this.pos.y-j2ds.scene.view.y,
-               this.box.size.x+this.size.x, this.box.size.y+this.size.y);
-  context.stroke();
- };
-
- return (o);
-}
 
 
 /* окружность */
 
-j2ds.scene.addCircleNode = function(_pos, _radius, _color) {
- var o = j2ds.scene.addBaseNode(_pos, j2ds.vector.vec2df(_radius*2, _radius*2));
+j2ds.scene.addCircleNode= function (_pos, _radius, _color) {
+	return new j2ds.scene.CircleNode(_pos, _radius, _color);
+};
+
+j2ds.scene.CircleNode = function(_pos, _radius, _color) {
+
+ j2ds.scene.BaseNode.call(this, _pos, j2ds.vector.vec2df(_radius*2, _radius*2)); 
+ 
  /*Свойства*/
- o.color = _color;
- o.radius = _radius;
+ this.color = _color;
+ this.radius = _radius;
+};
 
-/*Функции*/
+j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.CircleNode);
 
- o.draw = function() {
-  var context = this.layer.context;
-  if (this.visible && this.isLookScene()) {
-   if (this.alpha != 1) {
-    var tmpAlpha = context.globalAlpha;
-    context.globalAlpha = this.alpha;
-   }
-   context.fillStyle = this.color;
-
-   context.beginPath();
-   context.arc(this.pos.x-j2ds.scene.view.x+this.radius,
-   this.pos.y-j2ds.scene.view.y+this.radius,
-   this.radius, 0, 2*Math.PI,true);
-   context.stroke();
-   context.fill();
-
-   if (this.alpha != 1) {
-    context.globalAlpha = tmpAlpha;
-   }
-
-   j2ds.countDrawNodes+= 1;
+j2ds.scene.CircleNode.prototype.draw = function() {
+ var context = this.layer.context;
+ if (this.visible && this.isLookScene()) {
+  if (this.alpha != 1) {
+   var tmpAlpha = context.globalAlpha;
+   context.globalAlpha = this.alpha;
   }
- };
+  context.fillStyle = this.color;
 
- return (o);
-}
+  context.beginPath();
+  context.arc(this.pos.x-j2ds.scene.view.x+this.radius,
+  this.pos.y-j2ds.scene.view.y+this.radius,
+  this.radius, 0, 2*Math.PI,true);
+  context.stroke();
+  context.fill();
+
+  if (this.alpha != 1) {
+   context.globalAlpha = tmpAlpha;
+  }
+
+  j2ds.countDrawNodes+= 1;
+ }
+};
+
 
 
 /* линии */
-j2ds.scene.addLineNode = function(_pos, _points, _scale, _color, _width, _fill, _cFill) {
- var o = j2ds.scene.addBaseNode(_pos, j2ds.vector.vec2df(0,0));
+
+j2ds.scene.addLineNode= function (_pos, _points, _scale, _color, _width, _fill, _cFill) {
+	return new j2ds.scene.LineNode(_pos, _points, _scale, _color, _width, _fill, _cFill);
+};
+
+j2ds.scene.LineNode = function(_pos, _points, _scale, _color, _width, _fill, _cFill) {
+
+ j2ds.scene.BaseNode.call(this, _pos, j2ds.vector.vec2df(0,0))
 
  /*Свойства*/
- o.color = _color;
- o.points = _points;
- o.fill = _fill || false;
- o.scale = _scale || 0;
- o.cFill = _cFill;
- o.lineWidth = _width;
+ this.color = _color;
+ this.points = _points;
+ this.fill = _fill || false;
+ this.scale = _scale || 0;
+ this.cFill = _cFill;
+ this.lineWidth = _width;
+};
 
-/*Функции*/
+j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.LineNode);
 
- o.draw = function() {
-  var context = this.layer.context;
-  if (this.visible && this.isLookScene()) {
+j2ds.scene.LineNode.prototype.draw = function() {
+ var context = this.layer.context;
+ if (this.visible && this.isLookScene()) {
 
-   if (this.alpha != 1) {
-    var tmpAlpha = context.globalAlpha;
-    context.globalAlpha = this.alpha;
-   }
-
-   context.strokeStyle = this.color;
-   context.lineWidth = this.lineWidth;
-
-   context.beginPath();
-   context.moveTo(this.pos.x-j2ds.scene.view.x,
-   this.pos.y-j2ds.scene.view.y);
-
-   for (var i=0, len = this.points.length;i<len;i+=1) {
-    context.lineTo(
-    this.pos.x+this.points[i][0]*this.scale-j2ds.scene.view.x,
-    this.pos.y+this.points[i][1]*this.scale-j2ds.scene.view.y);
-   }
-
-   context.stroke();
-   if (this.fill) {
-    context.fillStyle = this.cFill;
-    context.fill();
-   }
-
-   if (this.alpha != 1) {
-    context.globalAlpha = tmpAlpha;
-   }
-
-   j2ds.countDrawNodes+= 1;
+  if (this.alpha != 1) {
+   var tmpAlpha = context.globalAlpha;
+   context.globalAlpha = this.alpha;
   }
- };
 
- return (o);
-}
+  context.strokeStyle = this.color;
+  context.lineWidth = this.lineWidth;
+
+  context.beginPath();
+  context.moveTo(this.pos.x-j2ds.scene.view.x,
+  this.pos.y-j2ds.scene.view.y);
+
+  for (var i=0, len = this.points.length;i<len;i+=1) {
+   context.lineTo(
+   this.pos.x+this.points[i][0]*this.scale-j2ds.scene.view.x,
+   this.pos.y+this.points[i][1]*this.scale-j2ds.scene.view.y);
+  }
+
+  context.stroke();
+  if (this.fill) {
+   context.fillStyle = this.cFill;
+   context.fill();
+  }
+
+  if (this.alpha != 1) {
+   context.globalAlpha = tmpAlpha;
+  }
+
+  j2ds.countDrawNodes+= 1;
+ }
+};
 
 
 /*прямоугольники*/
-j2ds.scene.addRectNode = function(_pos, _size, _color) {
- var o = j2ds.scene.addBaseNode(_pos, _size);
- /*Свойства*/
- o.color = _color;
 
- /*Функции*/
+j2ds.scene.addRectNode= function (_pos, _size, _color) {
+	return new j2ds.scene.RectNode(_pos, _size, _color);
+};
 
- o.draw = function() {
-  var context = this.layer.context;
-  if (this.visible  && this.isLookScene()) {
+j2ds.scene.RectNode = function(_pos, _size, _color) {
 
-   if (this.alpha != 1) {
-    var tmpAlpha = context.globalAlpha;
-    context.globalAlpha = this.alpha;
-   }
+ j2ds.scene.BaseNode.call(this, _pos, _size)
 
-   if (this.angle)
-   {
-    context.save();
-    context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);
-    context.rotate(j2ds.math.rad(this.angle));
-    context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
-   }
+ this.color = _color;
+};
 
-   context.fillStyle = this.color;
+j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.RectNode);
 
-   context.fillRect(
-   this.pos.x-j2ds.scene.view.x,
-   this.pos.y-j2ds.scene.view.y,
-   this.size.x, this.size.y);
+j2ds.scene.RectNode.prototype.draw = function() {
+ var context = this.layer.context;
+ if (this.visible  && this.isLookScene()) {
 
-   if (this.angle) { context.restore(); }
-
-   if (this.alpha != 1) {
-    context.globalAlpha = tmpAlpha;
-   }
-
-   j2ds.countDrawNodes+= 1;
+  if (this.alpha != 1) {
+   var tmpAlpha = context.globalAlpha;
+   context.globalAlpha = this.alpha;
   }
- };
 
- return (o);
-}
+  if (this.angle)
+  {
+   context.save();
+   context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);
+   context.rotate(j2ds.math.rad(this.angle));
+   context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
+  }
+
+  context.fillStyle = this.color;
+
+  context.fillRect(
+  this.pos.x-j2ds.scene.view.x,
+  this.pos.y-j2ds.scene.view.y,
+  this.size.x, this.size.y);
+
+  if (this.angle) { context.restore(); }
+
+  if (this.alpha != 1) {
+   context.globalAlpha = tmpAlpha;
+  }
+
+  j2ds.countDrawNodes+= 1;
+ }
+};
 
 /* изображения */
 j2ds.scene.createImageMap = function(path) {
@@ -1137,24 +1148,31 @@ j2ds.scene.createImageMap = function(path) {
  }
 
  return (o);
-}
+};
 
-j2ds.scene.addSpriteNode = function(_pos, _size, _animation) {
 
-var o = j2ds.scene.addBaseNode(_pos, _size);
- o.tmpSpeed = 0;
- o.frame = 0;
- o.animation = _animation;
- o.flip = {x:false, y:false};
+j2ds.scene.addSpriteNode= function (_pos, _size, _animation) {
+	return new j2ds.scene.SpriteNode(_pos, _size, _animation);
+};
 
-/* Функции */
+j2ds.scene.SpriteNode = function(_pos, _size, _animation) {
 
- o.setFlip = function(_x, _y) {
-  o.flip = {x:_x, y:_y};
- };
+ j2ds.scene.BaseNode.call(this, _pos, _size);
 
-// отрисовка всей анимации
-o.draw = function(_speed) {
+ this.tmpSpeed = 0;
+ this.frame = 0;
+ this.animation = _animation;
+ this.flip = {x:false, y:false};
+
+};
+
+j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.SpriteNode);
+
+j2ds.scene.SpriteNode.prototype.setFlip = function(_x, _y) {
+ o.flip = {x:_x, y:_y};
+};
+
+j2ds.scene.SpriteNode.prototype.draw = function(_speed) {
  if (this.visible && this.isLookScene()) {
   _speed = _speed || 1;
 
@@ -1170,12 +1188,11 @@ o.draw = function(_speed) {
   else {
    this.tmpSpeed+=1;
   }
-
  };
-}
+};
 
-// отрисовка одного кадра
-o.drawFrame = function(_frame) {
+ // отрисовка одного кадра
+j2ds.scene.SpriteNode.prototype.drawFrame = function(_frame) {
  var context = this.layer.context;
  if (this.visible && this.isLookScene()) {
 
@@ -1212,13 +1229,10 @@ o.drawFrame = function(_frame) {
  }
 };
 
-o.setAnimation = function(_id) {
+j2ds.scene.SpriteNode.prototype.setAnimation = function(_id) {
  if (this.animation != _id)	{
 	 this.animation = _id;
 	}
-};
-
-return (o);
 };
 
 
