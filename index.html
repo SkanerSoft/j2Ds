@@ -17,7 +17,7 @@
                           border: 1px solid;
                           padding: 5px;"
                           onclick="$id('textBuffer').innerHTML= ''; io.setWriteMode(true);">
-<span id="textBuffer"> Введите текст!</span>|
+<span id="textBuffer"> Введите текст!</span><span style="display: none;" id="textCursor">|</span>
                           </div>
 
 <div id="chatRoom" style="z-index: 2000; 
@@ -36,7 +36,7 @@ var lr = scene.layers;
 
 var vec2df= j2ds.vector.vec2df;
 
-io.readKey(function (symbol) {
+j2ds.on('writeModeKeyPress', function (symbol) {
 	$id('textBuffer').innerHTML += symbol;
 	
  if (io.isKeyPress('ESC')) {
@@ -57,17 +57,29 @@ io.readKey(function (symbol) {
 });
 
 
-// вектор для быстрого доступа
-var vec2di = j2ds.vector.vec2di;
-
-// инициализация сцены
-scene.init(640, 380, function () {
+j2ds.on('loadedDOM', function () {
 	$id('chatRoom').style.left= scene.width + 'px';
 	$id('chatMess').style.left= scene.width + 'px';
 	$id('chatRoom').style.height= scene.height - 112 + 'px';	
 	$id('chatRoom').style.backgroundColor= j2ds.math.rndColor(220, 255, 1);
 	$id('chatMess').style.backgroundColor= 'white';
+
+ setInterval(function () {
+ 	if ($id('textCursor').style.display == 'none') {
+ 	 $id('textCursor').style.display = '';
+ 	} else {
+ 		$id('textCursor').style.display= 'none';
+ 	}
+ }, 500);
+
 });
+
+
+// вектор для быстрого доступа
+var vec2di = j2ds.vector.vec2di;
+
+// инициализация сцены
+scene.init(640, 380);
 
 lr.add('back', -1);
 
@@ -85,7 +97,7 @@ var a= scene.addRectNode(vec2df(j2ds.math.random(20, scene.width-20), j2ds.math.
 // Игровое состояние Game
 var Game = function () {
  scene.clear();
-
+ 
  if (io.isKeyDown('W') || io.isKeyDown('UP')) a.move(vec2df(0, -1));
  if (io.isKeyDown('S') || io.isKeyDown('DOWN')) a.move(vec2df(0, 1));
  if (io.isKeyDown('A') || io.isKeyDown('LEFT')) a.move(vec2df(-1, 0));

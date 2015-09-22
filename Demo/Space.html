@@ -40,7 +40,7 @@ var jLogoMap= scene.createImageMap('Base/j2Ds-Logo.png');
 
 var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
 
-var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/2, scene.height/2), jAnim);
+var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/3, scene.height/3), jAnim);
 jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
 jLogo.setAlpha(0);
 jLogo.setLayer('logo');
@@ -105,6 +105,8 @@ var Game= function () {
  {
   if (jLogo.alpha <= 1) {
    jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
+   jLogo.setSize(vec2df(jLogo.getSize().x+0.2, jLogo.getSize().y+0.2));
+   jLogo.move(vec2df(-0.1, -0.1));
   }
  }
 
