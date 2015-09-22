@@ -173,7 +173,8 @@ j2ds.input = {
  canceled : false,
  body : false,
  anyKey : false,
- writeMode : false
+ writeMode : false,
+ displayCursor : ''
 };
 
 // Константы клавиш
@@ -403,7 +404,12 @@ j2ds.input.setCursorImage = function (_curImg) {
 };
 
 j2ds.input.setVisible = function (_true) {
-	$tag('body')[0].style.cursor = _true ? 'auto' : 'none';
+ if (!_true) {
+  j2ds.input.displayCursor = $tag('body')[0].style.cursor;
+  $tag('body')[0].style.cursor = 'none';
+ } else {
+  $tag('body')[0].style.cursor = j2ds.input.displayCursor;
+ }	
 };
 
 
