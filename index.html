@@ -17,7 +17,7 @@
                           border: 1px solid;
                           padding: 5px;"
                           onclick="$id('textBuffer').innerHTML= ''; io.setWriteMode(true);">
-<div id="textBuffer"> Введите текст! </div>
+<span id="textBuffer"> Введите текст!</span>|
                           </div>
 
 <div id="chatRoom" style="z-index: 2000; 
@@ -37,7 +37,6 @@ var lr = scene.layers;
 var vec2df= j2ds.vector.vec2df;
 
 io.readKey(function (symbol) {
- if (!io.isWriteMode()) return (0);
 	$id('textBuffer').innerHTML += symbol;
 	
  if (io.isKeyPress('ESC')) {
@@ -54,6 +53,7 @@ io.readKey(function (symbol) {
 	 $id('textBuffer').innerHTML= 'Введите текст!';
 	 io.setWriteMode(false);
  }
+ io.cancel();
 });
 
 
@@ -73,14 +73,14 @@ lr.add('back', -1);
 
 lr.layer('back').fill(j2ds.math.rndColor(220, 255, 1));
 
-for (var i= 0, iStep= scene.width/20; i < scene.width; i+=iStep) {
- for (var j= 0, jStep= scene.height/20; j < scene.height; j+=jStep) {
+for (var i= 0, iStep= scene.width/100; i < scene.width; i+=iStep) {
+ for (var j= 0, jStep= scene.height/100; j < scene.height; j+=jStep) {
   lr.layer('back').context.fillStyle= j2ds.math.rndColor(220, 255, 1);
   lr.layer('back').context.fillRect(i, j, iStep, jStep);
  }  
 }
 
-var a= scene.addRectNode(vec2df(10, 10), vec2df(10, 10), j2ds.math.rndColor(0, 100, 1));
+var a= scene.addRectNode(vec2df(j2ds.math.random(20, scene.width-20), j2ds.math.random(20, scene.height-20)), vec2df(10, 10), j2ds.math.rndColor(0, 100, 1));
 
 // Игровое состояние Game
 var Game = function () {

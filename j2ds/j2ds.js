@@ -308,7 +308,6 @@ j2ds.input.keyEvent= function(e) {
    }
   }
  	j2ds.input.write(_char);
- 	j2ds.input.cancel();
  }
 
  j2ds.input.keyDown[e.keyCode]= (e.type== 'keydown')&&(!j2ds.input.canceled);
@@ -450,6 +449,7 @@ j2ds.layers.add= function (_id, _index) {
  o.canvas.style.position= 'fixed';
  o.canvas.style.left= '0px';
  o.canvas.style.top= '0px';
+ o.canvas.id= _id;
  o.alpha= 1;
 
  o.fill= function (_color) {
@@ -667,6 +667,7 @@ j2ds.scene.clear= function(_color) {
 j2ds.scene.init= function(_w, _h, _func) {
 	j2ds.scene.layerName= 'sceneNode';
 	j2ds.scene.canvas= document.createElement('canvas');
+	j2ds.scene.canvas.id= 'sceneNode';
 	j2ds.scene.canvas.width= _w;
 	j2ds.scene.canvas.height= _h;
 	j2ds.scene.width= _w;
