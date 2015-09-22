@@ -679,7 +679,11 @@ j2ds.scene.setViewPosition = function(_pos) {
 
 //! Движение "камеры" вслед за объектом
 j2ds.scene.setViewFocus = function(_id, _d) {
- var _dX = _d.x || 0, _dY = _d.y || 0;
+ var _dX = 0, _dY = 0;
+ if (_d) {
+  _dX = _d.x;
+  _dY = _d.y;
+ }
 	j2ds.scene.view.x = _id.getPosition().x - Math.ceil(j2ds.scene.width/2)+_dX;
 	j2ds.scene.view.y = _id.getPosition().y - Math.ceil(j2ds.scene.height/2)+_dY;
 };

@@ -703,6 +703,8 @@ keyList() возвращает массив, в котором каждый эл
 
     var gettingLayer = a.getLayer();
 
+> Примечание: gettingLayer в данном случае содержит строку - 'background'
+
 ### Collision-box и Bounding-box
 
 По умолчанию все объекты имеют collision-box для определения пересечений, 
@@ -748,14 +750,6 @@ keyList() возвращает массив, в котором каждый эл
 
     a.setPosition(vec2df(50, 900));
 
-или:
-
-    a.pos.x= 50;
-    a.pos.y= 90;
-
-или:
-
-    a.pos = vec2df(50, 900);
 
 Чтобы двигать объект:
 
@@ -763,34 +757,13 @@ keyList() возвращает массив, в котором каждый эл
 
 или:
 
-
-    a.pos.y+= 1;
-
-или:
-
-    a.pos= vec2df(0, a.pos.y+1);
-
-или:
-
     a.setPosition(vec2df(0, a.getPosition().y+1));
-
-или:
-
-    a.move({x : 0, y : 1});
-
-или:
-
-    a.pos= {x : a.pos.x, y : a.pos.y + 1};
 
 
 Чтобы получить текущую позицию объекта:
 
     var pos = a.getPosition();
     console.log(pos.x, pos.y);
-
-или:
-
-    var pos = a.pos;
 
 ### Размеры
 
@@ -963,7 +936,7 @@ keyList() возвращает массив, в котором каждый эл
     var anim = imageMap.createAnimation(sourceX, sourceY, sourceW, sourceH, frameCount);
 
 > Примечание: Теперь такую анимацию можно передать в качестве аргумента для вывода на слой/сцену.
-
+> Примечание № 2: sourceX,Y,W,H не должны выходить за пределы изображения
 
 
 
