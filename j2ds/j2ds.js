@@ -402,6 +402,11 @@ j2ds.input.setCursorImage = function (_curImg) {
 	$tag('body')[0].style.cursor = 'url("'+_curImg+'"), auto';
 };
 
+j2ds.input.setVisible = function (_true) {
+	$tag('body')[0].style.cursor = _true ? 'auto' : 'none';
+};
+
+
 j2ds.input.init = function() {
  j2ds.window.focus();
  j2ds.window.ontouchstart = j2ds.input.onTouch;
