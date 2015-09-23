@@ -1162,7 +1162,7 @@ j2ds.scene.SpriteNode = function(_pos, _size, _animation) {
 j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.SpriteNode);
 
 j2ds.scene.SpriteNode.prototype.setFlip = function(_x, _y) {
- o.flip = {x:_x, y:_y};
+ this.flip = {x:_x, y:_y};
 };
 
 j2ds.scene.SpriteNode.prototype.draw = function(_speed) {

@@ -112,7 +112,7 @@ var collisionBlock= function () {
     } 
     createMap(maps[level], tiles);
     layers.layer('pause').setVisible(1);
-    scene.setEngine(Pause);
+    scene.setGameState(Pause);
     continue;
    }
    // если он не твердый, переходим к обработке след.

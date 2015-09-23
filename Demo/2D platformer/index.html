@@ -92,7 +92,7 @@ var Pause= function () {
 
 	if (input.isKeyPress('ESC')) {
 	 layers.layer('pause').setVisible(false);
-	 scene.setEngine(Game);
+	 scene.setGameState(Game);
 	}
 };
 
@@ -111,7 +111,7 @@ var StartMenu= function () {
  scene.drawText(vec2di(scene.width/2-125, 160), 'Нажми любую клавишу');
 
 	if (input.anyKey) {
-	 scene.setEngine(Game);
+	 scene.setGameState(Game);
 	}
 };
 
@@ -124,7 +124,7 @@ var Game= function () {
 
  if (input.isKeyPress('ESC')) {
   layers.layer('pause').setVisible(true);
-  scene.setEngine(Pause);
+  scene.setGameState(Pause);
  }
 
  scene.clear();
