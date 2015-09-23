@@ -698,7 +698,7 @@ j2ds.scene.viewMove = function(_pos) {
 };
 
 //! Очистка отрисованного предыдущего кадра сцены
-j2ds.scene.clear = function(_color) {
+j2ds.scene.clear = function() {
  if (!j2ds.scene.cancelClear) {
   j2ds.scene.context.clearRect(0, 0, j2ds.scene.width, j2ds.scene.width);
   j2ds.scene.cancelClear = false;
@@ -727,15 +727,6 @@ j2ds.scene.init = function(_w, _h) {
  j2ds.scene.canvas.style.left = '0px';
  j2ds.scene.canvas.style.zIndex = '1000';
 
- j2ds.scene.canvas.style.WebkitTransform = 'translate3d(0,0,0)';
- j2ds.scene.canvas.style.WebkitTransform = 'tranlsateZ(0)';
- j2ds.scene.canvas.style.WebkitTransform = 'scale3d(1,1,1)';
- j2ds.scene.canvas.style.WebkitTransform = 'scale3dZ(1)';
- j2ds.scene.canvas.style.transform = 'translate3d(0,0,0)';
-
- j2ds.scene.canvas.style.width = j2ds.scene.width+1+'px';
- j2ds.scene.canvas.style.height = j2ds.scene.height+1+'px';
-
  j2ds.scene.font = '14px sens-serif';
  j2ds.scene.fillStyle = '#000';
  j2ds.scene.strokeStyle = '#fff';
@@ -756,6 +747,8 @@ j2ds.scene.init = function(_w, _h) {
  };
 };
 
+
+
 j2ds.Object= {
  inherit : function (_parent, _child) {
   _child.prototype = Object.create(_parent.prototype);
@@ -766,7 +759,7 @@ j2ds.Object= {
 /*базовый объект*/
 
 j2ds.scene.addBaseNode= function (_pos, _size) {
-	return new j2ds.scene.BaseNode(_pos, _size);
+	return (new j2ds.scene.BaseNode(_pos, _size));
 };
 
 j2ds.scene.BaseNode = function(_pos, _size) {
@@ -967,7 +960,7 @@ j2ds.scene.BaseNode.prototype.drawBox = function() {
 /* окружность */
 
 j2ds.scene.addCircleNode= function (_pos, _radius, _color) {
-	return new j2ds.scene.CircleNode(_pos, _radius, _color);
+	return (new j2ds.scene.CircleNode(_pos, _radius, _color));
 };
 
 j2ds.scene.CircleNode = function(_pos, _radius, _color) {
@@ -1010,7 +1003,7 @@ j2ds.scene.CircleNode.prototype.draw = function() {
 /* линии */
 
 j2ds.scene.addLineNode= function (_pos, _points, _scale, _color, _width, _fill, _cFill) {
-	return new j2ds.scene.LineNode(_pos, _points, _scale, _color, _width, _fill, _cFill);
+	return (new j2ds.scene.LineNode(_pos, _points, _scale, _color, _width, _fill, _cFill));
 };
 
 j2ds.scene.LineNode = function(_pos, _points, _scale, _color, _width, _fill, _cFill) {
@@ -1068,7 +1061,7 @@ j2ds.scene.LineNode.prototype.draw = function() {
 /*прямоугольники*/
 
 j2ds.scene.addRectNode= function (_pos, _size, _color) {
-	return new j2ds.scene.RectNode(_pos, _size, _color);
+	return (new j2ds.scene.RectNode(_pos, _size, _color));
 };
 
 j2ds.scene.RectNode = function(_pos, _size, _color) {
@@ -1152,7 +1145,7 @@ j2ds.scene.createImageMap = function(path) {
 
 
 j2ds.scene.addSpriteNode= function (_pos, _size, _animation) {
-	return new j2ds.scene.SpriteNode(_pos, _size, _animation);
+	return (new j2ds.scene.SpriteNode(_pos, _size, _animation));
 };
 
 j2ds.scene.SpriteNode = function(_pos, _size, _animation) {

@@ -32,10 +32,8 @@ var fpsTest= function () {
 
  fps.start();
 
- // очистка сцены перед отрисовкой
  scene.clear();
 
- // если нажата ЛКМ или ТАЧ, создаем прямоугольники
  if (input.lClick) {
   for (var n= 0; n<50; n+=1) {
    var o= scene.addRectNode(input.getPosition(), vec2df(5, 5), j2ds.math.rndColor(100, 255, 1));   
@@ -44,6 +42,17 @@ var fpsTest= function () {
    nodesCount= nodes.length; 
   }
  }
+
+ if (input.rClick) {
+  for (var n= 0; n<50; n+=1) {
+   var o= scene.addSpriteNode({x:0, y:0}, vec2df(15, 20), anim);
+   o.setPosition(input.getPosition());   
+   o.dx= 6-Random(0, 12); o.dy= 6-Random(0, 12);
+   nodes.push(o);
+   nodesCount= nodes.length; 
+  }
+ }
+
 
  for (var i= 0; i < nodesCount; i+=1) {
   nodes[i].move(vec2df(nodes[i].dx*j2ds.dt, nodes[i].dy*j2ds.dt));
@@ -64,7 +73,5 @@ var fpsTest= function () {
 
 scene.start(fpsTest, 60);
 </script>
-
-<!--// end of HTML-doc //-->
  </body>
 </html>

@@ -20,7 +20,7 @@ var vec2di= j2ds.vector.vec2di;
 var Random= j2ds.math.random;
 var rndColor= j2ds.math.rndColor;
 
-scene.init(700, 400);
+scene.init(800, 400);
 
 layers.add('space', -1);
 layers.layer('space').fill('#212121');
@@ -36,11 +36,8 @@ layers.add('logo', 0);
 
 scene.fullScreen(true);
 
-var jLogoMap= scene.createImageMap('Base/j2Ds-Logo.png');
-
-var jAnim= jLogoMap.createAnimation(0, 0, 634, 314, 1);
-
-var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/3, scene.height/3), jAnim);
+var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/3, scene.height/3), 
+                               scene.createImageMap('Base/j2Ds-Logo.png').createAnimation(0, 0, 634, 314, 1));
 jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
 jLogo.setAlpha(0);
 jLogo.setLayer('logo');
