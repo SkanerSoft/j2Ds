@@ -905,8 +905,7 @@ j2ds.scene.BaseNode.prototype.isLookScene = function() {
 };
 
 j2ds.scene.BaseNode.prototype.turn = function(_angle) {
-	if (this.angle > 359) { this.angle = 0; }
-	if (this.angle < 0) { this.angle = 359; }
+	this.angle = (this.angle % 360);
 	this.angle+= _angle;
 };
 
