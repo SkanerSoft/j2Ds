@@ -1,4 +1,4 @@
-var createFpsManager= function () {
+var createFpsManager = function () {
  return {
 
   /* Свойства */

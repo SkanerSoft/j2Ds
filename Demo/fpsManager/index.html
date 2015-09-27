@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script type="text/javascript" src="../../j2ds/j2ds.js"></script>
   <script type="text/javascript" src="../../j2ds/fps.js"></script>
-  <title>html5 page</title>
+  <title>FPS Test Example</title>
  </head>
 
  <body>
@@ -23,9 +23,11 @@ var nodes= [];
 
 var fps= createFpsManager();
 
-var imageMap = scene.createImageMap('img/map.png');
+var imageMap = scene.texture.loadImageMap('img/map.png');
 
-var anim= imageMap.createAnimation(6, 55, 47, 41, 1);
+var anim= imageMap.insertAnimation(6, 55, 47, 41, 1);
+
+var text = scene.addTextNode(vec2df(10, 10), 'sdsd', 50, 'black');
 
 // объявление игровой функции
 var fpsTest= function () {
@@ -37,7 +39,7 @@ var fpsTest= function () {
  if (input.lClick) {
   for (var n= 0; n<50; n+=1) {
    var o= scene.addRectNode(input.getPosition(), vec2df(5, 5), j2ds.math.rndColor(100, 255, 1));   
-   o.dx= 6-Random(0, 12); o.dy= 6-Random(0, 12);
+   o.dx= Random(-10, 10); o.dy= Random(-10, 10);
    nodes.push(o);
    nodesCount= nodes.length; 
   }
@@ -47,12 +49,11 @@ var fpsTest= function () {
   for (var n= 0; n<50; n+=1) {
    var o= scene.addSpriteNode({x:0, y:0}, vec2df(15, 20), anim);
    o.setPosition(input.getPosition());   
-   o.dx= 6-Random(0, 12); o.dy= 6-Random(0, 12);
+   o.dx= Random(-10, 10); o.dy= Random(-10, 10);
    nodes.push(o);
    nodesCount= nodes.length; 
   }
  }
-
 
  for (var i= 0; i < nodesCount; i+=1) {
   nodes[i].move(vec2df(nodes[i].dx*j2ds.dt, nodes[i].dy*j2ds.dt));
@@ -62,16 +63,15 @@ var fpsTest= function () {
   if (nodes[i].isCollisionScene().y) nodes[i].dy*= (-1);
 
  } 
-
- scene.drawTextOpt(vec2df(10, 10), 'Прямоугольники: '+ nodesCount, 'bold 50px Arial', 'black', 'white', 2);
   
  fps.end();
- scene.drawTextOpt(vec2df(10, 70), 'FPS: '+ fps.getFPS(), 'bold 50px Arial', 'black', 'white', 2);
  
+ text.drawSimpleText('Прямоугольники: '+ nodesCount + '\nFPS: '+ fps.getFPS());
+  
 };
 
 
-scene.start(fpsTest, 60);
+scene.start(fpsTest, 120);
 </script>
  </body>
 </html>

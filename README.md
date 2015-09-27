@@ -44,6 +44,7 @@ youtube: [youtube.com/skanersoft](https://youtube.com/SkanerSoft?sub_confirmatio
 1. [Прямоугольник](#addRectNode)
 1. [Окружность](#addCircleNode)
 1. [Линия](#addLineNode)
+1. [Текст](#addTextNode)
 1. [Спрайт-карта и анимация](#createImageMap)
 1. [Анимированные объекты](#addSpriteNode)
 1. [События](#events)
@@ -105,7 +106,12 @@ youtube: [youtube.com/skanersoft](https://youtube.com/SkanerSoft?sub_confirmatio
 
 Для Рандомизации к примеру от -15 до 15:
 
-    var num = Random(-15, 15);
+    var num = Random(-15, 15 [, notZero]);
+
+В случае, когда диапазон имеет отрицательные элементы, вы можете указать третий параметр как true, который не позволит функции
+вернуть 0, если значение 0 вам не требуется.
+
+
 
 Есть возможность получить рандомный цвет стандартными средствами:
 
@@ -259,8 +265,8 @@ var Game = function () {
  // Очищаем сцену
  scene.clear(); 
  
- // Рисуем текст черным цветом в координатах 50 по x и 100 по y
- scene.drawText(vec2di(50, 100), 'Пример игрового приложения', 'black');
+ /* Вся игровая логика происходит тут */
+ 
 };
 
 // После описания игрового состояния, оно не будет выполняться, пока игра не будет запущена.
@@ -372,45 +378,6 @@ scene.start(Game, 30); // Второй параметр - FPS
 > Примечание: если вы хотите заливать сцену одним фоном, оптимальнее будет использовать для этого отдельный слой для заливки.
 Если же нужно заливать именно сцену - то команду заливки нужно использовать либо после команды scene.clear() либо вместо нее.
 
-### Вывод текста
-Вывод текста:
-
-    var pos = vec2df(20, 20), // 20 на 20 пикселей
-        text = 'Привет, мир!',
-        color = 'red';
-    
-    scene.drawText(pos, text, color);
-
-можно так же все указать прямо в функции:
-
-    scene.drawText(vec2df(20, 20), 'Привет, мир!', 'red');
-
-результат будет аналогичен.
-
-Так же есть расширенная функция вывода текста:
-
-    var pos = vec2df(20, 50),     // Позиция
-        text = 'Привет, мир!',    // Текст
-        font = 'bold 20px Arial', // Шрифт CSS
-        color = 'green',          // Цвет текста
-        colorLine = 'ywllow',     // Цвет обводки
-        widthLine = 2;            // Толщина обводки
-
-    scene.drawTextOpt(pos, text, font, color, colorLine, widthLine);
-
-    
-### Вывод изображения
-Если требуется вывести на сцену изображение (не объект!), можете использовать команду:
-
-    var pos = vec2df(10, 10),  // Позиция
-        size = vec2df(50, 50), // Размер изображения
-        frame = 1;             // Нужный кадр анимации
-
-    scene.drawImage(pos, size, anim, frame);
-
-> Примечание: об объекте '[anim](#addSpriteNode-anim)' вы узнаете из раздела об [изображениях](#createImageMap)
-
-
 
 ## <a name="layers"></a> Слои (Layers)
 
@@ -438,29 +405,22 @@ scene.start(Game, 30); // Второй параметр - FPS
 
     layers.layer('background').метод
 
+Либо можно завести переменную для быстрого доступа:
+
+    var myLayer = layers.add('background', -1);
+
+И затем доступ можно осуществлять как первым методом, так и:
+
+    myLayer.метод()
+
+
+
+
 ### Заливка слоя
 
 Для заливки слоя одним цветом:
 
     layers.layer('background').fill('blue');
-
-Для заливки линейным градинетом:
-
-    var colors = ['black', 'white', 'yellow'];
-
-    layers.layer('background').fillGradientL(colors [, isHorizontal]);
-
-, где isHorizontal - необязательный аргумент. Если true - завилвка будет горизонтальная
-
-
-Для заливки радиальным градиентом:
-
-    var pos1 = vec2df(15, 15),
-        pos2 = vec2df(20, 20),
-        radius1 = 20,
-        radius2 = 60,
-        colors = ['black', 'white'];
-    layers.layer('background').fillGradientR(pos1, redius1, pos2, raduis2, colors);
 
 ### Скрыть/показать слой
 
@@ -490,11 +450,32 @@ scene.start(Game, 30); // Второй параметр - FPS
 
 Для соев так же актуальны следующие методы:
 
-    layers.layer('background').drawText(pos, text, color);
-                              .drawImage(pos, size, anim, frame);
-                              .clear();
+    layers.layer('background').clear();
                               .clearNode(idNode);
                               .clearRect(pos, size);
+
+
+Вы так же всегда имеете доступ к контексту слоя посредством функции onContext:
+
+    layers.layer('background').onContext(function(context){
+     context.fillStyle = 'black';
+     context.fillRect(0, 0, 25, 25); // нарисует черный квадрат
+    });
+
+
+Пример заливки слоя градиентом:
+
+    layers.add('back', -1);
+    layers.layer('back').onContext(function (context) {
+     j2ds.scene.texture.templates.gradientL(context, 
+                                            vec2df(scene.width, scene.height), 
+                                            ['black', 'rgba(0,0,0,0)', 'black']);
+    });
+
+
+> Примечание: j2ds.scene.texture.templates.gradientL(context, vec2df(width, height), colors [, izHorizontal]) - это функция
+из набора [шаблонов](#texture-templates) создания текстур.
+
 
 ### Удаление слоя
 
@@ -652,7 +633,7 @@ keyList() возвращает массив, в котором каждый эл
 Для определения касания, используются те же методы, что и для мыши:
 
     if (input.lClick) {
-     scene.drawText(vec2df(10, 10), 'Касание!', 'red');
+     concole.log('Касание');
     }
 
 Позиция прикосновения рассчитывается аналогично через input,getPosition и input.
@@ -849,7 +830,7 @@ keyList() возвращает массив, в котором каждый эл
 
 ## <a name="addRectNode"></a> Прямоугольник
 
-Прямоугольник - это потомoк объекта [BaseNode](#addBaseNode), поэтому ему доступны все его свойства и методы.
+Наследует: [BaseNode](#addBaseNode)
 
 Для создания прямоугольника:
 
@@ -869,6 +850,8 @@ keyList() возвращает массив, в котором каждый эл
 
 
 ## <a name="addCircleNode"></a> Окружность
+
+Наследует: [BaseNode](#addBaseNode)
 
 Окружность - это потомoк объекта [BaseNode](#addBaseNode), поэтому ему доступны все его свойства и методы.
 
@@ -892,6 +875,8 @@ keyList() возвращает массив, в котором каждый эл
 
 ## <a name="addLineNode"></a> Линии
 
+Наследует: [BaseNode](#addBaseNode)
+
 В j2Ds есть возможность создавать объекты из линий:
 
     var pos = vec2df(50, 50), // Позиция
@@ -914,6 +899,48 @@ keyList() возвращает массив, в котором каждый эл
 
 
 
+## <a name="addTextNode"></a> Текст
+
+Наследует: [BaseNode](#addBaseNode)
+
+Если требуется вывести текст в вашей игре, вы можете создать соответствующий объект TextNode:
+
+    var pos = vec2df(50, 50), // Позиция
+        text = 'Привет Мир!\nЭто будет уже с новой строки\nИ это тоже.',
+        size = 15, // размер текста
+        color = 'red',
+        family = 'sans-serif';
+    var a = scene.addTextNode(pos, text, size, color, family);
+
+
+Если текст требуется изменить, есть команда:
+
+    a.setText('Новый текст');
+
+Для получения текста:
+
+    a.getText(); // 'Новый текст'
+
+Для задания нового размера текста:
+
+    a.setSize(18);
+
+Чтобы узнать размер:
+
+    a.getSize(); // 18
+
+Для вывода текста:
+
+    a.draw();
+
+Если вам требуется выводить динамический текст, который часто изменяется и его не требуется обрабатывать (не важен размер или контейнер):
+
+    a.drawSimpleText('Пример вывода простого текста\nНовая строка поддерживается.' [, color, vec2df(0, 0)]);
+
+, где [, color, vec2df(0, 0)] - необязательные параметры для нового цвета и новой позиции. 
+
+> Примечание: drawSimpleText() не изменяет стиль текста и его позицию, а так же сам текст и его размер.
+
 ## <a name="createImageMap"></a> Спрайт-карта
 
 
@@ -923,11 +950,42 @@ keyList() возвращает массив, в котором каждый эл
 
 Формат такой спрайт-карты имеет только одно обязательное условия: *кадры должны располагаться горизонтально!*
 
-Для создания спрайт-карты есть специальная команда:
+j2Ds позволяет вам загружать такие спрайт карты через объект scene.texture.
 
-    var imageMap = scene.createImageMap('my_folder/my_image.png');
+Для загрузки спрайт-карты есть специальная команда:
+
+    var imageMap = scene.texture.loadImageMap('my_folder/my_image.png');
 
 Этой командой изображение станет доступным для обработки внутри движка.
+
+
+Кроме того, вы можете низкоуровневым способом создавать свои собственные спрайт-карты средствами движка. Для этого есть команда:
+
+    var width = 400,
+        height = 100;
+    
+    var createImg = function(context) {
+     for (var i = 0; i < 400; i+=100) {
+      context.fillStyle = j2ds.math.rndColor(100, 250, 1);
+      context.fillRect(i, 0, i+100, 100);
+     }
+    }
+
+    var imageMap = scene.texture.createImageMap(width, height, createImg);
+
+
+Ну или же передать все параметры непосредственно в функцию:
+
+
+    мar imageMap = scene.texture.createImageMap(400, 100, function(context) {
+     for (var i = 0; i < 400; i+=100) {
+      context.fillStyle = j2ds.math.rndColor(100, 250, 1);
+      context.fillRect(i, 0, i+100, 100);
+     }
+    });
+
+Функция "конструктор" для текстуры принимает лишь один параметр - ссылку на контекст новой текстуры и сама же его воссоздает.
+
 
 Но сам по себе объект imageMap ни с чем не может взаимодействовать, это просто подготовленный объект для взятия из него
 необходимых спрайтов или анимаций. Чтобы "извлечь" анимацию или картинку из него, есть команда:
@@ -941,7 +999,7 @@ keyList() возвращает массив, в котором каждый эл
         frameCount = 1; // Количеество кадров, если это анимация
     
     // Создание анимации
-    var anim = imageMap.createAnimation(sourceX, sourceY, sourceW, sourceH, frameCount);
+    var anim = imageMap.insertAnimation(sourceX, sourceY, sourceW, sourceH, frameCount);
 
 > Примечание: Теперь такую анимацию можно передать в качестве аргумента для вывода на слой/сцену.
 > Примечание № 2: sourceX,Y,W,H не должны выходить за пределы изображения
@@ -951,10 +1009,10 @@ keyList() возвращает массив, в котором каждый эл
 
 ## <a name="addSpriteNode"></a> Анимированные объекты
 
+Наследует: [BaseNode](#addBaseNode)
+
 Чтобы игра была насыщенней, в j2Ds есть возможность использовать не только прямоугольники и круги, вы так же можете
 использовать изображения из спрайт-карт.
-
-Спрайт - потомок [BaseNode](#addBaseNode), поэтому все его методы тут так же доступны.
 
 Для создания спрайта существует команда:
 
@@ -963,7 +1021,7 @@ keyList() возвращает массив, в котором каждый эл
 
     var a = scene.addSpriteNode(pos, size, anim);
 
-, где [anim](#addSpriteNode-anim) - анимация
+, где [anim](#addSpriteNode-anim) - анимация на основе спрайт-карты
 
 Для отрисовки спрайта есть несколько методов:
 
@@ -1044,6 +1102,26 @@ keyList() возвращает массив, в котором каждый эл
 
 За один вызов функции-обработчика передается один символ. Поэтому для ввода желательно использовать какоу-нибудь
 буфер или переменную.
+
+
+
+
+## <a name="texture-templates"></a> Шаблоны текстурирования
+
+В j2Ds вы можете вместо загрузки ткстуры из файла создавать ее "на лету" командой createImageMap, или же закрасить слой по шаблону
+командой onContext, которые принимают лишь один аргумент - это контекст для отрисовки. Внутри этих функций вы можете использовать шаблоны 
+текстурирования.
+
+Начинается любой шаблон командой j2ds.scene.texture.templates.названиеШаблона, где "названиеШаблона" - это функция текстурирования:
+
+* j2ds.scene.texture.templates.ellips(context, vec2df(width, height), color) - Рисует эллипс
+* j2ds.scene.texture.templates.fillRect(context, vec2df(width, height), color) - Рисует прямоугольник закрашенный
+* j2ds.scene.texture.templates.strokeRect(context, vec2df(width, height), color, lineWidth) - Рисует пустой прямоугольник
+* j2ds.scene.texture.templates.gradientL(context, vec2df(width, height), colors [, izHorizontal]) - Рисует линейный градиент, colors - массив цветов
+* j2ds.scene.texture.templates.gradientR(context, vec2df(width, height), vec2df(x1, y1), r1, vec2df(x2, y2), r2, colors) - Рисует радиальный градиент, colors - массив цветов
+
+
+
 
 
 ## <a name="createFpsManager"></a> Измерение FPS в игре

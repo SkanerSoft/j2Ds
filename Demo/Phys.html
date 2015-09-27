@@ -4,7 +4,7 @@
   <script type="text/javascript" src="../j2ds/j2ds.js"></script>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8;" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />  
-  <title>Demo J2ds. Физика</title>
+  <title>Phys Example</title>
  </head>
 
 <body>
@@ -33,7 +33,12 @@ a.grav= 1; a.speed= 0;
 b= scene.addCircleNode(vec2df(300, 250), 20, 'yellow');
 b.grav= 1; b.speed= 0;
 
-a.draw();
+
+var text = scene.addTextNode(vec2df(10, 10),
+                           'Управление - ПКМ / ЛКМ',
+                           20,
+                           'blue');
+
 
 // Описываем игровое состояние Game
 function Game() {
@@ -57,7 +62,7 @@ function Game() {
 
  phys2(a, b);
 
- scene.drawText(vec2df(10, 10), 'Управление: ЛКМ / ПКМ', 'black');
+ text.draw();
 
 }
 

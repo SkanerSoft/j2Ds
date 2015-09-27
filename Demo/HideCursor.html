@@ -22,7 +22,7 @@ j2ds.layers.layer('back').fill('#ceeeee');
 
 var cell = scene.addSpriteNode(vec2df(0, 0), 
                                vec2df(30, 30), 
-                               scene.createImageMap('Demo/Base/cell.png').createAnimation(0, 0, 30, 30, 1));
+                               scene.texture.loadImageMap('Base/cell.png').insertAnimation(0, 0, 30, 30, 1));
 
 function Game() {
 

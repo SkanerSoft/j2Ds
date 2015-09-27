@@ -17,9 +17,12 @@ var $tag = function (_id) {
  return document.getElementsByTagName(_id);
 };
 
-var goURL = function (_url) {
+var $goURL = function (_url) {
 	document.location.href = _url;
 };
+
+
+
 
 
 /*------------------ 2D движок --------------------*/
@@ -37,8 +40,21 @@ var j2ds = {
  scripts : {},
  root : 'j2ds/',
  countDrawNodes : 0,
- window : window
+ window : window,
+ getInfo : false
 };
+
+
+j2ds.getInfo = function () {
+	return ({
+	 'name' : 'j2Ds',
+	 'version' : '0.0.3',
+	 'site' : 'http://skanersoft.ru',
+	 'youtube' : 'https://youtube.com/SkanerSoft',
+	 'info' : 'j2Ds - HTML5 2D Game Engine'
+	});
+};
+
 
 
 
@@ -59,8 +75,14 @@ j2ds.math.rndColor = function (_min, _max, _alpha) {
  return ( 'rgba('+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+_alpha+')' );
 };
 
-j2ds.math.random = function (_min, _max) {
- return (Math.floor(Math.random() * (_max - _min + 1) + _min));
+j2ds.math.random = function (_min, _max, _notZero) {
+ var rnd = (Math.floor(Math.random() * (_max - _min + 1) + _min));
+ if (_notZero && rnd == 0) {
+  rnd = j2ds.math.random(_min, _max, _notZero);
+  return (rnd);
+ } else {
+  return (rnd);
+ }
 };
 
 j2ds.math.rad = function (_num) {
@@ -155,6 +177,7 @@ var nextJ2dsGameStep = (function() {
 
 
 
+
 /*----------------- INPUT -------------------*/
 j2ds.input = {
  /* Переменные */
@@ -175,7 +198,8 @@ j2ds.input = {
  body : false,
  anyKey : false,
  writeMode : false,
- displayCursor : ''
+ displayCursor : '',
+ visible : true
 };
 
 // Константы клавиш
@@ -300,7 +324,7 @@ j2ds.input.keyEvent = function(e) {
   if (!j2ds.input.writeMode) {
    e.preventDefault();
   } else {
-   j2ds.onEvent('writeMode:keyPress', _char);
+  	j2ds.onEvent('writeMode:keyPress', '');
   }
  } else if (e.type == 'keyup') {
   if (j2ds.input.keyPressed[e.keyCode]) {
@@ -405,6 +429,7 @@ j2ds.input.setCursorImage = function (_curImg) {
 };
 
 j2ds.input.setVisible = function (_true) {
+ j2ds.input.visible = _true;
  if (!_true) {
   j2ds.input.displayCursor = $tag('body')[0].style.cursor;
   $tag('body')[0].style.cursor = 'none';
@@ -431,7 +456,12 @@ j2ds.input.init = function() {
 };
 
 
-// События
+
+
+
+
+
+/*--------------- События ----------------*/
 j2ds.events = {
  'scene:beforeInit' : false,
  'scene:afterInit' : false,
@@ -454,7 +484,10 @@ j2ds.onEvent = function (_eventType, _args) {
 };
 
 
-/* слои */
+
+
+
+/*---------------- слои -------------------*/
 
 j2ds.layers = {};
 j2ds.layers.list = {};
@@ -477,12 +510,18 @@ j2ds.layers.add = function (_id, _index) {
 	o.width = j2ds.scene.width;
 	o.height = j2ds.scene.height;
 	o.context = o.canvas.getContext('2d');
+	o.context.shadowColor = 'rgba(0,0,0,0)';
  o.canvas.style.zIndex = 1000+_index;
  o.canvas.style.position = 'fixed';
  o.canvas.style.left = '0px';
  o.canvas.style.top = '0px';
  o.canvas.id = _id;
  o.alpha = 1;
+
+ o.onContext = function (_func) {
+ 	_func(this.context);
+ };
+
 
  o.fill = function (_color) {
  	this.context.fillStyle = _color;
@@ -497,30 +536,6 @@ j2ds.layers.add = function (_id, _index) {
  o.getAlpha = function () {
   return (this.alpha);
  };
-
- o.fillGradientL = function (_colors, _isHorizontal) {
- 	var gradient = this.context.createLinearGradient(0, 0, this.width, 0);
- 	var step = 1 / _colors.length;
-  if (!_isHorizontal) {
-   gradient = this.context.createLinearGradient(0, 0, 0, this.height);
-  }
-  for (var i = step/2, j = 0; j < _colors.length; j+=1, i+=step) {
-   gradient.addColorStop(i, _colors[j]);
-  }
-  this.context.fillStyle = gradient;
-  this.context.fillRect(0, 0, this.width, this.height);
- };
-
- o.fillGradientR = function (_pos1, _r1, _pos2, _r2, _colors) {
- 	var gradient = this.context.createRadialGradient(_pos1.x, _pos1.y, _r1, _pos2.x, _pos2.y, _r2);
- 	var step = 1 / _colors.length;
-  for (var i = step/2, j = 0; j < _colors.length; j+=1, i+=step) {
-   gradient.addColorStop(i, _colors[j]);
-  }
-  this.context.fillStyle = gradient;
-  this.context.fillRect(0, 0, this.width, this.height);
- };
-
 
  o.setVisible = function (_visible) {
  	if (_visible) {
@@ -543,26 +558,6 @@ j2ds.layers.add = function (_id, _index) {
  	return j2ds.vector.vec2di(parseInt(this.canvas.style.left), parseInt(this.canvas.style.top));
  };
 
- o.drawText = function (_pos, _text, _color) {
-  if (_color) {
-   this.context.fillStyle = _color;
-  }
- 	this.context.fillText(_text, _pos.x, _pos.y);
- };
-
- o.drawImage = function (_pos, _size, _anim, _frame) {
-  _frame = _frame?(_frame-1):0;
-  	this.context.drawImage(
-  _anim.imageMap.img, _anim.sourceX+(_anim.sourceW*_frame), _anim.sourceY, _anim.sourceW, _anim.sourceH,
-  _pos.x, _pos.y, _size.x, _size.y);
- };
-
- o.setStyle = function (_fill, _stroke, _width) {
- 	this.context.fillStyle = _fill;
- 	this.context.strokeStyle = _stroke;
- 	this.context.lineWidth = _width;
- };
-
  o.clear = function () {
  	this.context.clearRect(0, 0, this.width, this.height);
  };
@@ -581,11 +576,13 @@ j2ds.layers.add = function (_id, _index) {
 	if (j2ds.ready) {
 	 document.body.appendChild(j2ds.layers.list[_id].canvas);
 	}
+
+ return (o);
 };
 
 
 
-/* сцена */
+/*----------------- сцена ---------------------*/
 
 j2ds.scene = {
  layerName : 'sceneNode'
@@ -610,68 +607,20 @@ j2ds.scene.start = function (_engine, _framelimit) {
 
 j2ds.scene.fullScreen = function(_true) {
  if (_true) {
-  var layer = j2ds.scene.canvas;
-  layer.style.width = j2ds.device().width+'px';
-  layer.style.height = j2ds.device().height+'px';
   for (var i in j2ds.layers.list)
   {
-   layer = j2ds.layers.list[i].canvas;
+   var layer = j2ds.layers.list[i].canvas;
    layer.style.width = j2ds.device().width+'px';
    layer.style.height = j2ds.device().height+'px';
   }
  } else {
-  var layer = j2ds.scene.canvas;
-  layer.style.width = j2ds.scene.width+1+'px';
-  layer.style.height = j2ds.scene.height+1+'px';
   for (var i in j2ds.layers.list)
   {
-   layer = j2ds.layers.list[i].canvas;
-   layer.style.width = j2ds.scene.width+1+'px';
-   layer.style.height = j2ds.scene.height+1+'px';
+   var layer = j2ds.layers.list[i].canvas;
+   layer.style.width = j2ds.scene.width+'px';
+   layer.style.height = j2ds.scene.height+'px';
   }
  }
-};
-
-// вывод текста
-j2ds.scene.drawText = function(_pos, _text, _color) {
- if (_color) {
-  j2ds.scene.context.fillStyle = _color;
- }
- j2ds.scene.context.fillText(_text, _pos.x, _pos.y);
-};
-
-j2ds.scene.fill = function (_color) {
- 	j2ds.scene.context.fillStyle = _color;
- 	j2ds.scene.context.fillRect(0, 0, j2ds.scene.width, j2ds.scene.height);
-};
-
-// вывод текста с параметрами
-j2ds.scene.drawTextOpt = function(_pos,
- _text, // Сам текст
- _font,   // [ Шрифт (CSS) ]
- _colorF, // [ Цвет текста ]
- _colorS, // [ Цвет обводки ]
- _lineWidth, // [ Толщина линий обводки ]
- _baseLine // Начало отсчета пикслей
- ) {
- j2ds.scene.context.textBaseline = _baseLine || 'top';
- if (_font) { j2ds.scene.context.font = _font; };
-
- if (_colorS) {
-  j2ds.scene.context.lineWidth = _lineWidth || 1;
-  j2ds.scene.context.strokeStyle = _colorS;
-  j2ds.scene.context.strokeText(_text, _pos.x, _pos.y);
- }
-
- j2ds.scene.context.fillStyle = _colorF || '#000';
- j2ds.scene.context.fillText(_text, _pos.x, _pos.y);
-};
-
-j2ds.scene.drawImage = function (_pos, _size, _anim, _frame) {
-  _frame = _frame?(_frame-1):0;
-  	this.context.drawImage(
-  _anim.imageMap.img, _anim.sourceX+(_anim.sourceW*_frame), _anim.sourceY, _anim.sourceW, _anim.sourceH,
-  _pos.x, _pos.y, _size.x, _size.y);
 };
 
 // Устанавливает позицию для камеры
@@ -705,6 +654,10 @@ j2ds.scene.clear = function() {
  }
 };
 
+j2ds.scene.onContext = function (_func) {
+ _func(j2ds.scene.context);
+};
+
 // инициализация сцены
 j2ds.scene.init = function(_w, _h) {
 
@@ -718,6 +671,7 @@ j2ds.scene.init = function(_w, _h) {
 	j2ds.scene.width = _w;
 	j2ds.scene.height = _h;
 	j2ds.scene.context = j2ds.scene.canvas.getContext('2d');
+	j2ds.scene.context.shadowColor = 'rgba(0,0,0,0)';
  j2ds.scene.alpha = 1;
 
  j2ds.layers.list['sceneNode'] = j2ds.scene;
@@ -742,13 +696,15 @@ j2ds.scene.init = function(_w, _h) {
  	for (var i in j2ds.layers.list) {
    document.body.appendChild(j2ds.layers.layer(i).canvas);
   }
-  j2ds.onEvent('dom:loaded');
   j2ds.ready = true;
+  j2ds.onEvent('dom:loaded');
  };
 };
 
 
 
+
+/*--------------- Объекты ----------------*/
 j2ds.Object= {
  inherit : function (_parent, _child) {
   _child.prototype = Object.create(_parent.prototype);
@@ -756,7 +712,9 @@ j2ds.Object= {
  }
 };
 
-/*базовый объект*/
+
+
+/*------------------ базовый объект -------------------*/
 
 j2ds.scene.addBaseNode= function (_pos, _size) {
 	return (new j2ds.scene.BaseNode(_pos, _size));
@@ -905,8 +863,7 @@ j2ds.scene.BaseNode.prototype.isLookScene = function() {
 };
 
 j2ds.scene.BaseNode.prototype.turn = function(_angle) {
-	if (this.angle > 359) { this.angle = 0; }
-	if (this.angle < 0) { this.angle = 359; }
+	this.angle = (this.angle % 360);
 	this.angle+= _angle;
 };
 
@@ -957,9 +914,149 @@ j2ds.scene.BaseNode.prototype.drawBox = function() {
 
 
 
-/* окружность */
 
-j2ds.scene.addCircleNode= function (_pos, _radius, _color) {
+
+
+
+/*------------------ текст --------------------*/
+
+
+j2ds.scene.addTextNode = function (_pos, _text, _sizePx, _color, _family) {
+	return (new j2ds.scene.TextNode(_pos, _text, _sizePx, _color, _family));
+};
+
+j2ds.scene.TextNode = function(_pos, _text, _sizePx, _color, _family) {
+
+ j2ds.scene.BaseNode.call(this, _pos, j2ds.vector.vec2df(0, 0)); 
+
+ /*Свойства*/
+
+ this.vAlign = 'top';
+ this.hAlign = 'left';
+ this.color = _color ? _color : 'black';
+
+ this.family = _family ? _family : 'sans-serif';
+ this.sizePx = _sizePx;
+
+ this.font = this.sizePx+'px '+ this.family;
+
+ this.fullText = _text;
+ this.maxWidth = 0;
+ this.lines = _text.split("\n");
+
+ j2ds.scene.context.font = this.font;
+
+ for (var i = 0, len = this.lines.length; i < len; i += 1) {
+  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ? 
+                                   j2ds.scene.context.measureText(this.lines[i]).width :
+                                   this.maxWidth);
+ }
+
+ this.size.x = this.maxWidth;
+ this.size.y = this.lines.length * this.sizePx;
+};
+
+j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.TextNode);
+
+j2ds.scene.TextNode.prototype.setSize = function (_sizePx) {
+ this.sizePx = _sizePx;
+ this.font = this.sizePx+'px '+ this.family;
+ j2ds.scene.context.font = this.font;
+
+ for (var i = 0, len = this.lines.length; i < len; i += 1) {
+  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ? 
+                                   j2ds.scene.context.measureText(this.lines[i]).width :
+                                   this.maxWidth);
+ }
+ this.size.x = this.maxWidth;
+ this.size.y = this.lines.length * this.sizePx;
+};
+
+j2ds.scene.TextNode.prototype.getSize = function () {
+	return (this.sizePx);
+};
+
+j2ds.scene.TextNode.prototype.drawSimpleText = function (_text, _color, _pos) {
+ var context = this.layer.context;
+ context.fillStyle = _color ? _color : this.color;
+ context.textAlign = this.hAlign;
+ context.textBaseline = this.vAlign;
+ context.font = this.font;
+
+ var lines = _text.split("\n");
+
+ var pos = _pos ? _pos : this.pos;
+
+ for (var i = 0, len = lines.length; i < len; i += 1) {
+  context.fillText(lines[i], pos.x, pos.y+this.sizePx*i);
+ }
+};
+
+j2ds.scene.TextNode.prototype.getText = function () {
+	return (this.fullText);
+};
+
+j2ds.scene.TextNode.prototype.setText = function (_text) {
+ this.fullText = _text;
+ this.maxWidth = 0;
+ this.lines = _text.split("\n");
+
+ j2ds.scene.context.font = this.font;
+
+ for (var i = 0, len = this.lines.length; i < len; i += 1) {
+  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ? 
+                                   j2ds.scene.context.measureText(this.lines[i]).width :
+                                   this.maxWidth);
+ }
+ this.size.x = this.maxWidth;
+ this.size.y = this.lines.length * this.sizePx;
+};
+
+j2ds.scene.TextNode.prototype.draw = function() {
+ var context = this.layer.context;
+ if (this.visible && this.isLookScene()) {
+  if (this.alpha != 1) {
+   var tmpAlpha = context.globalAlpha;
+   context.globalAlpha = this.alpha;
+  }
+
+  if (this.angle)
+  {
+   context.save();
+   context.translate(this.getPosition().x-j2ds.scene.view.x, this.getPosition().y-j2ds.scene.view.y);
+   context.rotate(j2ds.math.rad(this.angle));
+   context.translate(-(this.getPosition().x-j2ds.scene.view.x), -(this.getPosition().y-j2ds.scene.view.y));
+  }
+
+  context.fillStyle = this.color;
+  context.textAlign = this.hAlign;
+  context.textBaseline = this.vAlign;
+  context.font = this.font;
+
+  for (var i = 0, len = this.lines.length; i < len; i += 1) {
+   context.fillText(this.lines[i], this.pos.x, this.pos.y+this.sizePx*i);
+  }
+
+  if (this.angle) { context.restore(); }
+
+  if (this.alpha != 1) {
+   context.globalAlpha = tmpAlpha;
+  }
+  j2ds.countDrawNodes += 1;
+ }
+};
+
+
+
+
+
+
+
+
+
+/*------------------ окружность --------------------*/
+
+j2ds.scene.addCircleNode = function (_pos, _radius, _color) {
 	return (new j2ds.scene.CircleNode(_pos, _radius, _color));
 };
 
@@ -994,15 +1091,21 @@ j2ds.scene.CircleNode.prototype.draw = function() {
    context.globalAlpha = tmpAlpha;
   }
 
-  j2ds.countDrawNodes+= 1;
+  j2ds.countDrawNodes += 1;
  }
 };
 
 
 
-/* линии */
 
-j2ds.scene.addLineNode= function (_pos, _points, _scale, _color, _width, _fill, _cFill) {
+
+
+
+
+
+/*-------------------- линии ----------------------*/
+
+j2ds.scene.addLineNode = function (_pos, _points, _scale, _color, _width, _fill, _cFill) {
 	return (new j2ds.scene.LineNode(_pos, _points, _scale, _color, _width, _fill, _cFill));
 };
 
@@ -1053,14 +1156,21 @@ j2ds.scene.LineNode.prototype.draw = function() {
    context.globalAlpha = tmpAlpha;
   }
 
-  j2ds.countDrawNodes+= 1;
+  j2ds.countDrawNodes += 1;
  }
 };
 
 
-/*прямоугольники*/
 
-j2ds.scene.addRectNode= function (_pos, _size, _color) {
+
+
+
+
+
+
+/*--------------------- прямоугольники ------------------------*/
+
+j2ds.scene.addRectNode = function (_pos, _size, _color) {
 	return (new j2ds.scene.RectNode(_pos, _size, _color));
 };
 
@@ -1103,12 +1213,57 @@ j2ds.scene.RectNode.prototype.draw = function() {
    context.globalAlpha = tmpAlpha;
   }
 
-  j2ds.countDrawNodes+= 1;
+  j2ds.countDrawNodes += 1;
  }
 };
 
-/* изображения */
-j2ds.scene.createImageMap = function(path) {
+
+
+
+
+
+
+
+
+/*--------------------- изображения ---------------------*/
+
+j2ds.scene.texture = {
+ loadImageMap    : false,   // загрузка из файла
+ createImageMap : false,    // создание анимации напрямую, минуя imageMap
+ templates : {}
+};
+
+j2ds.scene.texture.createImageMap = function(_w, _h, _func) {
+ var o = {
+  img : null,
+  width : _w,
+  height : _h
+ };
+
+ o.img = document.createElement('canvas');
+ o.context = o.img.getContext('2d');
+ o.img.width = o.width;
+ o.img.height = o.height;
+
+ _func(o.context);
+
+ /* Функции */
+ o.insertAnimation = function(_sourceX, _sourceY, _sourceW, _sourceH, _frameCount) {
+  var o = {
+   imageMap : this,
+   sourceX : _sourceX,
+   sourceY : _sourceY,
+   sourceW : _sourceW,
+   sourceH : _sourceH,
+   frameCount : _frameCount-1
+  };
+  return (o);
+ };
+
+ return (o);
+};
+
+j2ds.scene.texture.loadImageMap = function(path) {
  var o = {
   img : null,
   width : 0,
@@ -1127,7 +1282,7 @@ j2ds.scene.createImageMap = function(path) {
  /* Свойства */
 
  /* Функции */
- o.createAnimation = function(_sourceX, _sourceY, _sourceW, _sourceH, _frameCount) {
+ o.insertAnimation = function(_sourceX, _sourceY, _sourceW, _sourceH, _frameCount) {
   var o = {
    imageMap : this,
    sourceX : _sourceX,
@@ -1136,15 +1291,14 @@ j2ds.scene.createImageMap = function(path) {
    sourceH : _sourceH,
    frameCount : _frameCount-1
   };
-
   return (o);
- }
+ };
 
  return (o);
 };
 
 
-j2ds.scene.addSpriteNode= function (_pos, _size, _animation) {
+j2ds.scene.addSpriteNode = function (_pos, _size, _animation) {
 	return (new j2ds.scene.SpriteNode(_pos, _size, _animation));
 };
 
@@ -1218,7 +1372,7 @@ j2ds.scene.SpriteNode.prototype.drawFrame = function(_frame) {
    context.globalAlpha = tmpAlpha;
   }
 
-  j2ds.countDrawNodes+= 1;
+  j2ds.countDrawNodes += 1;
  }
 };
 
@@ -1230,16 +1384,45 @@ j2ds.scene.SpriteNode.prototype.setAnimation = function(_id) {
 
 
 
+/*----------- шаблоны текстур -------------*/
 
+j2ds.scene.texture.templates.ellips = function (_context, _size, _color) {
+	
+};
 
+j2ds.scene.texture.templates.fillRect = function (_context, _size, _color) {
+ _context.fillStyle = _color;
+ _context.fillRect(0, 0, _size.x, _size.y);
+};
 
+j2ds.scene.texture.templates.strokeRect = function (_context, _size, _color, _lineWidth) {
+ _context.strokeStyle = _color;
+ _context.lineWidth = _lineWidth;
+ _context.strokeRect(0, 0, _size.x, _size.y);
+};
 
+j2ds.scene.texture.templates.gradientL = function (_context, _size, _colors, _izHorizontal) {
+ var gradient = _context.createLinearGradient(0, 0, _size.x, 0);
+ var step = 1 / _colors.length;
+ if (!_izHorizontal) {
+  gradient = _context.createLinearGradient(0, 0, 0, _size.y);
+ }
+ for (var i = step/2, j = 0; j < _colors.length; j+=1, i+=step) {
+  gradient.addColorStop(i, _colors[j]);
+ }
+ _context.fillStyle = gradient;
+ _context.fillRect(0, 0, _size.x, _size.y);
+};
 
-
-
-
-
-
+j2ds.scene.texture.templates.gradientR = function (_context, _size, _pos1, _r1, _pos2, _r2, _colors) {
+	var gradient = _context.createRadialGradient(_pos1.x, _pos1.y, _r1, _pos2.x, _pos2.y, _r2);
+	var step = 1 / _colors.length;
+ for (var i = step/2, j = 0; j < _colors.length; j+=1, i+=step) {
+  gradient.addColorStop(i, _colors[j]);
+ }
+ _context.fillStyle = gradient;
+ _context.fillRect(0, 0, _size.x, _size.y);
+};
 
 
 

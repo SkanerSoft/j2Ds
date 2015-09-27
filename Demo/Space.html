@@ -3,7 +3,7 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script type="text/javascript" src="../j2ds/j2ds.js"></script>
-  <title>html5 page</title>
+  <title>Space Example</title>
  </head>
  <body>
 
@@ -12,9 +12,7 @@
 var dvc= j2ds.device();
 var scene= j2ds.scene;
 var input= j2ds.input;
-
 var layers= scene.layers;
-
 var vec2df= j2ds.vector.vec2df;
 var vec2di= j2ds.vector.vec2di;
 var Random= j2ds.math.random;
@@ -24,12 +22,36 @@ scene.init(800, 400);
 
 layers.add('space', -1);
 layers.layer('space').fill('#212121');
-layers.layer('space').fillGradientR(vec2df(scene.width/2, scene.height/2), 0,
-                                   vec2df(scene.width/2, scene.height/2), scene.height/3,
-                                   ['white', rndColor(220, 255, 1), 'rgba(0,0,0,0)']);
+layers.layer('space').onContext(function (context) {
+ j2ds.scene.texture.templates.gradientR(context,
+                                        vec2df(scene.width, scene.height),
+                                        vec2df(scene.width/2, scene.height/2), 0,
+                                        vec2df(scene.width/2, scene.height/2), scene.height/3,
+                                        ['white', rndColor(220, 255, 1), 'rgba(0,0,0,0)']);
+});
 
 layers.add('back', 1);
-layers.layer('back').fillGradientL(['black', 'rgba(0,0,0,0)', 'black']);
+layers.layer('back').onContext(function (context) {
+	j2ds.scene.texture.templates.gradientL(context, 
+	                                       vec2df(scene.width, scene.height), 
+	                                       ['black', 'rgba(0,0,0,0)', 'rgba(0,0,0,0)', 'black']);
+
+ j2ds.scene.texture.templates.gradientR(context,
+                                        vec2df(scene.width, scene.height),
+                                        vec2df(scene.width/2, scene.height/2), 0,
+                                        vec2df(scene.width/2, scene.height/2), scene.width ,
+                                        [
+                                         'rgba(0,0,0,0)',
+                                         'rgba(0,0,0,0)',
+                                         'rgba(0,0,0,0)',
+                                         'rgba(255,255,255,0.3)',
+                                         'rgba(0,0,0,0)',
+                                         'rgba(255,255,255,0)',
+                                         'rgba(0,0,0,0)',
+                                         'rgba(0,0,0,0)'
+                                        ]);
+
+});
 
 layers.add('logo', 0);
 //layers.layer('logo').setAlpha(0.4);
@@ -37,7 +59,7 @@ layers.add('logo', 0);
 scene.fullScreen(true);
 
 var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/3, scene.height/3), 
-                               scene.createImageMap('Base/j2Ds-Logo.png').createAnimation(0, 0, 634, 314, 1));
+                               scene.texture.loadImageMap('Base/j2Ds-Logo.png').insertAnimation(0, 0, 634, 314, 1));
 jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
 jLogo.setAlpha(0);
 jLogo.setLayer('logo');

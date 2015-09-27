@@ -3,7 +3,7 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <script type="text/javascript" src="../j2ds/j2ds.js"></script>
-  <title>Пример игрового кода</title>
+  <title>Input Text key-press-mode</title>
  </head>
  <body>
 
@@ -83,31 +83,38 @@ scene.init(640, 380);
 
 lr.add('back', -1);
 
-lr.layer('back').fill(j2ds.math.rndColor(220, 255, 1));
-
 for (var i= 0, iStep= scene.width/100; i < scene.width; i+=iStep) {
  for (var j= 0, jStep= scene.height/100; j < scene.height; j+=jStep) {
-  lr.layer('back').context.fillStyle= j2ds.math.rndColor(220, 255, 1);
+  lr.layer('back').context.fillStyle= j2ds.math.rndColor(180, 255, 1);
   lr.layer('back').context.fillRect(i, j, iStep, jStep);
  }  
 }
 
-var a= scene.addRectNode(vec2df(j2ds.math.random(20, scene.width-20), j2ds.math.random(20, scene.height-20)), vec2df(10, 10), j2ds.math.rndColor(0, 100, 1));
+var width = 100,
+    height = 100;
+
+var imageMap = scene.texture.createImageMap(width, height, function (context) {
+ j2ds.scene.texture.templates.gradientR(context,
+                                        vec2df(width, height),
+                                        vec2df(width/2, height/2), height/5,
+                                        vec2df(width/2, height/2), height/2,
+                                        [j2ds.math.rndColor(150, 255, 0.5), j2ds.math.rndColor(150, 255, 1), 'rgba(255,255,255,0)']);
+});
+
+var anim = imageMap.insertAnimation(0, 0, width, height, 1);
+
+var a = scene.addSpriteNode(vec2df(10, 10), vec2df(width, height), anim);
 
 // Игровое состояние Game
 var Game = function () {
  scene.clear();
- 
+
  if (io.isKeyDown('W') || io.isKeyDown('UP')) a.move(vec2df(0, -1));
  if (io.isKeyDown('S') || io.isKeyDown('DOWN')) a.move(vec2df(0, 1));
  if (io.isKeyDown('A') || io.isKeyDown('LEFT')) a.move(vec2df(-1, 0));
  if (io.isKeyDown('D') || io.isKeyDown('RIGHT')) a.move(vec2df(1, 0));
 
- 
-
  a.draw();
-
- scene.drawText(vec2di(10, 10), 'Enter - отправить текст в чат!', 'red');
 };
 
 scene.start(Game, 60);
