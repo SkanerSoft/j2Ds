@@ -61,7 +61,6 @@ j2ds.input.on('keypressed', function(keyCode) {
 
 j2ds.input.on('input', function (symbol) {
 	$id('textBuffer').innerHTML += symbol;
-  io.cancel();
 });
 
 
@@ -117,10 +116,12 @@ var a = scene.addSpriteNode(vec2df(10, 10), vec2df(width, height), imageMap.getA
 var Game = function () {
  scene.clear();
 
- if (io.isKeyDown('W') || io.isKeyDown('UP')) a.move(vec2df(0, -1));
- if (io.isKeyDown('S') || io.isKeyDown('DOWN')) a.move(vec2df(0, 1));
- if (io.isKeyDown('A') || io.isKeyDown('LEFT')) a.move(vec2df(-1, 0));
- if (io.isKeyDown('D') || io.isKeyDown('RIGHT')) a.move(vec2df(1, 0));
+  if (!j2ds.input.isWriteMode()) {
+    if (io.isKeyDown('W') || io.isKeyDown('UP')) a.move(vec2df(0, -1));
+    if (io.isKeyDown('S') || io.isKeyDown('DOWN')) a.move(vec2df(0, 1));
+    if (io.isKeyDown('A') || io.isKeyDown('LEFT')) a.move(vec2df(-1, 0));
+    if (io.isKeyDown('D') || io.isKeyDown('RIGHT')) a.move(vec2df(1, 0));
+  }
 
  a.draw();
 };
