@@ -447,7 +447,7 @@ j2ds.input.keyEvent = function(e) {
  }
 
  j2ds.input.keyDown[e.keyCode] = (e.type== 'keydown')&&(!j2ds.input.canceled);
- j2ds.input.keyDown[e.keyCode] ? this.emit('keydown', e.keyCode) : '';
+ j2ds.input.keyDown[e.keyCode] && j2ds.input.keyPressed[e.keyCode] ? this.emit('keydown', e.keyCode) : '';
  j2ds.input.anyKey = e.keyCode;
  return (false);
 };
