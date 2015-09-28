@@ -37,12 +37,18 @@ var lr = scene.layers;
 var vec2df= j2ds.vector.vec2df;
 
 j2ds.input.on('keydown', function(keyCode) {
+  if (io.isKeyDown('BACKSPACE')) {
+    $id('textBuffer').innerHTML= $id('textBuffer').innerHTML.substring(0, $id('textBuffer').innerHTML.length - 1);
+  }
+});
+
+j2ds.input.on('keypressed', function(keyCode) {
   if (io.isKeyPress('ESC')) {
     io.setWriteMode(false);
     $id('textBuffer').innerHTML= 'Введите текст!';
   }
 
-  if (io.isKeyPress('BACKSPACE')) {
+  if (io.isKeyPress('LEFT')) {
     $id('textBuffer').innerHTML= $id('textBuffer').innerHTML.substring(0, $id('textBuffer').innerHTML.length - 1);
   }
 
@@ -55,7 +61,7 @@ j2ds.input.on('keydown', function(keyCode) {
 
 j2ds.input.on('input', function (symbol) {
 	$id('textBuffer').innerHTML += symbol;
- io.cancel();
+  io.cancel();
 });
 
 
