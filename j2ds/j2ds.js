@@ -132,7 +132,7 @@ j2ds.start = function(_engine, _framelimit) {
 };
 
 // установка активного игрового состояния
-j2ds.setActivEngine = function(_engine) {
+j2ds.setActiveEngine = function(_engine) {
 	j2ds.engine = _engine;
 };
 
@@ -594,7 +594,7 @@ j2ds.scene.layers = j2ds.layers;
 
 
 j2ds.scene.setGameState = function(_engine) {
- j2ds.setActivEngine(_engine);
+ j2ds.setActiveEngine(_engine);
  j2ds.onEvent('scene:changedGameState');
 };
 
