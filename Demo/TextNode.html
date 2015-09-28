@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <title>TextNode</title>
+ </head>
+ <body>
+<script type="text/javascript">
+
+var scene = j2ds.scene;
+var input = j2ds.input;
+var vec2df = j2ds.vector.vec2df;
+
+scene.init(640, 300);
+
+var text = 'Привет, Мир! Это Строка!\nЭтот текст написан с новой строки!\nИ это тоже строка...';
+
+var t = scene.addTextNode(vec2df(100, 50),
+                           text,
+                           20,
+                           'red');
+
+j2ds.on('dom:loaded', function () {
+	$id('sceneNode').style.border = '1px solid';
+});
+
+var textState = function () {
+
+ scene.clear();
+
+ t.draw();
+
+ t.drawBox();
+ 
+ t.drawSimpleText('Этот текст будет выведен в том же стиле, но \n'+
+                  'в другом месте...', 0, vec2df(10, 120));
+
+ t.drawSimpleText('А этот текст будет зеленым.', 'green', vec2df(10, 10));
+
+
+};
+
+scene.start(textState, 30);
+
+</script>
+ </body>
+</html>

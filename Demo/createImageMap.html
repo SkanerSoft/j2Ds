@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <title>Create Image Map Example</title>
+ </head>
+ <body>
+<script type="text/javascript">
+
+var scene = j2ds.scene;
+var input = j2ds.input;
+var vec2df = j2ds.vector.vec2df;
+
+scene.init(640, 300);
+
+var back = scene.layers.add('back', -1);
+back.fill('#BFBFBF');
+
+back.onContext(function (context) {
+ var dX = 100,
+     dY = 100;
+ for (var i= 0; i < 20000; i+= 1) {
+  dX+= j2ds.math.random(-2, 2, true);
+  dY+= j2ds.math.random(-2, 2, true);
+  context.fillStyle = j2ds.math.rndColor(200, 255, 1);
+	 context.fillRect(dX, dY, 2, 2);
+ }
+});
+
+var width  = 100,
+    height = 100;
+
+var imageMap = scene.texture.createImageMap(width, height, function (context) {
+ context.shadowColor = 'rgba(0,0,0,0)';
+	var gradient = context.createRadialGradient(width/2, height/2, 25, width/2, height/2, 40);
+ gradient.addColorStop(0, j2ds.math.rndColor(220, 255, 1)); 
+ gradient.addColorStop(1, 'rgba(255,255,255,0)');
+ context.fillStyle = gradient;
+ context.fillRect(0, 0, width, height);
+});
+
+var anim = imageMap.insertAnimation(0, 0, width, height, 1);
+
+var a = scene.addSpriteNode(vec2df(10, 10), vec2df(width, height), anim);
+a.dx = -1;
+
+a.resizeBox(vec2df(10, 10), vec2df(-20, -20));
+
+var textState = function () {
+
+ scene.clear();
+
+ if (!a.isLookScene()) {
+  a.setPosition(vec2df(j2ds.math.random(width/2, scene.width-width), j2ds.math.random(height/2, scene.height-height)));
+  a.dx = j2ds.math.random(-1, 1, true);
+ }
+
+ a.move(vec2df(a.dx, 0));
+
+ a.draw();
+ 
+ //a.drawBox();
+
+};
+
+scene.start(textState, 30);
+
+</script>
+ </body>
+</html>
