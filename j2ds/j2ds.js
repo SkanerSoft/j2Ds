@@ -42,6 +42,115 @@ var j2ds = {
  getInfo : false
 };
 
+j2ds.util = {
+  isObject: function isObject(value) {
+    return typeof value === 'object';
+  },
+  isFunction: function isFunction(value) {
+    return typeof value === 'function';
+  },
+  inherits: function inherit(_child, _parent) {
+    _child.prototype = Object.create(_parent.prototype);
+    _child.prototype.constructor = _child;
+  },
+  extend: function extend(_) {
+    var i = 1,
+      len = arguments.length,
+      key;
+
+    if (len == 1) return _;
+
+    if (len > 1) {
+      for (; i < len; i++) {
+        for (key in arguments[i]) {
+          if (arguments[i].hasOwnProperty(key)) {
+            arguments[0][key] = arguments[i][key];
+          }
+        }
+      }
+
+      return arguments[0];
+    }
+
+    return null;
+  },
+  extendObjectFromConstructor: function extendObjectFromPrototype(obj, Constructor) {
+    Constructor.call(obj);
+    this.extend(obj, Constructor.prototype);
+  }
+};
+
+
+j2ds.EventEmitter = function EventEmitter() {
+  this._events = {};
+};
+
+j2ds.EventEmitter.prototype.on = function(type, listener) {
+  if (!j2ds.util.isFunction(listener)) {
+    return false;
+  }
+
+  if (!this._events[type]) {
+    this._events[type] = listener;
+  } else if (j2ds.util.isObject(this._events[type])) {
+    this._events[type].push(listener);
+  } else {
+    this._events[type] = [this._events[type], listener];
+  }
+
+  return this;
+};
+
+j2ds.EventEmitter.prototype.emit = function(type, _) {
+  var handler, len, args, i;
+
+  if (!this._events) {
+    this._events = {};
+  }
+
+  handler = this._events[type];
+
+  if (handler === undefined) {
+    return false;
+  }
+
+  if (j2ds.util.isFunction(handler)) {
+    switch (arguments.length) {
+      case 1:
+        handler.call(this);
+        break;
+      case 2:
+        handler.call(this, arguments[1]);
+        break;
+      case 3:
+        handler.call(this, arguments[1], arguments[2]);
+        break;
+      default:
+        len = arguments.length;
+        args = new Array(len - 1);
+        for (i = 1; i < len; i++) {
+          args[i - 1] = arguments[i];
+        }
+        handler.apply(this, args);
+    }
+  } else if (j2ds.util.isObject(handler)) {
+    len = arguments.length;
+    args = new Array(len - 1);
+    for (i = 1; i < len; i++) {
+      args[i - 1] = arguments[i];
+    }
+
+    len = handler.length;
+    for (i = 0; i < len; i++) {
+      handler[i].apply(this, args);
+    }
+  }
+
+  return true;
+};
+
+// добавляем движку поведение менеджера эвентов
+j2ds.util.extendObjectFromConstructor(j2ds, j2ds.EventEmitter);
 
 j2ds.getInfo = function () {
 	return ({
@@ -195,7 +304,7 @@ j2ds.input = {
  displayCursor : '',
  visible : true
 };
-
+j2ds.util.extendObjectFromConstructor(j2ds.input, j2ds.EventEmitter);
 // Константы клавиш
 
 j2ds.input.jKey = {
@@ -314,11 +423,10 @@ j2ds.input.keyEvent = function(e) {
   if (!j2ds.input.keyPressed[e.keyCode]) {
    j2ds.input.keyPress[e.keyCode] = true;
    j2ds.input.keyPressed[e.keyCode] = true;
+   this.emit('keypressed', e.keyCode);
   }
   if (!j2ds.input.writeMode) {
    e.preventDefault();
-  } else {
-  	j2ds.onEvent('writeMode:keyPress', '');
   }
  } else if (e.type == 'keyup') {
   if (j2ds.input.keyPressed[e.keyCode]) {
@@ -335,10 +443,11 @@ j2ds.input.keyEvent = function(e) {
     _char = String.fromCharCode(e.which);
    }
   }
-  j2ds.onEvent('writeMode:keyPress', _char);
+  this.emit('input', _char);
  }
 
  j2ds.input.keyDown[e.keyCode] = (e.type== 'keydown')&&(!j2ds.input.canceled);
+ j2ds.input.keyDown[e.keyCode] ? this.emit('keydown', e.keyCode) : '';
  j2ds.input.anyKey = e.keyCode;
  return (false);
 };
@@ -455,29 +564,7 @@ j2ds.input.init = function() {
 
 
 
-/*--------------- События ----------------*/
-j2ds.events = {
- 'scene:beforeInit' : [],
- 'scene:afterInit' : [],
- 'scene:beforeStart' : [],
- 'scene:afterStart' : [],
- 'writeMode:keyPress' : [],
- 'scene:changedGameState' : [],
- 'dom:loaded' : []
-};
 
-
-j2ds.on = function (_event, _func) {
-	j2ds.events[_event].push(_func);
-};
-
-j2ds.onEvent = function (_eventType, _args) {
- for (var i = 0, len = j2ds.events[_eventType].length; i < len; i+=1) {
-  if (j2ds.events[_eventType]) {
-   j2ds.events[_eventType][i](_args || '');
-  }
- }
-};
 
 
 
@@ -584,6 +671,7 @@ j2ds.layers.add = function (_id, _index) {
 j2ds.scene = {
  layerName : 'sceneNode'
 };
+j2ds.util.extendObjectFromConstructor(j2ds.scene, j2ds.EventEmitter);
 
 j2ds.scene.layers = j2ds.layers;
 
@@ -592,14 +680,14 @@ j2ds.scene.layers = j2ds.layers;
 
 j2ds.scene.setGameState = function(_engine) {
  j2ds.setActiveEngine(_engine);
- j2ds.onEvent('scene:changedGameState');
+ this.emit('gameStateChanged');
 };
 
 j2ds.scene.start = function (_engine, _framelimit) {
  j2ds.input.init();
- j2ds.onEvent('scene:beforeStart');
+ this.emit('beforeStart');
  j2ds.start(_engine, _framelimit);
- j2ds.onEvent('scene:afterStart');
+ this.emit('afterStart');
 };
 
 j2ds.scene.fullScreen = function(_true) {
@@ -659,7 +747,7 @@ j2ds.scene.onContext = function (_func) {
 // инициализация сцены
 j2ds.scene.init = function(_w, _h) {
 
- j2ds.onEvent('scene:beforeInit');
+ this.emit('beforeInit');
 
 	j2ds.scene.width = _w;
 	j2ds.scene.height = _h;
@@ -667,21 +755,21 @@ j2ds.scene.init = function(_w, _h) {
  j2ds.layers.add('sceneNode', 0);
 
  j2ds.scene.context = j2ds.layers.layer('sceneNode').context;
- j2ds.scene.canvas = j2ds.layers.layer('sceneNode').canvas; 
+ j2ds.scene.canvas = j2ds.layers.layer('sceneNode').canvas;
 
  j2ds.scene.cancelClear = false;
 
  /* Вид "камеры" */
  j2ds.scene.view = j2ds.vector.vec2df(0,0);
 
- j2ds.onEvent('scene:afterInit');
+ this.emit('afterInit');
 
  j2ds.window.onload = function () {
  	for (var i in j2ds.layers.list) {
    document.body.appendChild(j2ds.layers.layer(i).canvas);
   }
   j2ds.ready = true;
-  j2ds.onEvent('dom:loaded');
+  j2ds.emit('ready');
  };
 };
 
@@ -940,7 +1028,7 @@ j2ds.scene.TextNode = function(_pos, _text, _sizePx, _color, _family) {
  this.size.y = this.lines.length * this.sizePx;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.TextNode);
+j2ds.util.inherits(j2ds.scene.TextNode, j2ds.scene.BaseNode);
 
 j2ds.scene.TextNode.prototype.setSize = function (_sizePx) {
  this.sizePx = _sizePx;
@@ -1052,7 +1140,7 @@ j2ds.scene.CircleNode = function(_pos, _radius, _color) {
  this.radius = _radius;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.CircleNode);
+j2ds.util.inherits(j2ds.scene.CircleNode, j2ds.scene.BaseNode);
 
 j2ds.scene.CircleNode.prototype.draw = function() {
  var context = this.layer.context;
@@ -1103,7 +1191,7 @@ j2ds.scene.LineNode = function(_pos, _points, _scale, _color, _width, _fill, _cF
  this.lineWidth = _width;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.LineNode);
+j2ds.util.inherits(j2ds.scene.LineNode, j2ds.scene.BaseNode);
 
 j2ds.scene.LineNode.prototype.draw = function() {
  var context = this.layer.context;
@@ -1160,7 +1248,7 @@ j2ds.scene.RectNode = function(_pos, _size, _color) {
  this.color = _color;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.RectNode);
+j2ds.util.inherits(j2ds.scene.RectNode, j2ds.scene.BaseNode);
 
 j2ds.scene.RectNode.prototype.draw = function() {
  var context = this.layer.context;
@@ -1290,7 +1378,7 @@ j2ds.scene.SpriteNode = function(_pos, _size, _animation) {
 
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.SpriteNode);
+j2ds.util.inherits(j2ds.scene.SpriteNode, j2ds.scene.BaseNode);
 
 j2ds.scene.SpriteNode.prototype.setFlip = function(_x, _y) {
  this.flip = {x:_x, y:_y};
@@ -1362,7 +1450,7 @@ j2ds.scene.SpriteNode.prototype.setAnimation = function(_id) {
 /*----------- шаблоны текстур -------------*/
 
 j2ds.scene.texture.templates.ellips = function (_context, _size, _color) {
-	
+
 };
 
 j2ds.scene.texture.templates.fillRect = function (_context, _size, _color) {
