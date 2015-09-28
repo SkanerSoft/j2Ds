@@ -81,14 +81,16 @@ var vec2di = j2ds.vector.vec2di;
 // инициализация сцены
 scene.init(640, 380);
 
-lr.add('back', -1);
+var mlr = lr.add('back', -1);
 
-for (var i= 0, iStep= scene.width/100; i < scene.width; i+=iStep) {
- for (var j= 0, jStep= scene.height/100; j < scene.height; j+=jStep) {
-  lr.layer('back').context.fillStyle= j2ds.math.rndColor(180, 255, 1);
-  lr.layer('back').context.fillRect(i, j, iStep, jStep);
- }  
-}
+mlr.onContext(function (ctx) {
+ for (var i= 0, iStep= scene.width/100; i < scene.width; i+=iStep) {
+  for (var j= 0, jStep= scene.height/100; j < scene.height; j+=jStep) {
+   ctx.fillStyle= j2ds.math.rndColor(180, 255, 1);
+   ctx.fillRect(i, j, iStep, jStep);
+  }  
+ }
+});
 
 var width = 100,
     height = 100;
@@ -101,9 +103,7 @@ var imageMap = scene.texture.createImageMap(width, height, function (context) {
                                         [j2ds.math.rndColor(150, 255, 0.5), j2ds.math.rndColor(150, 255, 1), 'rgba(255,255,255,0)']);
 });
 
-var anim = imageMap.insertAnimation(0, 0, width, height, 1);
-
-var a = scene.addSpriteNode(vec2df(10, 10), vec2df(width, height), anim);
+var a = scene.addSpriteNode(vec2df(10, 10), vec2df(width, height), imageMap.getAnimation(0, 0, width, height, 1));
 
 // Игровое состояние Game
 var Game = function () {

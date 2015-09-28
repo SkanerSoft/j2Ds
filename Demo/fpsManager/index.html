@@ -25,7 +25,7 @@ var fps= createFpsManager();
 
 var imageMap = scene.texture.loadImageMap('img/map.png');
 
-var anim= imageMap.insertAnimation(6, 55, 47, 41, 1);
+var anim= imageMap.getAnimation(6, 55, 47, 41, 1);
 
 var text = scene.addTextNode(vec2df(10, 10), 'sdsd', 50, 'black');
 
@@ -71,7 +71,7 @@ var fpsTest= function () {
 };
 
 
-scene.start(fpsTest, 120);
+scene.start(fpsTest, 60);
 </script>
  </body>
 </html>

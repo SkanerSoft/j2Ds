@@ -40,7 +40,7 @@ var imageMap = scene.texture.createImageMap(width, height, function (context) {
  context.fillRect(0, 0, width, height);
 });
 
-var anim = imageMap.insertAnimation(0, 0, width, height, 1);
+var anim = imageMap.getAnimation(0, 0, width, height, 1);
 
 var a = scene.addSpriteNode(vec2df(10, 10), vec2df(width, height), anim);
 a.dx = -1;

@@ -6,15 +6,15 @@
 
 /*----------- DOM ---------------*/
 var $id = function (_id) {
- return document.getElementById(_id);
+ return (document.getElementById(_id));
 };
 
 var $name = function (_id) {
- return document.getElementsByName(_id);
+ return (document.getElementsByName(_id));
 };
 
 var $tag = function (_id) {
- return document.getElementsByTagName(_id);
+ return (document.getElementsByTagName(_id));
 };
 
 var $goURL = function (_url) {
@@ -34,12 +34,10 @@ var j2ds = {
  framelimit : 60,
  sceneStartTime : 0,
  sceneSkipTime : 0,
- FDT : 0,
  engine : false,
  ready : false,
  scripts : {},
  root : 'j2ds/',
- countDrawNodes : 0,
  window : window,
  getInfo : false
 };
@@ -48,10 +46,10 @@ var j2ds = {
 j2ds.getInfo = function () {
 	return ({
 	 'name' : 'j2Ds',
-	 'version' : '0.0.3',
-	 'site' : 'http://skanersoft.ru',
-	 'youtube' : 'https://youtube.com/SkanerSoft',
-	 'info' : 'j2Ds - HTML5 2D Game Engine'
+	 'version' : '0.0.4',
+	 'site' : 'https://github.com/SkanerSoft/J2ds',
+	 'info' : 'j2Ds - HTML5 2D Game Engine',
+	 'author' : 'Skaner'
 	});
 };
 
@@ -140,7 +138,6 @@ j2ds.gameEngine = function(){
  j2ds.now = Date.now();
  if (j2ds.now - j2ds.sceneStartTime > j2ds.sceneSkipTime)
  {
-  j2ds.countDrawNodes = 0;
   j2ds.input.upd();
   j2ds.dt = (j2ds.now - j2ds.lastTime) / 100.0;
   if (j2ds.dt > j2ds.sceneSkipTime) {
@@ -463,23 +460,25 @@ j2ds.input.init = function() {
 
 /*--------------- События ----------------*/
 j2ds.events = {
- 'scene:beforeInit' : false,
- 'scene:afterInit' : false,
- 'scene:beforeStart' : false,
- 'scene:afterStart' : false,
- 'writeMode:keyPress' : false,
- 'scene:changedGameState' : false,
- 'dom:loaded' : false
+ 'scene:beforeInit' : [],
+ 'scene:afterInit' : [],
+ 'scene:beforeStart' : [],
+ 'scene:afterStart' : [],
+ 'writeMode:keyPress' : [],
+ 'scene:changedGameState' : [],
+ 'dom:loaded' : []
 };
 
 
 j2ds.on = function (_event, _func) {
-	j2ds.events[_event] = _func;
+	j2ds.events[_event].push(_func);
 };
 
 j2ds.onEvent = function (_eventType, _args) {
- if (j2ds.events[_eventType]) {
-  j2ds.events[_eventType](_args || '');
+ for (var i = 0, len = j2ds.events[_eventType].length; i < len; i+=1) {
+  if (j2ds.events[_eventType]) {
+   j2ds.events[_eventType][i](_args || '');
+  }
  }
 };
 
@@ -517,6 +516,7 @@ j2ds.layers.add = function (_id, _index) {
  o.canvas.style.top = '0px';
  o.canvas.id = _id;
  o.alpha = 1;
+ o.angle = 0;
 
  o.onContext = function (_func) {
  	_func(this.context);
@@ -663,28 +663,14 @@ j2ds.scene.init = function(_w, _h) {
 
  j2ds.onEvent('scene:beforeInit');
 
-	j2ds.scene.layerName = 'sceneNode';
-	j2ds.scene.canvas = document.createElement('canvas');
-	j2ds.scene.canvas.id = 'sceneNode';
-	j2ds.scene.canvas.width = _w;
-	j2ds.scene.canvas.height = _h;
 	j2ds.scene.width = _w;
 	j2ds.scene.height = _h;
-	j2ds.scene.context = j2ds.scene.canvas.getContext('2d');
-	j2ds.scene.context.shadowColor = 'rgba(0,0,0,0)';
- j2ds.scene.alpha = 1;
 
- j2ds.layers.list['sceneNode'] = j2ds.scene;
+ j2ds.layers.add('sceneNode', 0);
 
- j2ds.scene.canvas.style.position = 'fixed';
- j2ds.scene.canvas.style.top = '0px';
- j2ds.scene.canvas.style.left = '0px';
- j2ds.scene.canvas.style.zIndex = '1000';
+ j2ds.scene.context = j2ds.layers.layer('sceneNode').context;
+ j2ds.scene.canvas = j2ds.layers.layer('sceneNode').canvas; 
 
- j2ds.scene.font = '14px sens-serif';
- j2ds.scene.fillStyle = '#000';
- j2ds.scene.strokeStyle = '#fff';
- j2ds.scene.angle = 0;
  j2ds.scene.cancelClear = false;
 
  /* Вид "камеры" */
@@ -1042,7 +1028,6 @@ j2ds.scene.TextNode.prototype.draw = function() {
   if (this.alpha != 1) {
    context.globalAlpha = tmpAlpha;
   }
-  j2ds.countDrawNodes += 1;
  }
 };
 
@@ -1090,8 +1075,6 @@ j2ds.scene.CircleNode.prototype.draw = function() {
   if (this.alpha != 1) {
    context.globalAlpha = tmpAlpha;
   }
-
-  j2ds.countDrawNodes += 1;
  }
 };
 
@@ -1155,8 +1138,6 @@ j2ds.scene.LineNode.prototype.draw = function() {
   if (this.alpha != 1) {
    context.globalAlpha = tmpAlpha;
   }
-
-  j2ds.countDrawNodes += 1;
  }
 };
 
@@ -1212,8 +1193,6 @@ j2ds.scene.RectNode.prototype.draw = function() {
   if (this.alpha != 1) {
    context.globalAlpha = tmpAlpha;
   }
-
-  j2ds.countDrawNodes += 1;
  }
 };
 
@@ -1248,7 +1227,7 @@ j2ds.scene.texture.createImageMap = function(_w, _h, _func) {
  _func(o.context);
 
  /* Функции */
- o.insertAnimation = function(_sourceX, _sourceY, _sourceW, _sourceH, _frameCount) {
+ o.getAnimation = function(_sourceX, _sourceY, _sourceW, _sourceH, _frameCount) {
   var o = {
    imageMap : this,
    sourceX : _sourceX,
@@ -1282,7 +1261,7 @@ j2ds.scene.texture.loadImageMap = function(path) {
  /* Свойства */
 
  /* Функции */
- o.insertAnimation = function(_sourceX, _sourceY, _sourceW, _sourceH, _frameCount) {
+ o.getAnimation = function(_sourceX, _sourceY, _sourceW, _sourceH, _frameCount) {
   var o = {
    imageMap : this,
    sourceX : _sourceX,
@@ -1371,8 +1350,6 @@ j2ds.scene.SpriteNode.prototype.drawFrame = function(_frame) {
   if (this.alpha != 1) {
    context.globalAlpha = tmpAlpha;
   }
-
-  j2ds.countDrawNodes += 1;
  }
 };
 

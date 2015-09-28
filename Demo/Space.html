@@ -59,7 +59,7 @@ layers.add('logo', 0);
 scene.fullScreen(true);
 
 var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/3, scene.height/3), 
-                               scene.texture.loadImageMap('Base/j2Ds-Logo.png').insertAnimation(0, 0, 634, 314, 1));
+                               scene.texture.loadImageMap('Base/j2Ds-Logo.png').getAnimation(0, 0, 634, 314, 1));
 jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
 jLogo.setAlpha(0);
 jLogo.setLayer('logo');

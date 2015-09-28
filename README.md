@@ -4,9 +4,9 @@
 
 [Лицензия и описание](https://github.com/SkanerSoft/J2ds/wiki)
 
-Автор движка: Skaner (Нагель Петр)
+Автор движка: [Skaner](https://youtube.com/SkanerSoft?sub_confirmation=1) (Нагель Петр)
 
-Главный помощник: Алексей
+Главный помощник: [likerRr](http://github.com/likerRr) (Алексей)
 
 E-mail: skaner0@yandex.ru
 
@@ -74,17 +74,9 @@ youtube: [youtube.com/skanersoft](https://youtube.com/SkanerSoft?sub_confirmatio
 
 Для задания целочисленных координат можно использовать объект:
 
-    { x : 0, y : 0 }
-
-или:
-
     j2ds.vector.vec2di(0, 0)
 
 Для задания вещественных координат:
-
-    { x : 0.0, y : 0.0 }
-
-или:
 
     j2ds.vector.vec2df(0.0, 0.0)
 
@@ -363,21 +355,6 @@ scene.start(Game, 30); // Второй параметр - FPS
 отрисовкой, чтобы не возник эффект "рисования":
 
     scene.clear();
-
-### Заливка сцены
-Если вам требуется залить сцену одним цветом, есть функция:
-
-    scene.fill(color);
-
-, где color - строка цвета, аналогичная цвету в CSS:
-
-- 'black' - простое строчное именование цвета
-- rgb(255, 255, 255) - цвет в формате rgb() или rgba()
-- #A1F3C6
-
-> Примечание: если вы хотите заливать сцену одним фоном, оптимальнее будет использовать для этого отдельный слой для заливки.
-Если же нужно заливать именно сцену - то команду заливки нужно использовать либо после команды scene.clear() либо вместо нее.
-
 
 ## <a name="layers"></a> Слои (Layers)
 
@@ -977,7 +954,7 @@ j2Ds позволяет вам загружать такие спрайт кар
 Ну или же передать все параметры непосредственно в функцию:
 
 
-    мar imageMap = scene.texture.createImageMap(400, 100, function(context) {
+    var imageMap = scene.texture.createImageMap(400, 100, function(context) {
      for (var i = 0; i < 400; i+=100) {
       context.fillStyle = j2ds.math.rndColor(100, 250, 1);
       context.fillRect(i, 0, i+100, 100);
@@ -999,7 +976,7 @@ j2Ds позволяет вам загружать такие спрайт кар
         frameCount = 1; // Количеество кадров, если это анимация
     
     // Создание анимации
-    var anim = imageMap.insertAnimation(sourceX, sourceY, sourceW, sourceH, frameCount);
+    var anim = imageMap.getAnimation(sourceX, sourceY, sourceW, sourceH, frameCount);
 
 > Примечание: Теперь такую анимацию можно передать в качестве аргумента для вывода на слой/сцену.
 > Примечание № 2: sourceX,Y,W,H не должны выходить за пределы изображения
