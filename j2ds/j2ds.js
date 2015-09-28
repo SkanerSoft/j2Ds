@@ -75,14 +75,10 @@ j2ds.math.rndColor = function (_min, _max, _alpha) {
  return ( 'rgba('+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+_alpha+')' );
 };
 
-j2ds.math.random = function (_min, _max, _notZero) {
+j2ds.math.random = function (_min, _max, _omitZero) {
  var rnd = (Math.floor(Math.random() * (_max - _min + 1) + _min));
- if (_notZero && rnd == 0) {
-  rnd = j2ds.math.random(_min, _max, _notZero);
-  return (rnd);
- } else {
-  return (rnd);
- }
+
+ return (_omitZero && rnd == 0) ? j2ds.math.random(_min, _max, _omitZero) : rnd;
 };
 
 j2ds.math.rad = function (_num) {
@@ -336,7 +332,7 @@ j2ds.input.keyEvent = function(e) {
   }
  } else if (e.type == 'keypress' && (j2ds.input.writeMode)) {
   var _char = '';
-  if (e.which != 0 && e.charCode != 0) { 
+  if (e.which != 0 && e.charCode != 0) {
    if (e.which >= 32) {
     _char = String.fromCharCode(e.which);
    }
@@ -435,7 +431,7 @@ j2ds.input.setVisible = function (_true) {
   $tag('body')[0].style.cursor = 'none';
  } else {
   $tag('body')[0].style.cursor = j2ds.input.displayCursor;
- }	
+ }
 };
 
 
@@ -927,7 +923,7 @@ j2ds.scene.addTextNode = function (_pos, _text, _sizePx, _color, _family) {
 
 j2ds.scene.TextNode = function(_pos, _text, _sizePx, _color, _family) {
 
- j2ds.scene.BaseNode.call(this, _pos, j2ds.vector.vec2df(0, 0)); 
+ j2ds.scene.BaseNode.call(this, _pos, j2ds.vector.vec2df(0, 0));
 
  /*Свойства*/
 
@@ -947,7 +943,7 @@ j2ds.scene.TextNode = function(_pos, _text, _sizePx, _color, _family) {
  j2ds.scene.context.font = this.font;
 
  for (var i = 0, len = this.lines.length; i < len; i += 1) {
-  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ? 
+  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ?
                                    j2ds.scene.context.measureText(this.lines[i]).width :
                                    this.maxWidth);
  }
@@ -964,7 +960,7 @@ j2ds.scene.TextNode.prototype.setSize = function (_sizePx) {
  j2ds.scene.context.font = this.font;
 
  for (var i = 0, len = this.lines.length; i < len; i += 1) {
-  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ? 
+  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ?
                                    j2ds.scene.context.measureText(this.lines[i]).width :
                                    this.maxWidth);
  }
@@ -1004,7 +1000,7 @@ j2ds.scene.TextNode.prototype.setText = function (_text) {
  j2ds.scene.context.font = this.font;
 
  for (var i = 0, len = this.lines.length; i < len; i += 1) {
-  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ? 
+  this.maxWidth = (this.maxWidth < j2ds.scene.context.measureText(this.lines[i]).width ?
                                    j2ds.scene.context.measureText(this.lines[i]).width :
                                    this.maxWidth);
  }
@@ -1062,8 +1058,8 @@ j2ds.scene.addCircleNode = function (_pos, _radius, _color) {
 
 j2ds.scene.CircleNode = function(_pos, _radius, _color) {
 
- j2ds.scene.BaseNode.call(this, _pos, j2ds.vector.vec2df(_radius*2, _radius*2)); 
- 
+ j2ds.scene.BaseNode.call(this, _pos, j2ds.vector.vec2df(_radius*2, _radius*2));
+
  /*Свойства*/
  this.color = _color;
  this.radius = _radius;
