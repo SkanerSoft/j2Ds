@@ -606,17 +606,18 @@ j2ds.scene.start = function (_engine, _framelimit) {
 };
 
 j2ds.scene.fullScreen = function(_true) {
+ var layer;
  if (_true) {
   for (var i in j2ds.layers.list)
   {
-   var layer = j2ds.layers.list[i].canvas;
+   layer = j2ds.layers.list[i].canvas;
    layer.style.width = j2ds.device().width+'px';
    layer.style.height = j2ds.device().height+'px';
   }
  } else {
   for (var i in j2ds.layers.list)
   {
-   var layer = j2ds.layers.list[i].canvas;
+   layer = j2ds.layers.list[i].canvas;
    layer.style.width = j2ds.scene.width+'px';
    layer.style.height = j2ds.scene.height+'px';
   }
