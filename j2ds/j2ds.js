@@ -56,6 +56,7 @@ j2ds.getInfo = function () {
 
 
 
+
 /*------------------- Математика --------------*/
 j2ds.vector.vec2df = function (_x, _y) {
  return ({x: _x, y: _y});
