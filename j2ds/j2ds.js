@@ -423,7 +423,7 @@ j2ds.input.keyEvent = function(e) {
   if (!j2ds.input.keyPressed[e.keyCode]) {
    j2ds.input.keyPress[e.keyCode] = true;
    j2ds.input.keyPressed[e.keyCode] = true;
-   this.emit('keypressed', e.keyCode);
+   this.emit('keypress', e.keyCode);
   }
   if (!j2ds.input.writeMode) {
    e.preventDefault();
