@@ -2,6 +2,7 @@
 <html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width,user-scalable=no" />  
   <script type="text/javascript" src="../j2ds/j2ds.js"></script>
   <title>Space Example</title>
  </head>
@@ -124,8 +125,8 @@ var Game= function () {
  {
   if (jLogo.alpha <= 1) {
    jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
-   jLogo.setSize(vec2df(jLogo.getSize().x+0.2, jLogo.getSize().y+0.2));
-   jLogo.move(vec2df(-0.1, -0.1));
+   jLogo.setSize(vec2df(jLogo.getSize().x+0.2*j2ds.dt, jLogo.getSize().y+0.2*j2ds.dt));
+   jLogo.move(vec2df(-0.1*j2ds.dt, -0.1*j2ds.dt));
   }
  }
 
@@ -141,7 +142,7 @@ var Game= function () {
 };
 
 
-scene.start(Game, 120);
+scene.start(Game, 60);
 
 
 </script>

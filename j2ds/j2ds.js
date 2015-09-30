@@ -6,15 +6,15 @@
 
 /*----------- DOM ---------------*/
 var $id = function (_id) {
- return (document.getElementById(_id));
+ return document.getElementById(_id);
 };
 
 var $name = function (_id) {
- return (document.getElementsByName(_id));
+ return document.getElementsByName(_id);
 };
 
 var $tag = function (_id) {
- return (document.getElementsByTagName(_id));
+ return document.getElementsByTagName(_id);
 };
 
 var $goURL = function (_url) {
@@ -44,13 +44,13 @@ var j2ds = {
 
 
 j2ds.getInfo = function () {
-	return ({
+	return {
 	 'name' : 'j2Ds',
 	 'version' : '0.0.4',
 	 'site' : 'https://github.com/SkanerSoft/J2ds',
 	 'info' : 'j2Ds - HTML5 2D Game Engine',
 	 'author' : 'Skaner'
-	});
+	};
 };
 
 
@@ -59,7 +59,7 @@ j2ds.getInfo = function () {
 
 /*------------------- Математика --------------*/
 j2ds.vector.vec2df = function (_x, _y) {
- return ({x: _x, y: _y});
+ return {x: _x, y: _y};
 };
 
 j2ds.vector.vec2di = function (_x, _y) {
@@ -67,11 +67,11 @@ j2ds.vector.vec2di = function (_x, _y) {
 };
 
 j2ds.math.toInt = function (_number) {
-	return ( _number >> 0 );
+	return _number >> 0;
 };
 
 j2ds.math.rndColor = function (_min, _max, _alpha) {
- return ( 'rgba('+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+_alpha+')' );
+ return 'rgba('+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+j2ds.math.random(_min, _max)+', '+_alpha+')';
 };
 
 j2ds.math.random = function (_min, _max, _omitZero) {
@@ -94,7 +94,7 @@ j2ds.device = function() {
 	var o = {};
 	o.width = (parseInt(document.documentElement.clientWidth) < parseInt(screen.width))   ? parseInt(document.documentElement.clientWidth):parseInt(screen.width);
 	o.height = (parseInt(document.documentElement.clientHeight) < parseInt(screen.height)) ? parseInt(document.documentElement.clientHeight) : parseInt(screen.height);
-	return (o);
+	return o;
 };
 
 j2ds.loaded = function(_id) {
@@ -282,23 +282,23 @@ j2ds.input.keyList = function () {
 	for (var i in j2ds.input.jKey) {
   o.push(i);
 	}
-	return (o);
+	return o;
 };
 
 j2ds.input.isKeyDown = function(_code) {
- return (this.keyDown[this.jKey[_code]]);
+ return this.keyDown[this.jKey[_code]];
 };
 
 j2ds.input.isKeyPress = function(_code) {
- return (this.keyPress[this.jKey[_code]]);
+ return this.keyPress[this.jKey[_code]];
 };
 
 j2ds.input.isKeyUp = function(_code) {
-return (this.keyUp[this.jKey[_code]]);
+return this.keyUp[this.jKey[_code]];
 };
 
 j2ds.input.getPosition = function() {
-return (j2ds.vector.vec2df(this.pos.x, this.pos.y));
+return j2ds.vector.vec2df(this.pos.x, this.pos.y);
 };
 
 j2ds.input.setWriteMode = function (_true) {
@@ -306,7 +306,7 @@ j2ds.input.setWriteMode = function (_true) {
 };
 
 j2ds.input.isWriteMode = function () {
- return (j2ds.input.writeMode);
+ return j2ds.input.writeMode;
 };
 
 j2ds.input.keyEvent = function(e) {
@@ -340,11 +340,10 @@ j2ds.input.keyEvent = function(e) {
 
  j2ds.input.keyDown[e.keyCode] = (e.type== 'keydown')&&(!j2ds.input.canceled);
  j2ds.input.anyKey = e.keyCode;
- return (false);
+ return false;
 };
 
 //! системная
-// Вернет true, если мышь наxодится над объектом
 j2ds.input.cancel = function(_id) {
  if (!_id) {
   j2ds.input.canceled = true;
@@ -357,10 +356,10 @@ j2ds.input.cancel = function(_id) {
 };
 
 //! системная
-// Вернет true, если мышь назодится над объектом
+// Вернет true, если мышь наxодится над объектом
 j2ds.input.onNode = function(_id) {
- return ( (this.pos.x > _id.pos.x && this.pos.x < _id.pos.x+_id.size.x) &&
-          (this.pos.y > _id.pos.y && this.pos.y < _id.pos.y+_id.size.y) );
+ return (this.pos.x > _id.pos.x && this.pos.x < _id.pos.x+_id.size.x) &&
+        (this.pos.y > _id.pos.y && this.pos.y < _id.pos.y+_id.size.y);
 };
 
 j2ds.input.upd = function() {
@@ -432,13 +431,16 @@ j2ds.input.setVisible = function (_true) {
  }
 };
 
+j2ds.input.isVisible = function () {
+	return j2ds.input.visible;
+};
 
 j2ds.input.init = function() {
  j2ds.window.focus();
  j2ds.window.ontouchstart = j2ds.input.onTouch;
  j2ds.window.ontouchmove = j2ds.input.onTouch;
  j2ds.window.ontouchend = function() { j2ds.input.canceled = false; j2ds.input.falseInput(); };
- j2ds.window.oncontextmenu = function() { return (false); }
+ j2ds.window.oncontextmenu = function() { return false; }
  j2ds.window.onselectstart = j2ds.window.oncontextmenu;
  j2ds.window.ondragstart = j2ds.window.oncontextmenu;
  j2ds.window.onmousedown = j2ds.input.onClick;
@@ -495,7 +497,7 @@ j2ds.layers.layer = function (_id) {
 j2ds.layers.add = function (_id, _index) {
 
  if (j2ds.layers.list[_id]) {
-  return (false);
+  return false;
  }
 
 	var o = {};
@@ -519,7 +521,6 @@ j2ds.layers.add = function (_id, _index) {
  	_func(this.context);
  };
 
-
  o.fill = function (_color) {
  	this.context.fillStyle = _color;
  	this.context.fillRect(0, 0, this.width, this.height);
@@ -531,7 +532,7 @@ j2ds.layers.add = function (_id, _index) {
  };
 
  o.getAlpha = function () {
-  return (this.alpha);
+  return this.alpha;
  };
 
  o.setVisible = function (_visible) {
@@ -574,7 +575,7 @@ j2ds.layers.add = function (_id, _index) {
 	 document.body.appendChild(j2ds.layers.list[_id].canvas);
 	}
 
- return (o);
+ return o;
 };
 
 
@@ -656,6 +657,10 @@ j2ds.scene.onContext = function (_func) {
  _func(j2ds.scene.context);
 };
 
+j2ds.scene.getLayer = function () {
+	return j2ds.layers.layer('sceneNode');
+};
+
 // инициализация сцены
 j2ds.scene.init = function(_w, _h) {
 
@@ -701,7 +706,7 @@ j2ds.Object= {
 /*------------------ базовый объект -------------------*/
 
 j2ds.scene.addBaseNode= function (_pos, _size) {
-	return (new j2ds.scene.BaseNode(_pos, _size));
+	return new j2ds.scene.BaseNode(_pos, _size);
 };
 
 j2ds.scene.BaseNode = function(_pos, _size) {
@@ -728,7 +733,7 @@ j2ds.scene.BaseNode.prototype.setLayer = function (_layer) {
 };
 
 j2ds.scene.BaseNode.prototype.getLayer = function () {
-	return (this.layer);
+	return this.layer;
 };
 
 j2ds.scene.BaseNode.prototype.setVisible = function(_visible) {
@@ -760,7 +765,7 @@ j2ds.scene.BaseNode.prototype.move = function(_pos) {
 };
 
 j2ds.scene.BaseNode.prototype.getPosition = function() {
- return (j2ds.vector.vec2df(this.pos.x+Math.ceil(this.size.x/2), this.pos.y+Math.ceil(this.size.y/2)));
+ return j2ds.vector.vec2df(this.pos.x+Math.ceil(this.size.x/2), this.pos.y+Math.ceil(this.size.y/2));
 };
 
 j2ds.scene.BaseNode.prototype.setSize = function(_size) {
@@ -768,7 +773,7 @@ j2ds.scene.BaseNode.prototype.setSize = function(_size) {
 };
 
 j2ds.scene.BaseNode.prototype.getSize = function() {
- return (this.size);
+ return this.size;
 };
 
 j2ds.scene.BaseNode.prototype.setParent = function(_id) {
@@ -803,13 +808,11 @@ j2ds.scene.BaseNode.prototype.isIntersect = function(_id) {
  };
 
 return (
-        (
-         (pos.y1+size.y1 >= pos.y2) &&
-         (pos.x1+size.x1 >= pos.x2)
-        ) && (
-         (pos.x1 < pos.x2+size.x2) &&
-         (pos.y1 < pos.y2+size.y2)
-        )
+        (pos.y1+size.y1 >= pos.y2) &&
+        (pos.x1+size.x1 >= pos.x2)
+       ) && (
+        (pos.x1 < pos.x2+size.x2) &&
+        (pos.y1 < pos.y2+size.y2)
        );
 };
 
@@ -821,18 +824,7 @@ var result = false;
  ) {
     result = true;
    }
- return (result);
-};
-
-j2ds.scene.BaseNode.prototype.isCollisionRadius = function(_id) {
-var result = false;
- if (
- (this.getDistanceXY(_id).x < (this.size.x/2 + _id.size.x/2)) &&
- (this.getDistanceXY(_id).y < (this.size.y/2 + _id.size.y/2))
- ) {
-    result = true;
-   }
- return (result);
+ return result;
 };
 
 j2ds.scene.BaseNode.prototype.isLookScene = function() {
@@ -843,7 +835,7 @@ j2ds.scene.BaseNode.prototype.isLookScene = function() {
 	   this.pos.y+this.size.y < j2ds.scene.view.y)) {
 	    yes = false;
 	   }
-	return (yes);
+	return yes;
 };
 
 j2ds.scene.BaseNode.prototype.turn = function(_angle) {
@@ -852,15 +844,14 @@ j2ds.scene.BaseNode.prototype.turn = function(_angle) {
 };
 
 j2ds.scene.BaseNode.prototype.setRotation = function(_angle) {
-	_angle = _angle < 0 ? 360+_angle : (_angle > 359 ? 0 : _angle);
-	this.angle = _angle;
+	this.angle = _angle % 360;
 };
 
 j2ds.scene.BaseNode.prototype.isCollisionScene = function() {
 	var o = {};
 
 	if (this.pos.x+this.size.x >= j2ds.scene.view.x+j2ds.scene.width) o.x = 1;
-	else	if (this.pos.x <= j2ds.scene.view.x) { o.x = -1; }
+	else	if (this.pos.x <= j2ds.scene.view.x) {o.x = -1; }
 	     else { o.x = 0; }
 
 	if (this.pos.y+this.size.y >= j2ds.scene.view.y+j2ds.scene.height) o.y = 1;
@@ -869,7 +860,7 @@ j2ds.scene.BaseNode.prototype.isCollisionScene = function() {
 
 	o.all = (o.x || o.y);
 
-	return (o);
+	return o;
 };
 
 j2ds.scene.BaseNode.prototype.moveDir = function(_speed) {
@@ -906,7 +897,7 @@ j2ds.scene.BaseNode.prototype.drawBox = function() {
 
 
 j2ds.scene.addTextNode = function (_pos, _text, _sizePx, _color, _family) {
-	return (new j2ds.scene.TextNode(_pos, _text, _sizePx, _color, _family));
+	return new j2ds.scene.TextNode(_pos, _text, _sizePx, _color, _family);
 };
 
 j2ds.scene.TextNode = function(_pos, _text, _sizePx, _color, _family) {
@@ -957,7 +948,7 @@ j2ds.scene.TextNode.prototype.setSize = function (_sizePx) {
 };
 
 j2ds.scene.TextNode.prototype.getSize = function () {
-	return (this.sizePx);
+	return this.sizePx;
 };
 
 j2ds.scene.TextNode.prototype.drawSimpleText = function (_text, _color, _pos) {
@@ -977,7 +968,7 @@ j2ds.scene.TextNode.prototype.drawSimpleText = function (_text, _color, _pos) {
 };
 
 j2ds.scene.TextNode.prototype.getText = function () {
-	return (this.fullText);
+	return this.fullText;
 };
 
 j2ds.scene.TextNode.prototype.setText = function (_text) {
@@ -1040,7 +1031,7 @@ j2ds.scene.TextNode.prototype.draw = function() {
 /*------------------ окружность --------------------*/
 
 j2ds.scene.addCircleNode = function (_pos, _radius, _color) {
-	return (new j2ds.scene.CircleNode(_pos, _radius, _color));
+	return new j2ds.scene.CircleNode(_pos, _radius, _color);
 };
 
 j2ds.scene.CircleNode = function(_pos, _radius, _color) {
@@ -1087,7 +1078,7 @@ j2ds.scene.CircleNode.prototype.draw = function() {
 /*-------------------- линии ----------------------*/
 
 j2ds.scene.addLineNode = function (_pos, _points, _scale, _color, _width, _fill, _cFill) {
-	return (new j2ds.scene.LineNode(_pos, _points, _scale, _color, _width, _fill, _cFill));
+	return new j2ds.scene.LineNode(_pos, _points, _scale, _color, _width, _fill, _cFill);
 };
 
 j2ds.scene.LineNode = function(_pos, _points, _scale, _color, _width, _fill, _cFill) {
@@ -1150,7 +1141,7 @@ j2ds.scene.LineNode.prototype.draw = function() {
 /*--------------------- прямоугольники ------------------------*/
 
 j2ds.scene.addRectNode = function (_pos, _size, _color) {
-	return (new j2ds.scene.RectNode(_pos, _size, _color));
+	return new j2ds.scene.RectNode(_pos, _size, _color);
 };
 
 j2ds.scene.RectNode = function(_pos, _size, _color) {
@@ -1234,10 +1225,10 @@ j2ds.scene.texture.createImageMap = function(_w, _h, _func) {
    sourceH : _sourceH,
    frameCount : _frameCount-1
   };
-  return (o);
+  return o;
  };
 
- return (o);
+ return o;
 };
 
 j2ds.scene.texture.loadImageMap = function(path) {
@@ -1268,15 +1259,15 @@ j2ds.scene.texture.loadImageMap = function(path) {
    sourceH : _sourceH,
    frameCount : _frameCount-1
   };
-  return (o);
+  return o;
  };
 
- return (o);
+ return o;
 };
 
 
 j2ds.scene.addSpriteNode = function (_pos, _size, _animation) {
-	return (new j2ds.scene.SpriteNode(_pos, _size, _animation));
+	return new j2ds.scene.SpriteNode(_pos, _size, _animation);
 };
 
 j2ds.scene.SpriteNode = function(_pos, _size, _animation) {
@@ -1429,24 +1420,24 @@ o.saveNode = function (_name, _o) {
  };
 
  o.load = function (_name) {
-  if (!this.ls) { return (false); }
-  return (this.ls.getItem(this.id+_name));
+  if (!this.ls) { return false; }
+  return this.ls.getItem(this.id+_name);
  };
 
  o.is = function (_name) {
- if (!this.ls) { return (false); }
+ if (!this.ls) { return false; }
   return !!(this.ls.getItem(this.id+_name));
  }
 
  o.save = function (_name, _value) {
-  if (!this.ls) { return (false); }
+  if (!this.ls) { return false; }
   this.ls.setItem(this.id+_name, _value);
  }
 
  o.loadNode = function (_name) {
- if (!this.ls) { return (false); }
+ if (!this.ls) { return false; }
   return JSON.parse(this.ls.getItem(this.id+_name));
  }
 
- return (o);
+ return o;
 };
