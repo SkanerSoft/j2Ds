@@ -36,8 +36,6 @@ var j2ds = {
  sceneSkipTime : 0,
  engine : false,
  ready : false,
- scripts : {},
- root : 'j2ds/',
  window : window,
  getInfo : false
 };
@@ -95,24 +93,6 @@ j2ds.device = function() {
 	o.width = (parseInt(document.documentElement.clientWidth) < parseInt(screen.width))   ? parseInt(document.documentElement.clientWidth):parseInt(screen.width);
 	o.height = (parseInt(document.documentElement.clientHeight) < parseInt(screen.height)) ? parseInt(document.documentElement.clientHeight) : parseInt(screen.height);
 	return o;
-};
-
-j2ds.loaded = function(_id) {
- j2ds.scripts[_id] = true;
-};
-
-j2ds.include = function(_path) {
- var _id = _path.replace(/\//g, '');
- if (j2ds.scripts[_id]) { return 0; }
-
- var reader = new XMLHttpRequest();
- reader.open('GET', j2ds.root+_path+'.js', false);
- reader.send(null);
- var sourceCode = reader.responseText;
-
- j2ds.loaded(_id);
-
- eval(sourceCode);
 };
 
 // старт игры
@@ -547,22 +527,13 @@ j2ds.layers.add = function (_id, _index) {
  	this.canvas.style.zIndex = _index;
  };
 
- o.setPosition = function (_pos) {
- 	this.canvas.style.top = _pos.y+'px';
- 	this.canvas.style.left = _pos.x+'px';
- };
-
- o.getPosition = function () {
- 	return j2ds.vector.vec2di(parseInt(this.canvas.style.left), parseInt(this.canvas.style.top));
- };
-
  o.clear = function () {
  	this.context.clearRect(0, 0, this.width, this.height);
  };
 
  o.clearNode = function (_node) {
  	if (_node.isLookScene()) {
-   this.context.clearRect(-5+_node.pos.x-j2ds.scene.view.x, -5+_node.pos.y-j2ds.scene.view.y, _node.size.x+10, _node.size.y+10);
+   this.context.clearRect(_node.pos.x-j2ds.scene.view.x, _node.pos.y-j2ds.scene.view.y, _node.size.x, _node.size.y);
  	}
  };
 
@@ -570,7 +541,7 @@ j2ds.layers.add = function (_id, _index) {
   this.context.clearRect(_pos.x-j2ds.scene.view.x, _pos.y-j2ds.scene.view.y, _size.x, _size.y);
  };
 
-	j2ds.layers.list[_id] = (o);
+	j2ds.layers.list[_id] = o;
 	if (j2ds.ready) {
 	 document.body.appendChild(j2ds.layers.list[_id].canvas);
 	}
@@ -583,13 +554,12 @@ j2ds.layers.add = function (_id, _index) {
 /*----------------- сцена ---------------------*/
 
 j2ds.scene = {
- layerName : 'sceneNode'
+ layerName : 'sceneNode',
+ layers : j2ds.layers
 };
 
-j2ds.scene.layers = j2ds.layers;
 
 /*функции*/
-
 
 j2ds.scene.setGameState = function(_engine) {
  j2ds.setActiveEngine(_engine);
@@ -630,16 +600,11 @@ j2ds.scene.setViewPosition = function(_pos) {
 
 //! Движение "камеры" вслед за объектом
 j2ds.scene.setViewFocus = function(_id, _d) {
- var _dX = 0, _dY = 0;
- if (_d) {
-  _dX = _d.x;
-  _dY = _d.y;
- }
-	j2ds.scene.view.x = _id.getPosition().x - Math.ceil(j2ds.scene.width/2)+_dX;
-	j2ds.scene.view.y = _id.getPosition().y - Math.ceil(j2ds.scene.height/2)+_dY;
+	j2ds.scene.view.x = _id.getPosition().x - Math.ceil(j2ds.scene.width/2)+(_d ? _d.x : 0);
+	j2ds.scene.view.y = _id.getPosition().y - Math.ceil(j2ds.scene.height/2)+(_d ? _d.y : 0);
 };
 
-//! Движение "камеры" или же вида
+//! Движение "камеры"
 j2ds.scene.viewMove = function(_pos) {
 	j2ds.scene.view.x+=_pos.x;
 	j2ds.scene.view.y+=_pos.y;
@@ -647,14 +612,7 @@ j2ds.scene.viewMove = function(_pos) {
 
 //! Очистка отрисованного предыдущего кадра сцены
 j2ds.scene.clear = function() {
- if (!j2ds.scene.cancelClear) {
-  j2ds.scene.context.clearRect(0, 0, j2ds.scene.width, j2ds.scene.width);
-  j2ds.scene.cancelClear = false;
- }
-};
-
-j2ds.scene.onContext = function (_func) {
- _func(j2ds.scene.context);
+ j2ds.scene.getLayer().clear();
 };
 
 j2ds.scene.getLayer = function () {
@@ -694,7 +652,7 @@ j2ds.scene.init = function(_w, _h) {
 
 
 /*--------------- Объекты ----------------*/
-j2ds.Object= {
+j2ds.Obj= {
  inherit : function (_parent, _child) {
   _child.prototype = Object.create(_parent.prototype);
   _child.prototype.constructor = _child;
@@ -931,7 +889,7 @@ j2ds.scene.TextNode = function(_pos, _text, _sizePx, _color, _family) {
  this.size.y = this.lines.length * this.sizePx;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.TextNode);
+j2ds.Obj.inherit(j2ds.scene.BaseNode, j2ds.scene.TextNode);
 
 j2ds.scene.TextNode.prototype.setSize = function (_sizePx) {
  this.sizePx = _sizePx;
@@ -1043,7 +1001,7 @@ j2ds.scene.CircleNode = function(_pos, _radius, _color) {
  this.radius = _radius;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.CircleNode);
+j2ds.Obj.inherit(j2ds.scene.BaseNode, j2ds.scene.CircleNode);
 
 j2ds.scene.CircleNode.prototype.draw = function() {
  var context = this.layer.context;
@@ -1094,7 +1052,7 @@ j2ds.scene.LineNode = function(_pos, _points, _scale, _color, _width, _fill, _cF
  this.lineWidth = _width;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.LineNode);
+j2ds.Obj.inherit(j2ds.scene.BaseNode, j2ds.scene.LineNode);
 
 j2ds.scene.LineNode.prototype.draw = function() {
  var context = this.layer.context;
@@ -1151,7 +1109,7 @@ j2ds.scene.RectNode = function(_pos, _size, _color) {
  this.color = _color;
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.RectNode);
+j2ds.Obj.inherit(j2ds.scene.BaseNode, j2ds.scene.RectNode);
 
 j2ds.scene.RectNode.prototype.draw = function() {
  var context = this.layer.context;
@@ -1281,7 +1239,7 @@ j2ds.scene.SpriteNode = function(_pos, _size, _animation) {
 
 };
 
-j2ds.Object.inherit(j2ds.scene.BaseNode, j2ds.scene.SpriteNode);
+j2ds.Obj.inherit(j2ds.scene.BaseNode, j2ds.scene.SpriteNode);
 
 j2ds.scene.SpriteNode.prototype.setFlip = function(_x, _y) {
  this.flip = {x:_x, y:_y};
