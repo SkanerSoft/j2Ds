@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8;" />
+  <meta name="viewport" content="width=device-width,user-scalable=no" />  
+  <title>Phys Example</title>
+ </head>
+
+<body>
+
+<script type="text/javascript">
+var scene= j2ds.scene;
+var input= j2ds.input;
+var vec2df= j2ds.vector.vec2df;
+
+// Создаем сцену
+scene.init(640, 300);
+
+j2ds.layers.add('back', -1);
+j2ds.layers.layer('back').fill('#ceeeee');
+
+if (j2ds.device().width < 800)
+ scene.fullScreen(true);
+
+// Инициализируем устройство ввода
+input.init();
+
+// создаем шар A
+a= scene.addCircleNode(vec2df(10, 10), 20, 'green');
+a.grav= 1; a.speed= 0;
+
+b= scene.addCircleNode(vec2df(300, 250), 20, 'yellow');
+b.grav= 1; b.speed= 0;
+
+
+var text = scene.addTextNode(vec2df(10, 10),
+                           'Управление - ПКМ / ЛКМ',
+                           20,
+                           'blue');
+
+
+// Описываем игровое состояние Game
+function Game() {
+
+ scene.clear();
+
+ if (input.lClick) 
+ {
+  a.grav= 0;
+  a.moveTo(input);
+ }
+
+ if (input.rClick) 
+ {
+  b.grav= 0;
+  b.moveTo(input);
+ }
+
+ phys(a);
+ phys(b);
+
+ phys2(a, b);
+
+ text.draw();
+
+}
+
+
+function phys2(_id1, _id2)
+{
+ // проверим, столкнулись ли объекты
+ if (_id1.isCollision(_id2))
+ {
+  // если столкнулись, передаем силу гравитации одного - другому, умножив их
+  // на коэффициент, определяющий, какой из них выше, чтобы оттолкнуть объект
+  // в нужном направлении
+  _id2.grav= Math.abs(_id2.grav + _id1.grav) * (_id1.getPosition().y < _id2.getPosition().y ? 1 : -1);
+  // второму просто присваиваем гравитацию, обрутную получившейся и немного ее снижаем
+  _id1.grav= (_id2.grav) * (-1);  
+
+  // тут можно было так же домножить скорость на коэффициент, но решили пока так:
+  // Если 1 объект сврху, то позиционируем его, избегая прохождения сквозь
+  // и аналогично, если он снизу
+  if (_id1.getPosition().y < _id2.getPosition().y) 
+   _id1.pos.y= -_id1.size.y + _id2.pos.y;
+  else
+   _id1.pos.y= _id2.size.y + _id2.pos.y;
+
+ // тут, можно рассчитать угол отражения, но мы поступили проще
+ // взяв разность между центрами объектов и поделив их на 100, чтобы снизить импульс
+ // на выходе
+ _id1.speed= (_id1.getPosition().x - _id2.getPosition().x) * 0.1;
+ // второму объекту присвоили обратную силу, отталкивая его
+ _id2.speed= -_id1.speed; 
+ }
+}
+
+
+function phys(_id)
+{
+ // если столкновение с нижней границей сцены
+ if (_id.isCollisionScene().y > 0)
+ {
+  // ихбегаем проваливания сквозь нее
+  _id.pos.y= -_id.size.y + scene.height;
+  // даем возможность шарику "отскочить", снизив его скоросьт (*0,7)
+  _id.grav= -_id.grav * 0.7;
+  // При этом, если его гравитация слишком мала, обнуляем ее, чтобы объект не трясло
+  if ( (Math.abs(_id.grav) > 0) && (Math.abs(_id.grav) < 0.5) ) _id.grav= 0;
+ } 
+ // если столкновения нет, увеличиваем гравитацию для объекта и
+ else
+ {
+  _id.grav+= _id.grav < 10 ? 0.2 : 0; 
+ }
+ // если скорость движения отлична от нуля, замедляем движение (сила трения, сопротивление и т.д.)
+ _id.speed+= _id.speed > 0 ? -0.05 : 0.05; 
+ // При этом если скорость станет совсем маленькой, обнуляем ее
+ if (Math.abs(_id.speed) < 0.1) _id.speed= 0; 
+ // Толкаме обхект с заданной скоростью и гравитацией
+ _id.move(vec2df(_id.speed, _id.grav));
+ // отрисовываем
+ _id.draw();
+}
+
+
+j2ds.on('loadedDOM', function () {
+	input.setCursorImage('Base/cursor.png');
+});
+
+
+// Стартуем игру с игровым состоянием Game и FPS 60
+scene.start(Game, 60);
+</script>
+
+</body>
+</html>
