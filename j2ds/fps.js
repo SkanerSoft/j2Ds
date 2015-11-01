@@ -10,7 +10,7 @@ var createFpsManager = function () {
   /* Методы */
 
   start : function () {
-  	this. tmp_of_fps += 1;
+  	this.tmp_of_fps += 1;
   },
 
   end : function () {
@@ -22,7 +22,7 @@ var createFpsManager = function () {
   },
 
   getFPS : function () {
-  	return (this.fps);
+  	return (this.fps-1);
   }
 
  };

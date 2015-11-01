@@ -11,10 +11,11 @@
 
 <script type="text/javascript">
 
-var scene= j2ds.scene;
-var input= j2ds.input;
+var scene= j2ds.getScene();
+var input= j2ds.getIO();
 var vec2df= j2ds.vector.vec2df;
 var Random= j2ds.math.random;
+var textureManager = j2ds.getTextureManager();
 
 scene.init(800, 400);
 
@@ -23,11 +24,11 @@ var nodes= [];
 
 var fps= createFpsManager();
 
-var imageMap = scene.texture.loadImageMap('img/map.png');
+var imageMap = textureManager.loadImageMap('img/map.png');
 
 var anim= imageMap.getAnimation(6, 55, 47, 41, 1);
 
-var text = scene.addTextNode(vec2df(10, 10), 'sdsd', 50, 'black');
+var text = scene.addTextNode(vec2df(10, 10), 'sdsd', 50, 'black', 'Courier New', 8, 'white');
 
 // объявление игровой функции
 var fpsTest= function () {
@@ -59,8 +60,8 @@ var fpsTest= function () {
   nodes[i].move(vec2df(nodes[i].dx*j2ds.dt, nodes[i].dy*j2ds.dt));
   nodes[i].draw();
   
-  if (nodes[i].isCollisionScene().x) nodes[i].dx*= (-1);
-  if (nodes[i].isCollisionScene().y) nodes[i].dy*= (-1);
+  if (nodes[i].isOutScene().x) nodes[i].dx*= (-1);
+  if (nodes[i].isOutScene().y) nodes[i].dy*= (-1);
 
  } 
   
