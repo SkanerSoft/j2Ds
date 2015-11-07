@@ -6,7 +6,7 @@
 
 Автор движка: [Skaner](https://youtube.com/SkanerSoft?sub_confirmation=1) (Нагель Петр)
 
-Главный помощник: [likerRr](http://github.com/likerRr) (Алексей)
+Главный помощник (версия 0.0.4 - 0.0.5): [likerRr](http://github.com/likerRr) (Алексей)
 
 E-mail: skaner0@yandex.ru
 
@@ -14,7 +14,7 @@ vk: [vk.com/skaner.soft](http://vk.com/skaner.soft)
 
 youtube: [youtube.com/skanersoft](https://youtube.com/SkanerSoft?sub_confirmation=1)
 
-Сайты: [nagel-petr.ru](http://nagel-petr.ru), [skanersoft.ru](http://skanersoft.ru)
+Сайты: [j2ds.ru](http://j2ds.ru), [nagel-petr.ru](http://nagel-petr.ru), [skanersoft.ru](http://skanersoft.ru)
 
 
 #### Если у вас возникают вопросы по работе с движком, либо у вас есть предложения, писать нужно на форум, там ответ вы получите гораздо быстрее,

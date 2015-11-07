@@ -11,7 +11,7 @@ var j2ds = {
  dom : {},
  now : 0,
  dt : 0,
- framelimit : 60,
+ frameLimit : 60,
  sceneStartTime : 0,
  sceneSkipTime : 0,
  engine : false,
@@ -20,6 +20,7 @@ var j2ds = {
 
  getInfo : false,
  getScene : function () { return j2ds.scene; },
+ //getDevice() - уже определена
  getLayers : function () { return j2ds.layers; },
  getTextureManager : function () { return j2ds.scene.texture; },
  getIO : function () { return j2ds.input; },
@@ -30,7 +31,7 @@ var j2ds = {
 j2ds.getInfo = function () {
 	return {
 	 'name' : 'j2Ds',
-	 'version' : '0.1.0',
+	 'version' : '0.1.1',
 	 'site' : 'https://github.com/SkanerSoft/J2ds',
 	 'info' : 'j2Ds - HTML5 2D Game Engine',
 	 'author' : 'Skaner'
@@ -81,7 +82,6 @@ j2ds.math.rndColor = function (_min, _max, _alpha) {
 
 j2ds.math.random = function (_min, _max, _omitZero) {
  var rnd = (Math.floor(Math.random() * (_max - _min + 1) + _min));
-
  return (_omitZero && rnd == 0) ? j2ds.math.random(_min, _max, _omitZero) : rnd;
 };
 
@@ -90,7 +90,6 @@ j2ds.math.rad = function (_num) {
 };
 
 /* функции */
-
 j2ds.setWindow = function (_window) {
 	j2ds.window = _window ? _window : window;
 };
@@ -103,10 +102,10 @@ j2ds.getDevice = function() {
 };
 
 // старт игры
-j2ds.start = function(_engine, _framelimit) {
+j2ds.start = function(_engine, _frameLimit) {
  j2ds.engine = _engine || function() { document.body.innerHTML = 'Пожалуйста, инициализируйте игровую функцию!'; };
- j2ds.framelimit = _framelimit || 60;
- j2ds.sceneSkipTime = 1000.0 / j2ds.framelimit;
+ j2ds.frameLimit = _frameLimit || 60;
+ j2ds.sceneSkipTime = 1000.0 / j2ds.frameLimit;
  j2ds.lastTime = Date.now();
  j2ds.dt = 0;
  j2ds.sceneStartTime = j2ds.lastTime;
@@ -119,7 +118,7 @@ j2ds.setActiveEngine = function(_engine) {
 
 j2ds.gameEngine = function(){
  j2ds.now = Date.now();
- setTimeout( function () {
+ setTimeout(function () {
   j2ds.input.upd();
   j2ds.dt = (j2ds.now - j2ds.lastTime) / 100.0;
   if (j2ds.dt > j2ds.sceneSkipTime) {
@@ -141,7 +140,7 @@ var nextJ2dsGameStep = (function() {
  window.oRequestAnimationFrame       ||
  window.msRequestAnimationFrame      ||
  function (callback) {
-  window.setTimeout(callback, 1000 / j2ds.framelimit);
+  window.setTimeout(callback, 1000 / j2ds.frameLimit);
  };
 })();
 
@@ -579,10 +578,10 @@ j2ds.scene.setGameState = function(_engine) {
  j2ds.onEvent('scene:changedGameState');
 };
 
-j2ds.scene.start = function (_engine, _framelimit) {
+j2ds.scene.start = function (_engine, _frameLimit) {
  j2ds.input.init();
  j2ds.onEvent('scene:beforeStart');
- j2ds.start(_engine, _framelimit);
+ j2ds.start(_engine, _frameLimit);
  j2ds.onEvent('scene:afterStart');
 };
 

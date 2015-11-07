@@ -4,11 +4,14 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />
   <script type="text/javascript" src="j2ds/j2ds.js"></script>
+  <script type="text/javascript" src="j2ds/fps.js"></script>
   <title>html5 page</title>
  </head>
  <body>
 <script type="text/javascript">
 // this is JavaScript's
+
+var fps = createFpsManager();
 
 var scene = j2ds.getScene();
 var layers = j2ds.getLayers();
@@ -20,13 +23,22 @@ scene.init(300, 300);
 
 var a = scene.addRectNode(v2f(0, 0), v2f(50, 50), 'red');
 
-var gs = function () {
- scene.clear();
+var b = scene.addTextNode(v2f(50, 50), '', 15, 'blue');
 
+var gs = function () {
+ fps.start();
+
+ scene.clear();
+ a.move(v2f(5*j2ds.dt, 0));
  a.draw();
+ 
+ if (a.getPosition().x > scene.width) a.setPosition(v2f(0, a.getPosition().y));
+ 
+ fps.end();
+ b.drawSimpleText('FPS: '+fps.getFPS());
 };
 
-scene.start(gs);
+scene.start(gs, 60);
 
 // end of script
 </script>
