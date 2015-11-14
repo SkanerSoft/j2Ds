@@ -1,3 +1,10 @@
+/*
+ author: Skaner
+ url: http://yputube.com/SkanerSoft
+ This script is counter of FPS in your Games on JS
+ GameDev by SkanerSoft and j2Ds Game Engine
+*/
+
 var createFpsManager = function () {
  return {
 

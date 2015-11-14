@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html> 
+ <head>
+  <script type="text/javascript" src="../../j2ds/j2ds.js"></script>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width,user-scalable=no" />  
+  <title>BezaBead</title>
+ </head>
+
+<body>
+<script type="text/javascript">
+grav= 0; speed= 1; score= 0; maxScore= 0;
+
+// Создаем сцену
+var scene= j2ds.getScene();
+var Random = j2ds.math.random;
+var vec2df = j2ds.vector.vec2df;
+var io = j2ds.getIO();
+var dev = j2ds.getDevice();
+
+
+scene.init(dev.width/2, dev.height/2);
+
+scene.fullScreen(true);
+
+var text = scene.addTextNode(vec2df(0, 0), '', 12, 'black', 'Comic Sans MS');
+var text40 = scene.addTextNode(vec2df(0, 0), '', 20, 'black', 'Comic Sans MS');
+
+var gs= { r:221, g:226, b:227, max:250, min:30 };
+
+var gsDark = function(_a) {
+ _a= _a || 1;
+ return ('rgba('+Random(gs.min, gs.r)+','+
+                       Random(gs.min, gs.g)+','+
+                       Random(gs.min, gs.b)+', '+_a+')');
+};
+
+var gsLight= function() {
+ return ('rgb('+Random(gs.r, gs.max)+','+
+                       Random(gs.g, gs.max)+','+
+                       Random(gs.b, gs.max)+')');
+};
+
+
+scene.fillStyle= '#326598';
+scene.strokeStyle= '#a2a2a2';
+scene.font= '18px sens-serif'; 
+scene.color= 'rgb('+gs.r+','+
+                       gs.g+','+
+                       gs.b+')';
+
+function CreateGame() {
+
+     grav= 0,
+     speed= 5,
+     score= 0;
+
+ // Создаем прямоугольник
+ a= scene.addRectNode(vec2df(0, -50), vec2df(20, 20), gsDark()); 
+ a.setRotation(30);
+
+ arr= []; count= 13;
+ arr[0]= scene.addRectNode(vec2df(0, 0), vec2df(200, 20), gsDark()); 
+ old= arr[0];
+ 
+ for (var i= 1; i<count; i+=1) {
+  arr[i]= scene.addRectNode( 
+          vec2df(old.pos.x+old.size.x+Random(2, 10), old.pos.y-Random(0,2) ),
+          vec2df(Random(30, 60), 20),
+                old.color
+               ); 
+  old= arr[i];
+ }
+ 
+ back= [];
+ back[0]= scene.addRectNode(vec2df(50, 0), 
+                vec2df(100, 100),
+                gsDark(0.2)
+               );
+ oldB= back[0];
+               
+ for (var i= 1; i<count; i+=1) {
+  back[i]= scene.addRectNode( 
+           vec2df(oldB.pos.x+oldB.size.x+Random(2, 10), oldB.pos.y-Random(0, 200)),
+                vec2df(Random(10, 100), Random(10, 100)),
+                gsDark(0.2)
+               ); 
+  oldB= arr[i];
+ }
+ 
+}
+
+dY= -60;
+function GameNew() {
+ scene.clear();
+ dY+= dY < 0 ? 1 : 0;
+ 
+ if (io.isKeyDown('UP') || io.lClick) {
+  CreateGame();
+  scene.setGameState(Engine); 
+ }
+ 
+ text40.drawSimpleText('BezaBead', vec2df(240, 80+dY), '#326598');
+ text40.drawSimpleText( 'Коснись экрана, чтобы начать', vec2df(150, 100+dY));;
+}
+
+
+d2Y= -60;
+function GameOver() {
+ scene.clear();
+ 
+ d2Y+= d2Y < 0 ? 1 : 0;
+ 
+ if (io.isKeyDown('UP') || (io.lClick)) {
+  CreateGame();
+  scene.setGameState(Engine); 
+ }
+ 
+ text40.drawSimpleText('Game Over', vec2df(240, 80+d2Y), '#326598');
+ text40.drawSimpleText('Коснись, чтобы сыграть снова', vec2df(150, 110+d2Y));
+ text40.drawSimpleText('YouTube.com/SkanerSoft', vec2df(165, 130+d2Y));
+ text40.drawSimpleText('Самый крутой счет: '+maxScore, vec2df(180, 160+d2Y));
+ 
+}
+
+// Инициализируем игровой цикл
+function Engine() {
+
+ scene.clear();
+
+ grav+= (grav > -3 ? -0.5 : 0);
+  
+
+ for (var i= 0; i<count; i+=1) {
+  if (!back[i].isLookScene(scene) && back[i].pos.x < a.pos.x)
+   {
+    back[i].color= gsDark(0.2);
+    back[i].setPosition(vec2df(scene.view.x+scene.width+oldB.size.x, 
+                       a.getPosition().y-Random(0, 200)));
+    oldB= back[i]; 
+    score+= 1; 
+   }
+   
+   if (back[i].pos.x+back[i].size.x > a.pos.x) {
+    if (a.getDistance(back[i]) > 400) {
+     back[i].move(vec2df(speed-(speed*back[i].size.x*0.05),0));
+    } else {
+     back[i].move(vec2df(speed-(speed*back[i].size.x*0.01),0));
+    }
+   } else {
+    back[i].move(vec2df(speed-(speed*back[i].size.x*0.05),0));
+   }   
+   
+   back[i].draw(scene);
+ }
+
+ for (var i= 0; i<count; i+=1) {
+
+    if (a.isIntersect(arr[i])) {
+     if (a.getPosition().y+a.size.y/2-3 < arr[i].getPosition().y-arr[i].size.y/2 && a.pos.x+a.size.x > arr[i].pos.x) {
+       a.setRotation(0); grav= 0;
+       if (io.isKeyDown('UP') || io.lClick) grav= 5; 
+     } else { 
+      a.color= 'red'; 
+      d2Y= -60; 
+      maxScore= maxScore>score?maxScore:score;
+      scene.setGameState(GameOver); 
+      io.cancel();
+     }
+    }
+   
+   
+   if (arr[i].pos.x+arr[i].size.x < a.pos.x) {
+    arr[i].move(vec2df(-speed,0));
+   } 
+   
+   
+  
+    if (!arr[i].isLookScene(scene) && arr[i].pos.x < a.pos.x)
+    {
+     arr[i].setSize(vec2df(speed+Random(20, 100), 20));
+     arr[i].setPosition(vec2df(old.getPosition().x+old.size.x+speed*2+Random(0, 20), -speed+old.getPosition().y/2-Random(0, 20)));
+     old= arr[i]; 
+     score+= 1; 
+    }
+    arr[i].draw(scene);
+    
+   
+ }
+ speed+= j2ds.dt*((speed < 30 && grav == 0 )? (0.05) : ((speed > 1 && grav > 0) ? (-0.05) : 0));  
+ a.move(vec2df(speed, -grav)); if (grav != 0) a.turn(2+Math.abs(grav));
+
+  
+
+ // Альтернативный вариант позиционирования камеры 
+ scene.setViewFocus(a, vec2df(100, -50));
+
+
+ // Рисуем наши объекты
+ a.draw();
+
+ // Выводим текст
+ text.drawSimpleText('Счет: '+score+' | Рекорд: '+maxScore, vec2df(10, 5)); 
+  
+}  
+
+scene.start(GameNew, 30);
+</script>
+
+</body>
+</html>

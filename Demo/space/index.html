@@ -3,7 +3,7 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />  
-  <script type="text/javascript" src="../j2ds/j2ds.js"></script>
+  <script type="text/javascript" src="../../j2ds/j2ds.js"></script>
   <title>Space Example</title>
  </head>
  <body>
@@ -11,15 +11,15 @@
 <script type="text/javascript">
 
 var dvc= j2ds.getDevice();
-var scene= j2ds.scene;
-var input= j2ds.input;
-var layers= scene.layers;
+var scene= j2ds.getScene();
+var input= j2ds.getIO();
+var layers= j2ds.getLayers();
 var vec2df= j2ds.vector.vec2df;
 var vec2di= j2ds.vector.vec2di;
 var Random= j2ds.math.random;
 var rndColor= j2ds.math.rndColor;
 
-scene.init(800, 400);
+scene.init(dvc.width, dvc.height);
 
 layers.add('space', -1);
 layers.layer('space').fill('#212121');
@@ -54,20 +54,11 @@ layers.layer('back').onContext(function (context) {
 
 });
 
-layers.add('logo', 0);
+layers.add('logo', 3);
 //layers.layer('logo').setAlpha(0.4);
-
-scene.fullScreen(true);
-
-var jLogo= scene.addSpriteNode(vec2df(0, 0), vec2df(scene.width/3, scene.height/3), 
-                               scene.texture.loadImageMap('Base/j2Ds-Logo.png').getAnimation(0, 0, 634, 314, 1));
-jLogo.setPosition(vec2df(scene.width/2, scene.height/2));
-jLogo.setAlpha(0);
-jLogo.setLayer('logo');
 
 var max= 1000;
 
-var fullShow= false;
 
 for (var i= 0, ob= []; i < max; i+=1) {
  var dy= Random(80, scene.height);
@@ -79,7 +70,7 @@ for (var i= 0, ob= []; i < max; i+=1) {
 
  var r= Random(1, 3);
  var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r*0.5, r*0.5), color);
- o.dx= Random(1, 40)*0.05*r/5;
+ o.dx= Random(1, 40)*0.05*r/Random(10, 50);
  o.rnd= (Random(0, 50) == 1);
  ob.push(o);
 }
@@ -94,7 +85,7 @@ for (var i= 0, ob2= []; i < max; i+=1) {
 
  var r= Random(1, 3);
  var o= scene.addRectNode(vec2df(Random(0, scene.width-10), dy), vec2df(r*0.5, r*0.5), color);
- o.dx= -Random(1, 40)*0.05*r/5;
+ o.dx= -Random(1, 40)*0.05*r/Random(10, 50);
  ob2.push(o);
 }
 
@@ -106,11 +97,11 @@ var Game= function () {
 
  for (var i= 0; i < max; i+=1) {
 
- 	if (ob2[i].isCollisionScene().x < 0) {
+ 	if (ob2[i].isOutScene().x < 0) {
  	 ob2[i].pos.x= scene.width;
   }
 
- 	if (ob[i].isCollisionScene().x) {
+ 	if (ob[i].isOutScene().x) {
  	 ob[i].pos.x= 0;
   }
 
@@ -120,17 +111,6 @@ var Game= function () {
   ob2[i].draw();
  }
 
-
- if (j2ds.now - tmpTime > 5000 && j2ds.now - tmpTime < 20000)
- {
-  if (jLogo.alpha <= 1) {
-   jLogo.setAlpha(jLogo.alpha+0.001*j2ds.dt);
-   jLogo.setSize(vec2df(jLogo.getSize().x+0.2*j2ds.dt, jLogo.getSize().y+0.2*j2ds.dt));
-   jLogo.move(vec2df(-0.1*j2ds.dt, -0.1*j2ds.dt));
-  }
- }
-
- jLogo.draw();
 
  for (var i= 0; i < max; i+=1) {
   if (ob[i].rnd) {
@@ -144,6 +124,16 @@ var Game= function () {
 
 scene.start(Game, 60);
 
+
+j2ds.on('scene:deactivate', function () {
+ var text =	scene.addTextNode(vec2df(5, scene.height-40), 'Чтобы воспроизвести, кликни', 20, 'white', 'serif');
+ text.setLayer('logo');
+ text.draw();
+});
+
+j2ds.on('scene:activate', function () {
+ layers.layer('logo').clear();
+});
 
 </script>
 
