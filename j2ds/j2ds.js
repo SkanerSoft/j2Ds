@@ -32,7 +32,7 @@ var j2ds = {
 j2ds.getInfo = function () {
 	return {
 	 'name' : 'j2Ds',
-	 'version' : '0.2.0',
+	 'version' : '0.3.0',
 	 'site' : 'https://github.com/SkanerSoft/J2ds',
 	 'info' : 'j2Ds - HTML5 2D Game Engine',
 	 'author' : 'Skaner'
@@ -59,6 +59,9 @@ j2ds.dom.goURL = function (_url) {
 	document.location.href = _url;
 };
 
+j2ds.dom.reloadURL = function () {
+	document.location.href = document.location.href;
+};
 
 
 
@@ -132,6 +135,7 @@ j2ds.gameEngine = function() {
    j2ds.input.keyUp = [];
    j2ds.input.mousePress = [];
    j2ds.input.mouseUp = [];
+   j2ds.input.mouseWheel = 0;
    nextJ2dsGameStep(j2ds.gameEngine);   
   }
  }, (j2ds.frameLimit < 60 ? j2ds.sceneSkipTime : 0));
@@ -177,6 +181,7 @@ j2ds.input = {
  mousePressed : [],
  mouseUp : [],
  mouseUpped : false,
+ mouseWheel : 0,
  canceled : false,
  body : false,
  anyKey : false,
@@ -379,11 +384,21 @@ j2ds.input.isMousePress = function(_code) {
 };
 
 j2ds.input.isMouseUp = function(_code) {
-return this.mouseUp[this.mKey[_code]];
+ return this.mouseUp[this.mKey[_code]];
+};
+
+j2ds.input.isMouseWheel = function(_code) {
+ return (_code == 'UP' && this.mouseWheel > 0) ||
+        (_code == 'DOWN' && this.mouseWheel < 0)
+};
+
+j2ds.input.onMouseWheel = function (e) {
+	this.mouseWheel = ((e.wheelDelta) ? e.wheelDelta : -e.detail);
+	e.preventDefault();
+	return false;
 };
 
 j2ds.input.onMouseEvent = function(e) {
-
  if (!e.which && e.button) {
   if (e.button & 1) e.which = 1;
   else if (e.button & 4) e.which = 2;
@@ -431,7 +446,7 @@ j2ds.input.isVisible = function () {
 
 j2ds.input.init = function() {
  j2ds.window.focus();
- j2ds.window.oncontextmenu = function() { return false; }
+ j2ds.window.oncontextmenu = function() { return false; };
  j2ds.window.onselectstart = j2ds.window.oncontextmenu;
  j2ds.window.ondragstart = j2ds.window.oncontextmenu;
  j2ds.window.onmousedown = j2ds.input.onMouseEvent;
@@ -440,6 +455,13 @@ j2ds.input.init = function() {
  j2ds.window.onkeydown = function(e) { j2ds.input.keyEvent(e); };
  j2ds.window.onkeyup = function(e) { j2ds.input.canceled = false; j2ds.input.keyEvent(e); };
  j2ds.window.onkeypress = function(e) { j2ds.input.keyEvent(e); };
+ j2ds.window.onmousewheel = function(e) { j2ds.input.onMouseWheel(e); };
+
+ if (j2ds.window.addEventListener) {
+  j2ds.window.addEventListener("DOMMouseScroll", function(e) {
+  	j2ds.input.onMouseWheel(e);
+  }, false);
+ }
 
  j2ds.window.onblur = function () {
   if (j2ds.stopAll == 0) {
