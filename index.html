@@ -18,16 +18,16 @@ var v2f = j2ds.getMathManager().v2f;
 
 scene.init(300, 300);
 
-scene.setAutoClear(true);
+//scene.setAutoClear(true);
 
 
 j2ds.getGameStateManager().add('myGame', function () {
 
-
+ scene.getLayer().fill(j2ds.getMathManager().rndColor(0, 255, 0.1));
 
 });
 
-scene.start('myGame', 20);
+scene.start('myGame', 60);
 
 // end of script
 </script>

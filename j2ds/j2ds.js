@@ -36,6 +36,7 @@ var j2ds = {
  },
 
  getSoundManager : function() {
+  j2ds.sound.init();
   return j2ds.sound;
  },
 
@@ -265,14 +266,33 @@ var nextJ2dsGameStep = (function() {
  };
 })();
 
+j2ds.stopEngine = function () {
+ j2ds.stopAll = 1;
+ if (j2ds.sound.enabled) {
+  j2ds.sound.deactivate();
+ }
+};
+
+j2ds.runEngine = function () {
+ j2ds.stopAll = 0;
+ if (j2ds.sound.enabled) {
+  j2ds.sound.activate();
+ }
+};
+
+
 
 
 /*----------------- Sound -------------------*/
 
 j2ds.sound = {
  sounds : {},
+ enabled : false
 };
 
+j2ds.sound.init = function () {
+ j2ds.sound.enabled = true;
+};
 
 j2ds.sound.load = function (_id, _files, _vol) {
 
@@ -311,6 +331,10 @@ j2ds.sound.load = function (_id, _files, _vol) {
 
  o.domEl.onerror = function () {
   o.setLock(true);
+ };
+
+ o.domEl.onended = function () {
+  o.state = 'stop';
  };
 
  o.play = function (_unlock) {
@@ -394,6 +418,25 @@ j2ds.sound.play = function (_unlock) {
   j2ds.sound.sounds[snd].play(_unlock);
  }
 };
+
+j2ds.sound.deactivate = function () {
+ for (var snd in j2ds.sound.sounds) {
+  if (j2ds.sound.sounds[snd].state == 'play') {
+   j2ds.sound.sounds[snd].pause();
+   j2ds.sound.sounds[snd].state = 'deactivated';
+  }
+ }
+};
+
+j2ds.sound.activate = function () {
+ for (var snd in j2ds.sound.sounds) {
+  if (j2ds.sound.sounds[snd].state == 'deactivated') {
+   j2ds.sound.sounds[snd].play();
+  }
+ }
+};
+
+
 
 
 
@@ -1084,14 +1127,14 @@ j2ds.scene.init = function(_w, _h) {
 
   j2ds.window.onblur = function () {
    if (j2ds.stopAll == 0) {
-    j2ds.stopAll = 1;
+    j2ds.stopEngine();
     j2ds.onEvent('scene:deactivate');
    }
   };
 
   j2ds.window.onfocus = function () {
    if (j2ds.stopAll == 1) {
-    j2ds.stopAll = 0;
+    j2ds.runEngine();
     nextJ2dsGameStep(j2ds.gameEngine);
     j2ds.onEvent('scene:activate');
     j2ds.input.cancel();
