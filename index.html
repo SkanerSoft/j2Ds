@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html> 
+<html>
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />
@@ -11,37 +11,23 @@
 <script type="text/javascript">
 // this is JavaScript's
 
-var fps = createFpsManager();
-
-var scene = j2ds.getScene();
-var layers = j2ds.getLayers();
+var scene = j2ds.getSceneManager();
 var io = j2ds.getIO();
 
-var v2f = j2ds.vector.vec2df;
+var v2f = j2ds.getMathManager().v2f;
 
 scene.init(300, 300);
 
-var a = scene.addRectNode(v2f(0, 0), v2f(50, 50), 'red');
+scene.setAutoClear(true);
 
-var b = scene.addTextNode(v2f(50, 50), '', 15, 'blue');
 
-var gs = function () {
- fps.start();
- scene.clear();
+j2ds.getGameStateManager().add('myGame', function () {
 
- if (io.isMouseWheel('UP')) {
-  a.move(v2f(0, -5));
- } else if (io.isMouseWheel('DOWN')) {
-  a.move(v2f(0, 5));
- }
 
- a.draw();
 
- fps.end();
- b.drawSimpleText('FPS: '+fps.getFPS());
-};
+});
 
-scene.start(gs, 60);
+scene.start('myGame', 20);
 
 // end of script
 </script>
