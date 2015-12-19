@@ -9,7 +9,7 @@ var j2ds = {
  vector : {},
  math : {},
  dom : {},
- now : 0,
+ now : Date.now,
  dt : 0,
  stopAll : 0,
  frameLimit : 60,
@@ -18,14 +18,19 @@ var j2ds = {
  engine : false,
  ready : false,
  window : window,
+ canDeactivate : true,
 
  getInfo : false, // Определена
+ getDeviceManager : false, // Определена
+
+ getFPSManager : function() {
+  j2ds.fpsManager.enabled = true;
+  return j2ds.fpsManager;
+ },
 
  getSceneManager : function () {
   return j2ds.scene;
  },
-
- getDeviceManager : false, // Jпределена
 
  getLayerManager : function () {
   return j2ds.layers;
@@ -35,9 +40,9 @@ var j2ds = {
   return j2ds.scene.texture;
  },
 
- getSoundManager : function() {
-  j2ds.sound.init();
-  return j2ds.sound;
+ getAudioManager : function() {
+  j2ds.audio.init();
+  return j2ds.audio;
  },
 
  getPaintManager : function() {
@@ -60,6 +65,11 @@ var j2ds = {
   return j2ds.dom;
  },
 
+ getTriggerManager : function () {
+  j2ds.trigger.init();
+  return j2ds.trigger;
+ },
+
  getMathManager : function() {
   return j2ds.math;
  },
@@ -77,7 +87,7 @@ var j2ds = {
 j2ds.getInfo = function() {
 	return {
 	 'name' : 'j2Ds',
-	 'version' : '0.4.0',
+	 'version' : '0.5.0',
 	 'site' : 'https://github.com/SkanerSoft/J2ds',
 	 'info' : 'j2Ds - HTML5 2D Game Engine',
 	 'author' : 'Skaner'
@@ -196,7 +206,15 @@ j2ds.math.rad = function (_num) {
  return _num * (Math.PI / 180);
 };
 
-/* функции */
+
+
+
+
+
+
+
+/*-------------------j2Ds--------------------*/
+
 j2ds.setWindow = function (_window) {
 	j2ds.window = _window ? _window : window;
 };
@@ -209,7 +227,7 @@ j2ds.getDeviceManager = function() {
 };
 
 j2ds.start = function(_engine, _frameLimit) {
- j2ds.engine = _engine || function() { document.body.innerHTML = 'Пожалуйста, инициализируйте игровую функцию!'; };
+ j2ds.setActiveEngine(_engine);
  j2ds.frameLimit = _frameLimit || 60;
  j2ds.sceneSkipTime = 1000.0 / j2ds.frameLimit;
  j2ds.lastTime = Date.now();
@@ -219,7 +237,7 @@ j2ds.start = function(_engine, _frameLimit) {
 };
 
 j2ds.setActiveEngine = function(_engine) {
-	j2ds.engine = _engine;
+	j2ds.engine = (typeof _engine == 'function' ? _engine : console.log('Error in "GameStateManager"'));
 };
 
 j2ds.gameEngine = function() {
@@ -250,6 +268,7 @@ j2ds.gameEngine = function() {
    j2ds.lastTime = j2ds.now;
    j2ds.input.reset();
    j2ds.touch.reset();
+   j2ds.fpsManager.upd();
    nextJ2dsGameStep(j2ds.gameEngine);
   }
  }, (j2ds.frameLimit < 60 ? j2ds.sceneSkipTime : 0));
@@ -267,35 +286,116 @@ var nextJ2dsGameStep = (function() {
 })();
 
 j2ds.stopEngine = function () {
+ if (!j2ds.canDeactivate) return;
  j2ds.stopAll = 1;
- if (j2ds.sound.enabled) {
-  j2ds.sound.deactivate();
+ if (j2ds.audio.enabled) {
+  j2ds.audio.deactivate();
  }
 };
 
 j2ds.runEngine = function () {
+ if (!j2ds.canDeactivate) return;
  j2ds.stopAll = 0;
- if (j2ds.sound.enabled) {
-  j2ds.sound.activate();
+ if (j2ds.audio.enabled) {
+  j2ds.audio.activate();
  }
 };
 
 
 
 
-/*----------------- Sound -------------------*/
 
-j2ds.sound = {
- sounds : {},
+
+
+
+/*----------------- Триггеры -------------------*/
+
+j2ds.trigger = {
+ enabled : false,
+ triggers : {}
+};
+
+j2ds.trigger.add = function (_id, _func) {
+ var o = {
+  command : _func,
+  count : 0,
+  state : 'stop',
+  last : false
+ };
+
+ o.run = function (_mSec) {
+  if (this.state == 'job') {
+   this.command();
+   return;
+  }
+  if (j2ds.now - this.last > _mSec) {
+   if (this.last) {
+    this.state = 'job';
+    this.count+= 1;
+    this.command();
+   }
+   this.last = j2ds.now;
+  }
+ };
+
+ o.job = function (_mSec) {
+  if (j2ds.now - this.last > _mSec && this.state != 'run') {
+   if (this.last) {
+    this.state = 'run';
+    this.count+= 1;
+    this.command();
+   }
+   this.last = j2ds.now;
+  }
+ };
+
+ o.loop = function (_mSec) {
+  if (j2ds.now - this.last > _mSec) {
+   if (this.last) {
+    this.state = 'run';
+    this.count+= 1;
+    this.command();
+   }
+   this.last = j2ds.now;
+  }
+ };
+
+ o.reset = function () {
+  this.count = 0;
+  this.state = 'stop';
+  this.last = false;
+ };
+
+ j2ds.trigger.triggers[_id] = o;
+ return o;
+};
+
+j2ds.trigger.get = function (_id) {
+ return j2ds.trigger.triggers[_id];
+};
+
+j2ds.trigger.init = function () {
+ j2ds.trigger.enabled = true;
+};
+
+
+
+
+
+
+
+/*----------------- audio -------------------*/
+
+j2ds.audio = {
+ audios : {},
  enabled : false
 };
 
-j2ds.sound.init = function () {
- j2ds.sound.enabled = true;
+j2ds.audio.init = function () {
+ j2ds.audio.enabled = true;
 };
 
-j2ds.sound.load = function (_id, _files, _vol) {
-
+j2ds.audio.load = function (_id, _files, _vol) {
  var audio = document.createElement('audio'),
      source = false;
  for (var i = 0, len = _files.length; i<len; i+=1) {
@@ -393,45 +493,45 @@ j2ds.sound.load = function (_id, _files, _vol) {
   return this.domEl.currentTime;
  };
 
- j2ds.sound.sounds[_id] = o;
+ j2ds.audio.audios[_id] = o;
  return o;
 };
 
-j2ds.sound.get = function (_id) {
- return j2ds.sound.sounds[_id];
+j2ds.audio.get = function (_id) {
+ return j2ds.audio.audios[_id];
 };
 
-j2ds.sound.pause = function (_lock) {
- for (var snd in j2ds.sound.sounds) {
-  j2ds.sound.sounds[snd].pause(_lock);
+j2ds.audio.pause = function (_lock) {
+ for (var snd in j2ds.audio.audios) {
+  j2ds.audio.audios[snd].pause(_lock);
  }
 };
 
-j2ds.sound.stop = function (_lock) {
- for (var snd in j2ds.sound.sounds) {
-  j2ds.sound.sounds[snd].stop(_lock);
+j2ds.audio.stop = function (_lock) {
+ for (var snd in j2ds.audio.audios) {
+  j2ds.audio.audios[snd].stop(_lock);
  }
 };
 
-j2ds.sound.play = function (_unlock) {
- for (var snd in j2ds.sound.sounds) {
-  j2ds.sound.sounds[snd].play(_unlock);
+j2ds.audio.play = function (_unlock) {
+ for (var snd in j2ds.audio.audios) {
+  j2ds.audio.audios[snd].play(_unlock);
  }
 };
 
-j2ds.sound.deactivate = function () {
- for (var snd in j2ds.sound.sounds) {
-  if (j2ds.sound.sounds[snd].state == 'play') {
-   j2ds.sound.sounds[snd].pause();
-   j2ds.sound.sounds[snd].state = 'deactivated';
+j2ds.audio.deactivate = function () {
+ for (var snd in j2ds.audio.audios) {
+  if (j2ds.audio.audios[snd].state == 'play') {
+   j2ds.audio.audios[snd].pause();
+   j2ds.audio.audios[snd].state = 'deactivated';
   }
  }
 };
 
-j2ds.sound.activate = function () {
- for (var snd in j2ds.sound.sounds) {
-  if (j2ds.sound.sounds[snd].state == 'deactivated') {
-   j2ds.sound.sounds[snd].play();
+j2ds.audio.activate = function () {
+ for (var snd in j2ds.audio.audios) {
+  if (j2ds.audio.audios[snd].state == 'deactivated') {
+   j2ds.audio.audios[snd].play();
   }
  }
 };
@@ -739,8 +839,8 @@ j2ds.input.upd = function() {
 };
 
 j2ds.input.onMove = function(e) {
- this.screenPos.x = e.pageX;
- this.screenPos.y = e.pageY;
+ this.screenPos.x = -j2ds.scene.offsetLeft+e.pageX;
+ this.screenPos.y = -j2ds.scene.offsetTop+e.pageY;
 };
 
 j2ds.input.isMouseDown = function(_code) {
@@ -888,7 +988,7 @@ j2ds.layers.layer = function (_id) {
 	return j2ds.layers.list[_id];
 };
 
-j2ds.layers.add = function (_id, _index) {
+j2ds.layers.add = function (_id, _index, _notDOM) {
 
  if (j2ds.layers.list[_id]) {
   return false;
@@ -896,18 +996,27 @@ j2ds.layers.add = function (_id, _index) {
 
 	var o = {};
 	o.layerName = _id;
-	o.canvas = document.createElement('canvas');
+
+	if (!_notDOM) {
+	 o.canvas = document.createElement('canvas');
+	} else {
+	 o.canvas = j2ds.dom.id(_id);
+	}
+
+ o.canvas.style.position = j2ds.scene.stylePosition;
+
+ o.canvas.id = _id;
+
+ o.canvas.style.zIndex = 1000+_index;
+ o.canvas.style.left = j2ds.scene.offsetLeft+'px';
+ o.canvas.style.top = j2ds.scene.offsetTop+'px';
+
 	o.canvas.width = j2ds.scene.width;
 	o.canvas.height = j2ds.scene.height;
 	o.width = j2ds.scene.width;
 	o.height = j2ds.scene.height;
 	o.context = o.canvas.getContext('2d');
 	o.context.shadowColor = 'rgba(0,0,0,0)';
- o.canvas.style.zIndex = 1000+_index;
- o.canvas.style.position = 'fixed';
- o.canvas.style.left = '0';
- o.canvas.style.top = '0';
- o.canvas.id = _id;
  o.alpha = 1;
  o.angle = 0;
  o.visible = 1;
@@ -963,7 +1072,8 @@ j2ds.layers.add = function (_id, _index) {
  };
 
 	j2ds.layers.list[_id] = o;
-	if (j2ds.ready) {
+
+	if (!_notDOM) {
 	 j2ds.dom.attach(j2ds.layers.list[_id].canvas);
 	}
 
@@ -977,11 +1087,13 @@ j2ds.layers.add = function (_id, _index) {
 j2ds.scene = {
  nodes : [],
  layerName : 'sceneNode',
+ stylePosition : 'fixed',
  layers : j2ds.layers,
  autoDraw : false,
  autoClear : false,
  view : false,
- gameStateName : false
+ gameStateName : false,
+ canFullScreen : true
 };
 
 
@@ -1024,6 +1136,7 @@ j2ds.scene.start = function (_name, _frameLimit) {
 };
 
 j2ds.scene.fullScreen = function(_true) {
+ if (!j2ds.scene.canFullScreen) return;
  var layer;
  var tmpCanvas = document.createElement('canvas'); // Нужны для копирования содержимого
  var tmpContext = tmpCanvas.getContext('2d');      // При изменении размера
@@ -1065,6 +1178,7 @@ j2ds.scene.fullScreen = function(_true) {
 };
 
 j2ds.scene.fullScale = function(_true) {
+ if (!j2ds.scene.canFullScreen) return;
  var layer;
  if (_true) {
   for (var i in j2ds.layers.list)
@@ -1092,10 +1206,10 @@ j2ds.scene.clear = function() {
 };
 
 j2ds.scene.getLayer = function () {
-	return j2ds.layers.layer('sceneNode');
+	return j2ds.layers.layer(j2ds.scene.layerName);
 };
 
-j2ds.scene.init = function(_w, _h) {
+j2ds.scene.init = function(_w, _h, _canDeactivate) {
 
  j2ds.onEvent('scene:beforeInit');
 
@@ -1108,10 +1222,16 @@ j2ds.scene.init = function(_w, _h) {
  j2ds.scene.offsetWidth = _w;
  j2ds.scene.offsetHeight = _h;
 
+ j2ds.scene.offsetLeft = 0;
+ j2ds.scene.offsetTop = 0;
+
+
+ j2ds.canDeactivate = _canDeactivate == false ? false : true;
+
  j2ds.layers.add('sceneNode', 0);
 
- j2ds.scene.context = j2ds.layers.layer('sceneNode').context;
- j2ds.scene.canvas = j2ds.layers.layer('sceneNode').canvas;
+ j2ds.scene.context = j2ds.layers.layer(j2ds.scene.layerName).context;
+ j2ds.scene.canvas = j2ds.layers.layer(j2ds.scene.layerName).canvas;
  j2ds.scene.visible = true;
 
  j2ds.scene.cancelClear = false;
@@ -1151,7 +1271,72 @@ j2ds.scene.init = function(_w, _h) {
  };
 };
 
+j2ds.scene.initCanvas = function(_id, _canDeactivate) {
 
+ j2ds.scene.canFullScreen = false;
+
+ j2ds.scene.layerName = _id;
+
+ j2ds.onEvent('scene:beforeInit');
+
+	j2ds.scene.width = parseInt(j2ds.dom.id(_id).width);
+	j2ds.scene.height = parseInt(j2ds.dom.id(_id).height);
+
+	j2ds.scene.origWidth = j2ds.scene.width;
+	j2ds.scene.origHeight = j2ds.scene.height;
+
+ j2ds.scene.offsetWidth = parseInt(j2ds.dom.id(_id).offsetWidth);
+ j2ds.scene.offsetHeight = parseInt(j2ds.dom.id(_id).offsetHeight);
+
+ j2ds.scene.offsetLeft = parseInt(j2ds.dom.id(_id).offsetLeft);
+ j2ds.scene.offsetTop = parseInt(j2ds.dom.id(_id).offsetTop);
+
+ j2ds.scene.stylePosition = j2ds.dom.id(_id).style.position == 'fixed'?'fixed':'absolute';
+
+ j2ds.canDeactivate = _canDeactivate == false ? false : true;
+
+ j2ds.layers.add(_id, 0, 1);
+
+ j2ds.scene.context = j2ds.layers.layer(_id).context;
+ j2ds.scene.canvas = j2ds.layers.layer(_id).canvas;
+ j2ds.scene.visible = true;
+
+ j2ds.scene.cancelClear = false;
+
+ /* Вид "камеры" */
+ j2ds.scene.view = j2ds.viewManager.add('sceneView');
+
+ j2ds.onEvent('scene:afterInit');
+
+ j2ds.window.onload = function () {
+
+  j2ds.window.focus();
+
+  j2ds.window.onblur = function () {
+   if (j2ds.stopAll == 0) {
+    j2ds.stopEngine();
+    j2ds.onEvent('scene:deactivate');
+   }
+  };
+
+  j2ds.window.onfocus = function () {
+   if (j2ds.stopAll == 1) {
+    j2ds.runEngine();
+    nextJ2dsGameStep(j2ds.gameEngine);
+    j2ds.onEvent('scene:activate');
+    j2ds.input.cancel();
+   }
+  };
+
+ 	for (var i in j2ds.layers.list) {
+   j2ds.dom.attach(j2ds.layers.layer(i).canvas);
+  }
+
+  j2ds.ready = true;
+
+  j2ds.onEvent('dom:loaded');
+ };
+};
 
 
 /*--------------- Объекты ----------------*/
@@ -1963,3 +2148,40 @@ o.saveNode = function (_name, _o) {
 
  return o;
 };
+
+
+/*-------------------FPSManager--------------------*/
+
+j2ds.fpsManager = {
+ enabled : false,
+ fps : 1,
+ tmp_of_fps   : 1,
+ tmp_of_time  : Date.now()
+};
+
+j2ds.fpsManager.init = function () {
+ j2ds.fpsManager.enabled = true;
+};
+
+j2ds.fpsManager.upd = function () {
+ if (!this.enabled) return;
+ this.tmp_of_fps += 1;
+ if (j2ds.now - this.tmp_of_time >= 1000) {
+  this.fps = this.tmp_of_fps;
+  this.tmp_of_fps = 1;
+  this.tmp_of_time = j2ds.now;
+ }
+};
+
+j2ds.fpsManager.getFPS = function () {
+	return (this.fps-1);
+};
+
+
+
+
+
+
+
+
+

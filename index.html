@@ -4,30 +4,39 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width,user-scalable=no" />
   <script type="text/javascript" src="j2ds/j2ds.js"></script>
-  <script type="text/javascript" src="j2ds/fps.js"></script>
   <title>html5 page</title>
  </head>
  <body>
+
+  <div align="center">
+  Этот канвас расположен по центру<br />
+  <canvas id="myCanvas" width="600" height="300"></canvas>
+  </div>
+
 <script type="text/javascript">
 // this is JavaScript's
 
 var scene = j2ds.getSceneManager();
-var io = j2ds.getIO();
-
 var v2f = j2ds.getMathManager().v2f;
+var fps = j2ds.getFPSManager();
+var io = j2ds.getIO();
+var lr = j2ds.getLayerManager();
 
-scene.init(300, 300);
 
-//scene.setAutoClear(true);
+scene.initCanvas('myCanvas');
+scene.setAutoClear(true);
 
+lr.add('background', -1).fill('#EAEAEA');
+
+var b = scene.addTextNode(v2f(5, 0), '', 30, 'white', '', 1, 'black');
 
 j2ds.getGameStateManager().add('myGame', function () {
 
- scene.getLayer().fill(j2ds.getMathManager().rndColor(0, 255, 0.1));
+ b.drawSimpleText('FPS: '+fps.getFPS(), io.getScreenPosition());
 
 });
 
-scene.start('myGame', 60);
+scene.start('myGame', 20);
 
 // end of script
 </script>
