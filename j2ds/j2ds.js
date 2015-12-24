@@ -1,5 +1,5 @@
+var j2ds = (function () {
 'use strict';
-
 
 
 
@@ -2177,8 +2177,8 @@ j2ds.fpsManager.getFPS = function () {
 	return (this.fps-1);
 };
 
-
-
+return j2ds;
+})();
 
 
 
