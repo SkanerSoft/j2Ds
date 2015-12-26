@@ -9,34 +9,39 @@
  <body>
 
   <div align="center">
-  Этот канвас расположен по центру<br />
-  <canvas id="myCanvas" width="600" height="300"></canvas>
+   При клике на канвас произойдет ошибка<br />
+   <canvas id="myCanvas" width="600" height="300"></canvas>
   </div>
 
 <script type="text/javascript">
 // this is JavaScript's
 
-var scene = j2ds.getSceneManager();
-var v2f = j2ds.getMathManager().v2f;
-var fps = j2ds.getFPSManager();
-var io = j2ds.getIO();
-var lr = j2ds.getLayerManager();
+var scene = j2Ds.getSceneManager();
+var v2f = j2Ds.getMathManager().v2f;
+var fps = j2Ds.getFPSManager();
+
+// Менеджер обработки ошибок
+var err = j2Ds.getErrorManager();
+
+// Режим "показывать ошибки, но не останавливать работу игры"
+err.setMode('stopAndShow');
+
 
 
 scene.initCanvas('myCanvas');
 scene.setAutoClear(true);
 
-lr.add('background', -1).fill('#EAEAEA');
-
 var b = scene.addTextNode(v2f(5, 0), '', 30, 'white', '', 1, 'black');
 
-j2ds.getGameStateManager().add('myGame', function () {
+j2Ds.getGameStateManager().add('myGame', function () {
+
+ a.kek();
 
  b.drawSimpleText('FPS: '+fps.getFPS(), io.getScreenPosition());
 
 });
 
-scene.start('myGame', 20);
+scene.start('myGame', 60);
 
 // end of script
 </script>
