@@ -1,5 +1,7 @@
 # j2Ds - игровой HTML5 движок
 
+*Работа по движку перенесена на j2ds.ru*
+
 [Лицензия и описание](https://github.com/SkanerSoft/J2ds/wiki)
 
 Автор движка: [Skaner](https://youtube.com/SkanerSoft?sub_confirmation=1) (Нагель Петр)
