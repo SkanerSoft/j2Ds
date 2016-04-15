@@ -1,6 +1,6 @@
 var j2Ds = (function () {
     'use strict';
-    
+
     /*------------------ 2D движок --------------------*/
     var j2Ds = {
         vector: {},
@@ -93,9 +93,10 @@ var j2Ds = (function () {
     j2Ds.getInfo = function () {
         return {
             'name': 'j2Ds',
-            'version': '0.5.0',
-            'site': 'https://github.com/SkanerSoft/J2ds',
-            'info': 'j2Ds - HTML5 2D Game Engine',
+            'version': '0.7.0',
+            'git': 'https://github.com/SkanerSoft/j2Ds',
+            'site': 'http://j2Ds.ru',
+            'description': 'HTML5 2D Game Engine',
             'author': 'Skaner'
         };
     };
@@ -144,6 +145,20 @@ var j2Ds = (function () {
     };
 
 
+    j2Ds.dom.send = function (_path, _func) {
+        var ajax = new XMLHttpRequest();
+        ajax.open('GET', _path, true);
+        ajax.onreadystatechange = function () {
+            if (ajax.readyState == 4) {
+                if (ajax.status == 200) {
+                    _func(ajax.responseText);
+                }
+            }
+        };
+        ajax.send(null);
+    };
+
+
     /*------------------- GUI --------------*/
     j2Ds.gui = {
         nodes: {}
@@ -166,16 +181,24 @@ var j2Ds = (function () {
 
         ok: function (_file) {
             this.loaded += 1;
-            j2Ds.errorManager.show('loaded: "' + decodeURI(_file) + '"', 'green');
+            j2Ds.errorManager.show('loaded: "' + decodeURI(_file));
         },
 
         fail: function (_file) {
             this.failed += 1;
-            j2Ds.errorManager.show('error load: "' + decodeURI(_file) + '"', 'red');
+            j2Ds.errorManager.show('error load: "' + decodeURI(_file));
         },
 
         show: function () {
             return {'added': this.added, 'loaded': this.loaded, 'failed': this.failed};
+        },
+
+        isLoaded: function () {
+            return this.added == this.loaded;
+        },
+
+        getProgress: function () {
+            return Math.ceil(this.loaded / this.added * 100);
         }
 
     };
@@ -204,9 +227,8 @@ var j2Ds = (function () {
 
     /*------------------- Error Manager --------------*/
     j2Ds.errorManager = {
-        enabled: false,
         mode: 'neverShow',
-        usingLogger: false
+        enabled: false
         /*
          Состояния:
          onlyShow
@@ -216,43 +238,7 @@ var j2Ds = (function () {
     };
 
     j2Ds.errorManager.init = function (_true) {
-        j2Ds.errorManager.usingLogger = true;
-
-        var domId = document.createElement('code');
-        domId.id = 'j2Ds_logger' + j2Ds.now;
-        domId.style.position = 'fixed';
-        domId.style.zIndex = 20000;
-        domId.style.left = '0px';
-        domId.style.top = -198 + j2Ds.getDeviceManager().height + 'px';
-        domId.style.height = '198px';
-        domId.style.width = -2 + j2Ds.getDeviceManager().width + 'px';
-        domId.style.backgroundColor = '#2A2A2A';
-        domId.style.color = 'white';
-        domId.style.overflowY = 'scroll';
-        domId.style.fontSize = '8pt';
-
-        domId.onmousedown = function (e) {
-            e.stopPropagation();
-        };
-
-        domId.onmouseup = function (e) {
-            e.stopPropagation();
-        };
-
-        domId.onclick = function (e) {
-            e.stopPropagation();
-        };
-
-        domId.oncontextmenu = function (e) {
-            e.stopPropagation();
-        };
-
-        domId.onmousewheel = function (e) {
-            e.stopPropagation();
-        };
-
-        j2Ds.dom.attach(domId);
-        j2Ds.errorManager.logListener.elems.push(domId);
+        j2Ds.errorManager.enabled = true;
 
         var runBtn = document.createElement('div');
         runBtn.innerHTML = '<b>RUN</b>';
@@ -261,7 +247,7 @@ var j2Ds = (function () {
         runBtn.style.position = 'fixed';
         runBtn.style.zIndex = 20000;
         runBtn.style.left = '0px';
-        runBtn.style.top = -218 + j2Ds.getDeviceManager().height + 'px';
+        runBtn.style.top = -20 + j2Ds.getDeviceManager().height + 'px';
         runBtn.style.fontSize = '8pt';
         runBtn.style.backgroundColor = '#B8FFB8';
         runBtn.style.height = '12px';
@@ -274,7 +260,7 @@ var j2Ds = (function () {
 
         runBtn.onclick = function (e) {
             e.stopPropagation();
-            j2Ds.errorManager.show('Выполнение продолжено', '#B8FFB8');
+            j2Ds.errorManager.show('Выполнение продолжено');
             j2Ds.runEngine();
             return false;
         };
@@ -290,7 +276,7 @@ var j2Ds = (function () {
         pauseBtn.style.position = 'fixed';
         pauseBtn.style.zIndex = 20000;
         pauseBtn.style.left = '60px';
-        pauseBtn.style.top = -218 + j2Ds.getDeviceManager().height + 'px';
+        pauseBtn.style.top = -20 + j2Ds.getDeviceManager().height + 'px';
         pauseBtn.style.fontSize = '8pt';
         pauseBtn.style.backgroundColor = '#FFFFBD';
         pauseBtn.style.height = '12px';
@@ -303,7 +289,7 @@ var j2Ds = (function () {
 
         pauseBtn.onclick = function (e) {
             e.stopPropagation();
-            j2Ds.errorManager.show('Выполнение приостановлено', '#FFFFBD');
+            j2Ds.errorManager.show('Выполнение приостановлено');
             j2Ds.stopEngine();
             return false;
         };
@@ -311,44 +297,14 @@ var j2Ds = (function () {
         j2Ds.dom.attach(pauseBtn);
         j2Ds.errorManager.logListener.elems.push(pauseBtn);
 
-
-        var clearBtn = document.createElement('div');
-        clearBtn.innerHTML = '<b>CLEAR</b>';
-        clearBtn.style.padding = '5px';
-        clearBtn.align = 'center';
-        clearBtn.style.position = 'fixed';
-        clearBtn.style.zIndex = 20000;
-        clearBtn.style.left = '120px';
-        clearBtn.style.top = -218 + j2Ds.getDeviceManager().height + 'px';
-        clearBtn.style.fontSize = '8pt';
-        clearBtn.style.backgroundColor = '#FFD0D0';
-        clearBtn.style.color = 'black';
-        clearBtn.style.height = '12px';
-        clearBtn.style.width = '50px';
-        clearBtn.style.cursor = 'pointer';
-
-        clearBtn.onmousedown = function (e) {
-            e.stopPropagation();
-        };
-
-        clearBtn.onclick = function (e) {
-            e.stopPropagation();
-            j2Ds.errorManager.logListener.clear();
-            return false;
-        };
-
-        j2Ds.dom.attach(clearBtn);
-        j2Ds.errorManager.logListener.elems.push(clearBtn);
-
-
         var reloadBtn = document.createElement('div');
         reloadBtn.innerHTML = '<b>RELOAD</b>';
         reloadBtn.style.padding = '5px';
         reloadBtn.align = 'center';
         reloadBtn.style.position = 'fixed';
         reloadBtn.style.zIndex = 20000;
-        reloadBtn.style.left = '180px';
-        reloadBtn.style.top = -218 + j2Ds.getDeviceManager().height + 'px';
+        reloadBtn.style.left = '120px';
+        reloadBtn.style.top = -20 + j2Ds.getDeviceManager().height + 'px';
         reloadBtn.style.fontSize = '8pt';
         reloadBtn.style.backgroundColor = '#E2E2E2';
         reloadBtn.style.color = 'black';
@@ -369,177 +325,21 @@ var j2Ds = (function () {
         j2Ds.dom.attach(reloadBtn);
         j2Ds.errorManager.logListener.elems.push(reloadBtn);
 
-
-        var execLine = document.createElement('input');
-        execLine.id = 'exec_line' + j2Ds.now;
-        execLine.placeholder = 'command line';
-        execLine.value = '';
-        execLine.style.padding = '5px';
-        execLine.align = 'center';
-        execLine.style.position = 'fixed';
-        execLine.style.zIndex = 20000;
-        execLine.style.left = '240px';
-        execLine.style.top = -218 + j2Ds.getDeviceManager().height + 'px';
-        execLine.style.fontSize = '8pt';
-        execLine.style.backgroundColor = 'black';
-        execLine.style.color = 'white';
-        execLine.style.height = '12px';
-        execLine.style.width = '200px';
-        execLine.style.border = '0px solid';
-
-        execLine.onmousedown = function (e) {
-            e.stopPropagation();
-        };
-
-        execLine.onmouseup = function (e) {
-            e.stopPropagation();
-        };
-
-        execLine.oncontextmenu = function (e) {
-            e.stopPropagation();
-        };
-
-        execLine.onclick = function (e) {
-            e.stopPropagation();
-        };
-
-        execLine.onkeyup = function (e) {
-            e.stopPropagation();
-
-            if (e.keyCode == 13) {
-                j2Ds.errorManager.runString(j2Ds.errorManager.logListener.execLine.value);
-                j2Ds.window.focus();
-            }
-
-            if (e.keyCode == 27) {
-                j2Ds.errorManager.logListener.execLine.value = '';
-                j2Ds.errorManager.logListener.execLine.blur();
-                j2Ds.window.focus();
-            }
-        };
-
-        execLine.onkeydown = function (e) {
-            e.stopPropagation();
-        };
-
-        execLine.onkeypress = function (e) {
-            e.stopPropagation();
-        };
-
-        j2Ds.dom.attach(execLine);
-        j2Ds.errorManager.logListener.execLine = execLine;
-        j2Ds.errorManager.logListener.elems.push(execLine);
-
-
-        var execBtn = document.createElement('div');
-        execBtn.innerHTML = '<b>EXEC</b>';
-        execBtn.style.padding = '5px';
-        execBtn.align = 'center';
-        execBtn.style.position = 'fixed';
-        execBtn.style.zIndex = 20000;
-        execBtn.style.left = '450px';
-        execBtn.style.top = -218 + j2Ds.getDeviceManager().height + 'px';
-        execBtn.style.fontSize = '8pt';
-        execBtn.style.backgroundColor = 'black';
-        execBtn.style.color = 'white';
-        execBtn.style.height = '12px';
-        execBtn.style.width = '50px';
-        execBtn.style.cursor = 'pointer';
-
-        execBtn.onmousedown = function (e) {
-            e.stopPropagation();
-        };
-
-        execBtn.onclick = function (e) {
-            e.stopPropagation();
-            j2Ds.errorManager.runString(j2Ds.errorManager.logListener.execLine.value);
-            j2Ds.errorManager.logListener.execLine.blur();
-            j2Ds.window.focus();
-            return false;
-        };
-
-        j2Ds.dom.attach(execBtn);
-        j2Ds.errorManager.logListener.elems.push(execBtn);
-
-
-        var hideBtn = document.createElement('div');
-        hideBtn.innerHTML = '<b>HIDE</b>';
-        hideBtn.style.padding = '5px';
-        hideBtn.align = 'center';
-        hideBtn.style.position = 'fixed';
-        hideBtn.style.zIndex = 20000;
-        hideBtn.style.left = -60 + j2Ds.getDeviceManager().width + 'px';
-        hideBtn.style.top = -218 + j2Ds.getDeviceManager().height + 'px';
-        hideBtn.style.fontSize = '8pt';
-        hideBtn.style.backgroundColor = '#2A2A2A';
-        hideBtn.style.color = 'white';
-        hideBtn.style.height = '12px';
-        hideBtn.style.width = '50px';
-        hideBtn.style.cursor = 'pointer';
-
-        hideBtn.onmousedown = function (e) {
-            e.stopPropagation();
-        };
-
-        hideBtn.onclick = function (e) {
-            e.stopPropagation();
-            j2Ds.errorManager.show('Выполнение продолжено', '#B8FFB8');
-            j2Ds.errorManager.logListener.hide();
-            j2Ds.errorManager.logListener.execLine.blur();
-            j2Ds.window.focus();
-            j2Ds.runEngine();
-            return false;
-        };
-
-        j2Ds.dom.attach(hideBtn);
-        j2Ds.errorManager.logListener.elems.push(hideBtn);
-
-
-        j2Ds.errorManager.logListener.domId = domId;
-
         j2Ds.addEvent('dom:loaded', function () {
             j2Ds.window.onerror = function (e) {
-                if (j2Ds.errorManager.usingLogger) {
-                    j2Ds.errorManager.logListener.show();
-                }
-                j2Ds.errorManager.log(e);
-                return true;
+                j2Ds.errorManager.show(e);
             };
         });
     };
 
     j2Ds.errorManager.show = function (_string, _color) {
-        if (j2Ds.errorManager.usingLogger) {
-            j2Ds.errorManager.logListener.show();
-            j2Ds.errorManager.logListener.log(_string, _color);
-        } else {
-            console.log(_string);
-        }
-    };
-
-    j2Ds.errorManager.run = function (_func) {
-        if (!j2Ds.errorManager.enabled) return;
-        try {
-            _func();
-        } catch (err) {
-            j2Ds.errorManager.showError(err, _func);
-        }
-    };
-
-    j2Ds.errorManager.runString = function (_string) {
-        if (!j2Ds.errorManager.enabled) return;
-        try {
-            j2Ds.errorManager.show(j2Ds.errorManager.print_r(eval(_string)));
-        } catch (err) {
-            j2Ds.errorManager.showError(err, _string);
-        }
+        console.log('[j2Ds]: ' + _string);
     };
 
     j2Ds.errorManager.setMode = function (_mode) {
         j2Ds.errorManager.mode = _mode;
         if (_mode == 'neverShow') {
-            j2Ds.errorManager.usingLogger = false;
-            j2Ds.errorManager.logListener.hide();
+            j2Ds.errorManager.enabled = false;
         }
     };
 
@@ -547,7 +347,7 @@ var j2Ds = (function () {
         if (!j2Ds.errorManager.enabled) return;
         j2Ds.stopEngine();
         if (j2Ds.errorManager.mode != 'neverShow') {
-            j2Ds.errorManager.show(_string || 'Точка останова достигнута', '#FFFFBD');
+            j2Ds.errorManager.show(_string || 'Точка останова достигнута');
         }
     };
 
@@ -589,7 +389,7 @@ var j2Ds = (function () {
 
         if (j2Ds.errorManager.mode == 'stopAndShow') {
             j2Ds.stopEngine();
-            j2Ds.errorManager.show('Выполнение приостановлено', '#FFFFBD');
+            j2Ds.errorManager.show('Выполнение приостановлено');
         }
 
     };
@@ -599,41 +399,6 @@ var j2Ds = (function () {
         count: 0,
         execLine: '',
         elems: [],
-
-        log: function (_text, _color) {
-            if (!this.domId) return;
-            this.count += 1;
-            var text = _text.toString();
-
-            text = j2Ds.errorManager.lightSyntax(text);
-
-            var logMess = '<pre><table width="100%"><tr><td style="width: 10px; vertical-align: top; background-color: ' + (_color ? _color : '#FFEBEB') + '; color: black; font-weight: bold; padding: 2px;">' + this.count + '<td style="background-color: #312F2F; padding: 5px;">' + text + '</table></pre>';
-            this.domId.innerHTML += logMess;
-            this.domId.scrollTop = this.domId.scrollHeight;
-        },
-
-        execLineRunString: function (_string) {
-            j2Ds.errorManager.logListener.execLine.value = _string;
-            j2Ds.errorManager.runString(j2Ds.errorManager.logListener.execLine.value);
-        },
-
-        clear: function () {
-            this.domId.innerHTML = '';
-        },
-
-        hide: function () {
-            for (var i = 0, len = this.elems.length; i < len; i += 1) {
-                this.elems[i].style.display = 'none';
-            }
-        },
-
-        show: function () {
-            for (var i = 0, len = this.elems.length; i < len; i += 1) {
-                this.elems[i].style.display = 'block';
-            }
-        }
-
-
     };
 
     j2Ds.errorManager.lightSyntax = function (_code, _type) {
@@ -660,43 +425,6 @@ var j2Ds = (function () {
         }
 
         return code;
-    };
-
-    j2Ds.errorManager.print_r = function (_data) {
-        var ret = j2Ds.errorManager.logListener.execLine.value + ' ';
-        var spaces = '';
-        var path = j2Ds.errorManager.logListener.execLine.value + '.';
-        if (typeof _data == 'object') {
-            ret += typeof _data + '\n';
-            ret += spaces + '{\n';
-            for (var i in _data) {
-                if (typeof _data[i] == 'object') {
-                    ret += spaces + ' ' + i + ' : <span style="color: #FFFF00;">' + _data[i] + '</span> <span style="color: #FFFF00; cursor: pointer;" onclick="j2Ds.errorManager.logListener.execLineRunString(\'' + path + i + '\')">{...}</span>\n';
-                } else if (typeof _data[i] == 'function') {
-                    ret += spaces + ' ' + i + ' : <span style="color: #FFA500;">function()</span> <span style="color: #FFA500; cursor: pointer;" onclick="j2Ds.errorManager.logListener.execLineRunString(\'' + path + i + '\')">{...}</span>\n';
-                } else {
-                    if (typeof _data[i] == 'number') {
-                        ret += spaces + ' ' + i + ' : <span style="color: #B1DAFF;">' + _data[i] + '</span>\n';
-                    } else if (typeof _data[i] == 'boolean') {
-                        ret += spaces + ' ' + i + ' : ' + j2Ds.errorManager.lightSyntax(_data[i], 'boolean') + '\n';
-                    } else {
-                        ret += spaces + ' ' + i + ' : <span style="color: #8FFF8F;">"' + _data[i] + '"</span>\n';
-                    }
-                }
-            }
-            ret += spaces + '}\n';
-        } else {
-            ret += typeof _data + '\n';
-            if (typeof _data == 'string') {
-                ret += spaces + ' <span style="color: #8FFF8F;">"' + _data + '"</span>';
-            } else if (typeof _data == 'number') {
-                ret += spaces + ' <span style="color: #B1DAFF;">' + _data + '</span>';
-            } else {
-                ret += spaces + ' ' + j2Ds.errorManager.lightSyntax(_data, 'code');
-            }
-        }
-
-        return ret;
     };
 
 
@@ -741,9 +469,15 @@ var j2Ds = (function () {
     j2Ds.gameStates = {
         states: {},
 
-        add: function (_name, _state) {
-            j2Ds.gameStates.states[_name] = _state;
+        add: function (_name, _state, _start, _end) {
+            var state = {};
+            state.state = _state;
+            state.start = _start || false;
+            state.end = _end || false;
+
+            j2Ds.gameStates.states[_name] = state;
         }
+
     };
 
 
@@ -826,19 +560,19 @@ var j2Ds = (function () {
 
                 j2Ds.lastTime = j2Ds.now;
 
-                nextJ2dsGameStep(j2Ds.gameEngine);
+                nextj2DsGameStep(j2Ds.gameEngine);
             }
         }, (j2Ds.frameLimit < 60 ? j2Ds.sceneSkipTime : 0));
     };
 
-    var nextJ2dsGameStep = (function () {
+    var nextj2DsGameStep = (function () {
         return window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             window.oRequestAnimationFrame ||
             window.msRequestAnimationFrame ||
             function (callback) {
-                window.setTimeout(callback, 1000 / j2Ds.frameLimit);
+                j2Ds.window.setTimeout(callback, 1000 / j2Ds.frameLimit);
             };
     })();
 
@@ -851,7 +585,7 @@ var j2Ds = (function () {
         if (!j2Ds.canDeactivate) return;
         if (!j2Ds.stopAll) return;
         j2Ds.stopAll = 0;
-        nextJ2dsGameStep(j2Ds.gameEngine);
+        nextj2DsGameStep(j2Ds.gameEngine);
     };
 
 
@@ -1479,11 +1213,6 @@ var j2Ds = (function () {
 
 
         j2Ds.addEvent('dom:loaded', function () {
-            j2Ds.window.onclick = function () {
-                if (j2Ds.errorManager.usingLogger) {
-                    j2Ds.errorManager.logListener.execLine.blur();
-                }
-            };
             j2Ds.window.oncontextmenu = function () {
                 return false;
             };
@@ -1727,8 +1456,11 @@ var j2Ds = (function () {
     };
 
     j2Ds.scene.setGameState = function (_name) {
-        if (j2Ds.gameStates.states[_name]) {
-            j2Ds.setActiveEngine(j2Ds.gameStates.states[_name]);
+        if (j2Ds.gameStates.states[_name].start) {
+            j2Ds.gameStates.states[_name].start();
+        }
+        if (j2Ds.gameStates.states[_name].state) {
+            j2Ds.setActiveEngine(j2Ds.gameStates.states[_name].state);
         }
         j2Ds.scene.gameStateName = _name;
         j2Ds.onEvent('scene:changedGameState');
@@ -1740,8 +1472,11 @@ var j2Ds = (function () {
 
     j2Ds.scene.start = function (_name, _frameLimit) {
         j2Ds.onEvent('scene:beforeStart');
+        if (j2Ds.gameStates.states[_name].start) {
+            j2Ds.gameStates.states[_name].start();
+        }
         if (j2Ds.gameStates.states[_name]) {
-            j2Ds.start(j2Ds.gameStates.states[_name], _frameLimit);
+            j2Ds.start(j2Ds.gameStates.states[_name].state, _frameLimit);
         }
         j2Ds.onEvent('scene:afterStart');
     };
@@ -1903,7 +1638,7 @@ var j2Ds = (function () {
 
         j2Ds.scene.offsetLeft = parseInt(j2Ds.dom.id(_id).offsetLeft);
         j2Ds.scene.offsetTop = parseInt(j2Ds.dom.id(_id).offsetTop);
-
+        1
         j2Ds.scene.stylePosition = j2Ds.dom.id(_id).style.position == 'fixed' ? 'fixed' : 'absolute';
 
         j2Ds.canDeactivate = _canDeactivate != false;
