@@ -1,1 +1,11 @@
+*Thumbs.db
+*.DS_Store
+
+#IDEA
 .idea/
+
+#node modules
+node_modules/
+
+#vendor folder
+vendor/

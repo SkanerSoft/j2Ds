@@ -3,6 +3,7 @@
 [Лицензия и описание](https://github.com/SkanerSoft/J2ds/wiki)
 
 Автор движка: [Skaner](https://youtube.com/SkanerSoft?sub_confirmation=1) (Нагель Петр)
+Поддержка и разработка: DeVinterX
 
 E-mail: skaner0@yandex.ru
 
@@ -1430,18 +1431,18 @@ j2Ds позволяет вам загружать такие спрайт кар
 
 Чтобы назначить обработчик на события, в j2Ds если специальная команда addEvent:
 
-    j2Ds.addEvent('dom:loaded', function() { alert('Документ успешно загружен!') });
+    j2Ds.events.addEvent('dom:loaded', function() { alert('Документ успешно загружен!') });
 
 Эта команда добавит функцию в общий стек слушателя загрузки документа. Функций на добавление может быть любое количество.
 
 Команда addEvent позволяет передать дополнительный необязательный параметр - идентификатор. Его можно использовать для удаления обработчика, например:
 
-    j2Ds.addEvent('engine:before', function() { 'Выполняю игровой цикл' }, 'gameLoopRunning');
+    j2Ds.events.addEvent('engine:before', function() { 'Выполняю игровой цикл' }, 'gameLoopRunning');
 
 К обработчикам события 'engine:before' попадает функция с идентификатором 'gameLoopRunning', и если вам больше не требуется обработчик 'gameLoopRunning',
 вы можете его просто удалить:
 
-    j2Ds.destroyEvent('engine:before', 'gameLoopRunning');
+    j2Ds.events.destroyEvent('engine:before', 'gameLoopRunning');
 
 Эта команда посмотрит в событие 'engine:before', и, если будет обнаружен обработчик с идентификатором 'gameLoopRunning', она его удалит.
 
@@ -1452,7 +1453,7 @@ j2Ds позволяет вам загружать такие спрайт кар
 
 Например:
 
-    j2Ds.addEvent('dom:loaded', function() { alert('Документ успешно загружен!') });
+    j2Ds.events.addEvent('dom:loaded', function() { alert('Документ успешно загружен!') });
 
 Выведет сообщение либо сразу, если документ уже загружен, либо как только документ загрузится, то есть **в любом случае**.
 
@@ -1469,7 +1470,7 @@ j2Ds позволяет вам загружать такие спрайт кар
     var textBuffer = ''; // буфер для текста
 
     // устанавливаем обработчик события ввода символа
-    j2Ds.addEvent('writeMode:keyPress', function (symbol) {
+    j2Ds.events.addEvent('writeMode:keyPress', function (symbol) {
      // дописываем введенный символ
      textBuffer += symbol;
      // если нажали клавигу "Backspace", то удаляем последний символ (коррекция ввода)
