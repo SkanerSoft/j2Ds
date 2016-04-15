@@ -1,49 +1,48 @@
 <!DOCTYPE html>
 <html>
- <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="viewport" content="width=device-width,user-scalable=no" />
-  <script type="text/javascript" src="j2ds/j2ds.js"></script>
-  <title>html5 page</title>
- </head>
- <body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,user-scalable=no"/>
+    <script type="text/javascript" src="j2ds/j2ds.js"></script>
+    <title>html5 page</title>
+</head>
+<body>
 
-  <div align="center">
-   При клике на канвас произойдет ошибка<br />
-   <canvas id="myCanvas" width="600" height="300"></canvas>
-  </div>
+<div align="center">
+    При клике на канвас произойдет ошибка<br/>
+    <canvas id="myCanvas" width="600" height="300"></canvas>
+</div>
 
 <script type="text/javascript">
-// this is JavaScript's
+    // this is JavaScript's
 
-var scene = j2Ds.getSceneManager();
-var v2f = j2Ds.getMathManager().v2f;
-var fps = j2Ds.getFPSManager();
+    var scene = j2Ds.getSceneManager();
+    var v2f = j2Ds.getMathManager().v2f;
+    var fps = j2Ds.getFPSManager();
 
-// Менеджер обработки ошибок
-var err = j2Ds.getErrorManager();
+    // Менеджер обработки ошибок
+    var err = j2Ds.getErrorManager();
 
-// Режим "показывать ошибки, но не останавливать работу игры"
-err.setMode('stopAndShow');
+    // Режим "показывать ошибки, но не останавливать работу игры"
+    err.setMode('stopAndShow');
 
 
+    scene.initCanvas('myCanvas');
+    scene.setAutoClear(true);
 
-scene.initCanvas('myCanvas');
-scene.setAutoClear(true);
+    var b = scene.addTextNode(v2f(5, 0), '', 30, 'white', '', 1, 'black');
 
-var b = scene.addTextNode(v2f(5, 0), '', 30, 'white', '', 1, 'black');
+    j2Ds.getGameStateManager().add('myGame', function () {
 
-j2Ds.getGameStateManager().add('myGame', function () {
+        a.kek();
 
- a.kek();
+        b.drawSimpleText('FPS: ' + fps.getFPS(), io.getScreenPosition());
 
- b.drawSimpleText('FPS: '+fps.getFPS(), io.getScreenPosition());
+    });
 
-});
+    scene.start('myGame', 60);
 
-scene.start('myGame', 60);
-
-// end of script
+    // end of script
 </script>
- </body>
+</body>
 </html>
