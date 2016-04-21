@@ -3,7 +3,7 @@
  *
  * @authors Skaner, DeVinterX
  * @license zlib
- * @version 0.6.2-dev
+ * @version 0.6.2
  */
 
 if (global === undefined) {

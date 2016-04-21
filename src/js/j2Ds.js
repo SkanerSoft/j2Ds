@@ -3,7 +3,7 @@
  *
  * @authors Skaner, DeVinterX
  * @license zlib
- * @version 0.6.2-dev
+ * @version 0.6.2
  */
 
 (function (root, factory) {
@@ -126,7 +126,7 @@
             this.getInfo = function () {
                 return {
                     'name': 'j2DsEngine',
-                    'version': '0.6.2-dev',
+                    'version': '0.6.2',
                     'git': 'https://github.com/SkanerSoft/j2DsEngine',
                     'site': 'http://j2DsEngine.ru',
                     'description': 'HTML5 2D Game Engine',

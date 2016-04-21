@@ -1,6 +1,6 @@
 {
   "name": "j2Ds",
-  "version": "0.6.2-dev",
+  "version": "0.6.2",
   "description": "HTML5 2D Game Engine.",
   "main": "src/js/j2Ds.js",
   "directories": {
