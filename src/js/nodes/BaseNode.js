@@ -178,6 +178,14 @@
         return this.angle;
     };
 
+    BaseNode.prototype.rotateTo = function (_to, _t) {
+        _t = _t ? _t : 1;
+        this.setRotation((Math.atan2(
+                (_to.y - this.getPosition().y),
+                (_to.x - this.getPosition().x)
+            ) * (180 / Math.PI)) / _t);
+    };
+
     BaseNode.prototype.isOutScene = function () {
         var vector = {};
 
