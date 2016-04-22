@@ -227,6 +227,7 @@
             this.dom = new DOM(this);
             this.gui = new GUI(this);
             this.resources = new ResourceManager(this);
+            this.trigger = new TriggerManager(this);
             this.timeManager = new TimeManager(this);
             this.deviceManager = DeviceManager();
             this.errorManager = new ErrorManager(this);

@@ -3,7 +3,7 @@
  *
  * @authors Skaner, DeVinterX
  * @license zlib
- * @version 0.6.2
+ * @version 0.6.3
  */
 
 (function (root, factory) {
@@ -161,8 +161,8 @@
     };
 
     BaseNode.prototype.isLookScene = function () {
-        return (this.pos.x > j2Ds.scene.view.pos.x + j2Ds.scene.width || this.pos.x + this.size.x < j2Ds.scene.view.pos.x)
-            || (this.pos.y > j2Ds.scene.view.pos.y + j2Ds.scene.height || this.pos.y + this.size.y < j2Ds.scene.view.pos.y);
+        return !((this.pos.x > j2Ds.scene.view.pos.x + j2Ds.scene.width || this.pos.x + this.size.x < j2Ds.scene.view.pos.x)
+        || (this.pos.y > j2Ds.scene.view.pos.y + j2Ds.scene.height || this.pos.y + this.size.y < j2Ds.scene.view.pos.y));
     };
 
     BaseNode.prototype.turn = function (angle) {

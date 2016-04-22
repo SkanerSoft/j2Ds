@@ -3,7 +3,7 @@
  *
  * @authors Skaner, DeVinterX
  * @license zlib
- * @version 0.6.2
+ * @version 0.6.3
  */
 
 (function (root, factory) {
@@ -21,14 +21,14 @@
         this.j2Ds = j2Ds;
     };
 
-    TextureUtil.prototype.createImageMap = function (_w, _h, callback) {
+    TextureUtil.prototype.createImageMap = function (width, height, callback) {
         var textureUtil = this;
         textureUtil.j2Ds.resources.add();
         var image = {
             img: null,
             loaded: false,
-            width: _w,
-            height: _h
+            width: width,
+            height: height
         };
 
         image.img = document.createElement('canvas');
@@ -51,7 +51,7 @@
             };
         };
 
-        textureUtil.j2Ds.resources.ok('createImageMap_' + w + 'x' + h);
+        textureUtil.j2Ds.resources.ok('createImageMap_' + width + 'x' + height);
 
         return image;
     };
@@ -71,8 +71,8 @@
         image.img.src = path;
 
         image.img.addEventListener('load', function () {
-            image.width = o.img.width;
-            image.height = o.img.height;
+            image.width = image.img.width;
+            image.height = image.img.height;
             image.loaded = true;
             textureUtil.j2Ds.resources.ok(path);
         });
