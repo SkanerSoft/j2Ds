@@ -3,7 +3,7 @@
  *
  * @authors Skaner, DeVinterX
  * @license zlib
- * @version 0.6.2
+ * @version 0.6.3
  */
 
 (function (root, factory) {
@@ -104,8 +104,8 @@
 
         /*------------------ 2D движок --------------------*/
         var j2DsEngine = function () {
-            this.vector = {};
-            this.math = {};
+            this.vector = {}; //TODO:: is need?
+            this.math = {}; //TODO:: is need?
             this.dom = {};
             this.now = Date.now();
             this.dt = 0;
@@ -125,10 +125,10 @@
 
             this.getInfo = function () {
                 return {
-                    'name': 'j2DsEngine',
-                    'version': '0.6.2',
-                    'git': 'https://github.com/SkanerSoft/j2DsEngine',
-                    'site': 'http://j2DsEngine.ru',
+                    'name': 'j2Ds',
+                    'version': '0.6.3',
+                    'git': 'https://github.com/SkanerSoft/j2Ds',
+                    'site': 'http://j2ds.ru',
                     'description': 'HTML5 2D Game Engine',
                     'author': 'Skaner'
                 };
@@ -227,6 +227,7 @@
             this.dom = new DOM(this);
             this.gui = new GUI(this);
             this.resources = new ResourceManager(this);
+            this.trigger = new TriggerManager(this);
             this.timeManager = new TimeManager(this);
             this.deviceManager = DeviceManager();
             this.errorManager = new ErrorManager(this);

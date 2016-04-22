@@ -25,7 +25,7 @@
 
     ErrorManager.prototype.init = function (_true) {
         var errorManager = this;
-        errorManager.enabled = true;
+        errorManager.enabled = _true || true;
 
         var runBtn = document.createElement('div');
         runBtn.innerHTML = '<b>RUN</b>';
