@@ -22,55 +22,55 @@
         this.j2Ds = j2Ds;
     };
 
-    Dom.prototype.id = function (_id) {
-        return document.getElementById(_id);
+    Dom.prototype.id = function (id) {
+        return document.getElementById(id);
     };
 
-    Dom.prototype.name = function (_id) {
-        return document.getElementsByName(_id)[0];
+    Dom.prototype.name = function (id) {
+        return document.getElementsByName(id)[0];
     };
 
-    Dom.prototype.tag = function (_id, _parent) {
-        var finder = _parent || document;
-        return finder.getElementsByTagName(_id);
+    Dom.prototype.tag = function (id, parent) {
+        var finder = parent || document;
+        return finder.getElementsByTagName(id);
     };
 
-    Dom.prototype.goURL = function (_url) {
-        document.location.href = _url;
+    Dom.prototype.goURL = function (url) {
+        document.location.href = url;
     };
 
     Dom.prototype.reloadURL = function () {
         document.location.href = document.location.href;
     };
 
-    Dom.prototype.attach = function (_id, _parent) {
+    Dom.prototype.attach = function (id, parent) {
         var dom = this;
-        this.j2Ds.events.addEvent('dom:loaded', function (_parent) {
-            if (!_parent) {
-                dom.tag('body')[0].appendChild(_id);
+        this.j2Ds.events.addEvent('dom:loaded', function (parent) {
+            if (!parent) {
+                dom.tag('body')[0].appendChild(id);
             } else {
-                dom.id(_parent).appendChild(_id);
+                dom.id(parent).appendChild(id);
             }
         });
     };
 
-    Dom.prototype.injectJavaScript = function (_code) {
-        var code = _code.toString();
+    Dom.prototype.injectJavaScript = function (code) {
+        code = code.toString();
         code = code.replace(/[\n\r\t]/g, ';');
         document.location.href = 'javascript: var injectFunction = (function() {setTimeout(' + code + ', 0);}); injectFunction();';
     };
 
-    Dom.prototype.callJava = function (_code) {
-        document.location.href = 'javacall:' + _code;
+    Dom.prototype.callJava = function (code) {
+        document.location.href = 'javacall:' + code;
     };
 
-    Dom.prototype.send = function (_path, _func) {
+    Dom.prototype.send = function (path, callback) {
         var ajax = new XMLHttpRequest();
-        ajax.open('GET', _path, true);
+        ajax.open('GET', path, true);
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4) {
                 if (ajax.status == 200) {
-                    _func(ajax.responseText);
+                    callback(ajax.responseText);
                 }
             }
         };

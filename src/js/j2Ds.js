@@ -104,8 +104,8 @@
 
         /*------------------ 2D движок --------------------*/
         var j2DsEngine = function () {
-            this.vector = {};
-            this.math = {};
+            this.vector = {}; //TODO:: is need?
+            this.math = {}; //TODO:: is need?
             this.dom = {};
             this.now = Date.now();
             this.dt = 0;

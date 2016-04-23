@@ -64,8 +64,8 @@
 
         /*функции*/
 
-        Scene.prototype.setView = function (_id) {
-            this.view = this.j2Ds.viewManager.views[_id];
+        Scene.prototype.setView = function (id) {
+            this.view = this.j2Ds.viewManager.views[id];
         };
 
         Scene.prototype.getView = function () {
@@ -130,8 +130,8 @@
                 this.origHeight = this.height;
                 this.width = this.j2Ds.getDeviceManager().width;
                 this.height = this.j2Ds.getDeviceManager().height;
-                for (var i in this.j2Ds.layers.list) {
-                    layer = this.j2Ds.layers.list[i];
+                for (var i in this.j2Ds.layers.layersList) {
+                    layer = this.j2Ds.layers.layersList[i];
                     tmpCanvas.width = layer.width;
                     tmpCanvas.height = layer.height;
                     tmpContext.drawImage(layer.canvas, 0, 0);
@@ -147,8 +147,8 @@
             } else {
                 this.width = this.origWidth;
                 this.height = this.origHeight;
-                for (var i in this.j2Ds.layers.list) {
-                    layer = this.j2Ds.layers.list[i];
+                for (var i in this.j2Ds.layers.layersList) {
+                    layer = this.j2Ds.layers.layersList[i];
                     layer.width = this.origWidth;
                     layer.height = this.origHeight;
                     layer.canvas.width = this.origWidth;
@@ -164,16 +164,16 @@
             if (!this.canFullScreen) return;
             var layer;
             if (_true) {
-                for (var i in this.j2Ds.layers.list) {
-                    layer = this.j2Ds.layers.list[i].canvas;
+                for (var i in this.j2Ds.layers.layersList) {
+                    layer = this.j2Ds.layers.layersList[i].canvas;
                     layer.style.width = this.j2Ds.getDeviceManager().width + 'px';
                     layer.style.height = this.j2Ds.getDeviceManager().height + 'px';
                     this.offsetWidth = this.j2Ds.getDeviceManager().width;
                     this.offsetHeight = this.j2Ds.getDeviceManager().height;
                 }
             } else {
-                for (var i in this.j2Ds.layers.list) {
-                    layer = this.j2Ds.layers.list[i].canvas;
+                for (var i in this.j2Ds.layers.layersList) {
+                    layer = this.j2Ds.layers.layersList[i].canvas;
                     layer.style.width = this.width + 'px';
                     layer.style.height = this.height + 'px';
                     this.offsetWidth = this.width;
@@ -198,25 +198,25 @@
             }
         };
 
-        Scene.prototype.init = function (_w, _h, _canDeactivate) {
+        Scene.prototype.init = function (width, height, canDeactivate) {
             var scene = this;
 
             scene.j2Ds.events.onEvent('scene:beforeInit');
 
-            scene.width = _w;
-            scene.height = _h;
+            scene.width = width;
+            scene.height = height;
 
-            scene.origWidth = _w;
-            scene.origHeight = _h;
+            scene.origWidth = width;
+            scene.origHeight = height;
 
-            scene.offsetWidth = _w;
-            scene.offsetHeight = _h;
+            scene.offsetWidth = width;
+            scene.offsetHeight = height;
 
             scene.offsetLeft = 0;
             scene.offsetTop = 0;
 
 
-            scene.j2Ds.canDeactivate = _canDeactivate != false;
+            scene.j2Ds.canDeactivate = canDeactivate != false;
 
             scene.j2Ds.layers.add('sceneNode', 0);
 
@@ -250,7 +250,7 @@
                     }
                 };
 
-                for (var i in scene.j2Ds.layers.list) {
+                for (var i in scene.j2Ds.layers.layersList) {
                     scene.j2Ds.dom.attach(scene.j2Ds.layers.layer(i).canvas);
                 }
 
@@ -260,35 +260,35 @@
             };
         };
 
-        Scene.prototype.initCanvas = function (_id, _canDeactivate) {
+        Scene.prototype.initCanvas = function (id, canDeactivate) {
             var scene = this;
 
             scene.canFullScreen = false;
 
-            scene.layerName = _id;
+            scene.layerName = id;
 
             scene.j2Ds.events.onEvent('scene:beforeInit');
 
-            scene.width = parseInt(scene.j2Ds.dom.id(_id).width);
-            scene.height = parseInt(scene.j2Ds.dom.id(_id).height);
+            scene.width = parseInt(scene.j2Ds.dom.id(id).width);
+            scene.height = parseInt(scene.j2Ds.dom.id(id).height);
 
             scene.origWidth = scene.width;
             scene.origHeight = scene.height;
 
-            scene.offsetWidth = parseInt(scene.j2Ds.dom.id(_id).offsetWidth);
-            scene.offsetHeight = parseInt(scene.j2Ds.dom.id(_id).offsetHeight);
+            scene.offsetWidth = parseInt(scene.j2Ds.dom.id(id).offsetWidth);
+            scene.offsetHeight = parseInt(scene.j2Ds.dom.id(id).offsetHeight);
 
-            scene.offsetLeft = parseInt(scene.j2Ds.dom.id(_id).offsetLeft);
-            scene.offsetTop = parseInt(scene.j2Ds.dom.id(_id).offsetTop);
+            scene.offsetLeft = parseInt(scene.j2Ds.dom.id(id).offsetLeft);
+            scene.offsetTop = parseInt(scene.j2Ds.dom.id(id).offsetTop);
 
-            scene.stylePosition = scene.j2Ds.dom.id(_id).style.position == 'fixed' ? 'fixed' : 'absolute';
+            scene.stylePosition = scene.j2Ds.dom.id(id).style.position == 'fixed' ? 'fixed' : 'absolute';
 
-            scene.j2Ds.canDeactivate = _canDeactivate != false;
+            scene.j2Ds.canDeactivate = canDeactivate != false;
 
-            scene.j2Ds.layers.add(_id, 0, 1);
+            scene.j2Ds.layers.add(id, 0, 1);
 
-            scene.context = scene.j2Ds.layers.layer(_id).context;
-            scene.canvas = scene.j2Ds.layers.layer(_id).canvas;
+            scene.context = scene.j2Ds.layers.layer(id).context;
+            scene.canvas = scene.j2Ds.layers.layer(id).canvas;
             scene.visible = true;
 
             scene.cancelClear = false;
@@ -316,7 +316,7 @@
                     }
                 };
 
-                for (var i in scene.j2Ds.layers.list) {
+                for (var i in scene.j2Ds.layers.layersList) {
                     scene.j2Ds.dom.attach(scene.j2Ds.layers.layer(i).canvas);
                 }
 
