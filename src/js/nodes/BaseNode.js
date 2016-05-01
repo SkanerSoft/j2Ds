@@ -125,28 +125,69 @@
         return MathUtil.v2f(Math.abs(id.getPosition().x - this.getPosition().x), Math.abs(id.getPosition().y - this.getPosition().y));
     };
 
-    BaseNode.prototype.isIntersect = function (id) {
-        var pos = {
-            x1: this.pos.x + this.box.offset.x,
-            x2: id.pos.x + id.box.offset.x,
-            y1: this.pos.y + this.box.offset.y,
-            y2: id.pos.y + id.box.offset.y
-        };
+    BaseNode.prototype.getBox = function (node) {
+        return {
+            x1: node.pos.x + node.box.offset.x,
+            x2: node.pos.x + node.box.offset.x + node.size.x + node.box.size.x,
+            y1: node.pos.y + node.box.offset.y,
+            y2: node.pos.y + node.box.offset.y + node.size.y + node.box.size.y
+        }
+    };
 
-        var size = {
-            x1: this.size.x + this.box.size.x,
-            x2: id.size.x + id.box.size.x,
-            y1: this.size.y + this.box.size.y,
-            y2: id.size.y + id.box.size.y
-        };
+    BaseNode.prototype.getBoxVertices = function (node) {
+        var angle = MathUtil.rad(node.angle);
 
-        return (
-                (pos.y1 + size.y1 >= pos.y2) &&
-                (pos.x1 + size.x1 >= pos.x2)
-            ) && (
-                (pos.x1 < pos.x2 + size.x2) &&
-                (pos.y1 < pos.y2 + size.y2)
-            );
+        var dx = node.box.offset.x + node.box.size.x / 2 + node.getPosition().x - j2Ds.scene.view.pos.x;
+        var dy = node.box.offset.y + node.box.size.y / 2 + node.getPosition().y - j2Ds.scene.view.pos.y;
+
+        var box = this.getBox(node);
+
+        return {
+            a: {
+                x: (dx + (box.y1 - dy) * Math.sin(angle) + (box.x2 - dx) * Math.cos(angle)).toFixed(2),
+                y: (dy + (box.y1 - dy) * Math.cos(angle) - (box.x2 - dx) * Math.sin(angle))
+            },
+            b: {
+                x: (dx + (box.y2 - dy) * Math.sin(angle) + (box.x2 - dx) * Math.cos(angle)).toFixed(2),
+                y: (dy + (box.y2 - dy) * Math.cos(angle) - (box.x2 - dx) * Math.sin(angle)).toFixed(2)
+            },
+            c: {
+                x: (dx + (box.x2 - dy) * Math.sin(angle) + (box.x1 - dx) * Math.cos(angle)).toFixed(2),
+                y: (dy + (box.x2 - dy) * Math.cos(angle) - (box.x1 - dx) * Math.sin(angle)).toFixed(2)
+            },
+            d: {
+                x: (dx + (box.y1 - dy) * Math.sin(angle) + (box.x1 - dx) * Math.cos(angle)).toFixed(2),
+                y: (dy + (box.y1 - dy) * Math.cos(angle) - (box.x1 - dx) * Math.sin(angle)).toFixed(2)
+            }
+        }
+    };
+
+    var checkBoxIntersect = function (node1, node2) {
+        var a, b;
+        if (node1.angle === 0 && node2.angle === 0) {
+            a = node1.getBox(node1);
+            b = node1.getBox(node2);
+
+            return !(a.y1 > b.y2 || a.y2 < b.y1 || a.x2 < b.x1 || a.x1 > b.x2);
+        } else {
+            a = node1.getBoxVertices(node1);
+            b = node1.getBoxVertices(node2);
+
+            return MathUtil.is4VerticesIntersect(a, b);
+        }
+    };
+
+    BaseNode.prototype.isIntersect = function (node2) {
+        var node1 = this;
+
+        if (node2 instanceof BaseNode) {
+            return checkBoxIntersect(node1, node2);
+        } else if (node2 instanceof Array && node2.length > 0 && node2[0] instanceof BaseNode) {
+            for (var i = 0; i < node2.length; i++) {
+                if (checkBoxIntersect(node1, node2[i])) return true;
+            }
+            return false;
+        }
     };
 
     BaseNode.prototype.isCollision = function (id) {
@@ -217,8 +258,22 @@
 
     BaseNode.prototype.drawBox = function () {
         var context = this.layer.context;
+
         context.lineWidth = 2;
         context.strokeStyle = 'black';
+
+        if (this.angle) {
+            context.save();
+            context.translate(
+                this.getPosition().x - j2Ds.scene.view.pos.x,
+                this.getPosition().y - j2Ds.scene.view.pos.y
+            );
+            context.rotate(MathUtil.rad(this.angle));
+            context.translate(
+                -(this.getPosition().x - j2Ds.scene.view.pos.x),
+                -(this.getPosition().y - j2Ds.scene.view.pos.y)
+            );
+        }
 
         context.beginPath();
         context.rect(
@@ -227,12 +282,33 @@
             this.size.x, this.size.y);
         context.stroke();
 
+        if (this.angle) {
+            context.restore();
+            context.save();
+            context.translate(
+                this.box.offset.x + this.box.size.x / 2 + this.getPosition().x - j2Ds.scene.view.pos.x,
+                this.box.offset.y + this.box.size.y / 2 + this.getPosition().y - j2Ds.scene.view.pos.y
+            );
+            context.rotate(MathUtil.rad(this.angle));
+            context.translate(
+                -(this.box.offset.x + this.box.size.x / 2 + this.getPosition().x - j2Ds.scene.view.pos.x),
+                -(this.box.offset.y + this.box.size.y / 2 + this.getPosition().y - j2Ds.scene.view.pos.y)
+            );
+        }
+
         context.strokeStyle = 'yellow';
 
         context.beginPath();
-        context.rect(this.box.offset.x + this.pos.x - j2Ds.scene.view.pos.x, this.box.offset.y + this.pos.y - j2Ds.scene.view.pos.y,
-            this.box.size.x + this.size.x, this.box.size.y + this.size.y);
+        context.rect(
+            this.box.offset.x + this.pos.x - j2Ds.scene.view.pos.x,
+            this.box.offset.y + this.pos.y - j2Ds.scene.view.pos.y,
+            this.box.size.x + this.size.x,
+            this.box.size.y + this.size.y);
         context.stroke();
+
+        if (this.angle) {
+            context.restore();
+        }
     };
 
     if (typeof module === 'object' && typeof module.exports === 'object') module.exports.BaseNode = BaseNode;
