@@ -3,7 +3,7 @@
  *
  * @authors Skaner, DeVinterX
  * @license zlib
- * @version 0.6.3
+ * @version 0.6.4
  */
 
 (function (root, factory) {

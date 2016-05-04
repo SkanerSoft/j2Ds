@@ -1,3 +1,11 @@
+/**
+ * j2Ds (HTML5 2D Game Engine)
+ *
+ * @authors Skaner, DeVinterX
+ * @license zlib
+ * @version 0.6.4
+ */
+
 var scene = j2Ds.getSceneManager();
 var v2f = j2Ds.getMathManager().v2f;
 var fps = j2Ds.getFPSManager();
