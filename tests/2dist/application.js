@@ -13,9 +13,9 @@ lr.add('back', -1).fill('black');
 
 var b = scene.addTextNode(v2f(5, 270), '', 30, 'white', '', 1, 'black');
 var f = scene.addTextNode(v2f(300, 270), '', 30, 'white', '', 1, 'black');
-var r1 = scene.addRectNode(v2f(40, 40), v2f(40, 40), 'red');
-var r2 = scene.addRectNode(v2f(60, 60), v2f(40, 40), 'green');
-var r3 = scene.addRectNode(v2f(160, 160), v2f(40, 40), 'yellow');
+var r1 = scene.addRectNode(v2f(40, 40), v2f(50, 50), 'red');
+var r2 = scene.addRectNode(v2f(100, 100), v2f(90, 90), 'green');
+var r3 = scene.addRectNode(v2f(260, 60), v2f(1, 1), 'yellow');
 
 r1.setRotation(45);
 r2.setRotation(45);
@@ -31,7 +31,7 @@ r1.box = r2.box = r3.box = {
         y: 10
     }
 };
-
+var t;
 gm.add('myGame', function () {
     try {
         if (io.isKeyDown('W')) r1.move(v2f(0, -1));
@@ -39,8 +39,8 @@ gm.add('myGame', function () {
         if (io.isKeyDown('A')) r1.move(v2f(-1, 0));
         if (io.isKeyDown('D')) r1.move(v2f(1, 0));
 
-
-        b.drawSimpleText(r1.isIntersect([r2, r3]) ? 'TRUE' : 'FALSE');
+        b.drawSimpleText(io.onNode([r1, r2, r3]) ? 'TRUE' : 'FALSE');
+        //b.drawSimpleText(r1.isIntersect([r2, r3]) ? 'TRUE' : 'FALSE');
         f.drawSimpleText('FPS: ' + fps.getFPS());
 
         r1.draw();

@@ -135,31 +135,32 @@
     };
 
     BaseNode.prototype.getBoxVertices = function (node) {
-        var angle = MathUtil.rad(node.angle);
+        if (node === undefined) node = this;
+        var angle = -MathUtil.rad(node.angle);
 
         var dx = node.box.offset.x + node.box.size.x / 2 + node.getPosition().x - j2Ds.scene.view.pos.x;
         var dy = node.box.offset.y + node.box.size.y / 2 + node.getPosition().y - j2Ds.scene.view.pos.y;
 
         var box = this.getBox(node);
 
-        return {
-            a: {
-                x: (dx + (box.y1 - dy) * Math.sin(angle) + (box.x2 - dx) * Math.cos(angle)).toFixed(2),
-                y: (dy + (box.y1 - dy) * Math.cos(angle) - (box.x2 - dx) * Math.sin(angle))
+        return [
+            {
+                x: (dx + (box.y1 - dy) * Math.sin(angle) + (box.x2 - dx) * Math.cos(angle)).toFixed(5),
+                y: (dy + (box.y1 - dy) * Math.cos(angle) - (box.x2 - dx) * Math.sin(angle)).toFixed(5)
             },
-            b: {
-                x: (dx + (box.y2 - dy) * Math.sin(angle) + (box.x2 - dx) * Math.cos(angle)).toFixed(2),
-                y: (dy + (box.y2 - dy) * Math.cos(angle) - (box.x2 - dx) * Math.sin(angle)).toFixed(2)
+            {
+                x: (dx + (box.y2 - dy) * Math.sin(angle) + (box.x2 - dx) * Math.cos(angle)).toFixed(5),
+                y: (dy + (box.y2 - dy) * Math.cos(angle) - (box.x2 - dx) * Math.sin(angle)).toFixed(5)
             },
-            c: {
-                x: (dx + (box.x2 - dy) * Math.sin(angle) + (box.x1 - dx) * Math.cos(angle)).toFixed(2),
-                y: (dy + (box.x2 - dy) * Math.cos(angle) - (box.x1 - dx) * Math.sin(angle)).toFixed(2)
+            {
+                x: (dx + (box.y2 - dy) * Math.sin(angle) + (box.x1 - dx) * Math.cos(angle)).toFixed(5),
+                y: (dy + (box.y2 - dy) * Math.cos(angle) - (box.x1 - dx) * Math.sin(angle)).toFixed(5)
             },
-            d: {
-                x: (dx + (box.y1 - dy) * Math.sin(angle) + (box.x1 - dx) * Math.cos(angle)).toFixed(2),
-                y: (dy + (box.y1 - dy) * Math.cos(angle) - (box.x1 - dx) * Math.sin(angle)).toFixed(2)
+            {
+                x: (dx + (box.y1 - dy) * Math.sin(angle) + (box.x1 - dx) * Math.cos(angle)).toFixed(5),
+                y: (dy + (box.y1 - dy) * Math.cos(angle) - (box.x1 - dx) * Math.sin(angle)).toFixed(5)
             }
-        }
+        ]
     };
 
     var checkBoxIntersect = function (node1, node2) {
@@ -173,8 +174,16 @@
             a = node1.getBoxVertices(node1);
             b = node1.getBoxVertices(node2);
 
-            return MathUtil.is4VerticesIntersect(a, b);
+            if (!MathUtil.is4VerticesIntersect(a, b)) {
+                return node1.isPointInsideBox(a, node2.getPosition())
+                    || node2.isPointInsideBox(b, node1.getPosition());
+            }
+            return true;
         }
+    };
+
+    BaseNode.prototype.isPointInsideBox = function (vf, point) {
+        return MathUtil.isPointInRect(vf[0], vf[1], vf[2], vf[3], point);
     };
 
     BaseNode.prototype.isIntersect = function (node2) {

@@ -8,13 +8,13 @@
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define('io/InputHandler', ['utils/MathUtil'], factory);
+        define('io/InputHandler', ['utils/MathUtil', 'nodes/BaseNode'], factory);
     } else if (typeof module === 'object' && typeof module.exports === 'object') {
-        module.exports = factory(require('utils/MathUtil'));
+        module.exports = factory(require('utils/MathUtil'), require('nodes/BaseNode'));
     } else {
-        factory(root.modules.utils.MathUtil);
+        factory(root.modules.utils.MathUtil, root.modules.nodes.BaseNode);
     }
-}(typeof window !== 'undefined' ? window : global, function (MathUtil) {
+}(typeof window !== 'undefined' ? window : global, function (MathUtil, BaseNode) {
     "use strict";
 
     var InputHandler = function (j2Ds) {
@@ -221,10 +221,17 @@
         }
     };
 
-    InputHandler.prototype.onNode = function (id) {
-        if (!id.layer.visible) return false;
-        return (this.pos.x > id.pos.x && this.pos.x < id.pos.x + id.size.x) &&
-            (this.pos.y > id.pos.y && this.pos.y < id.pos.y + id.size.y);
+    InputHandler.prototype.onNode = function (node) {
+        if (node instanceof BaseNode) {
+            if (!node.layer.visible || !node.isLookScene()) return false;
+            return node.isPointInsideBox(node.getBoxVertices(), this.pos);
+        } else if (node instanceof Array && node.length > 0 && node[0] instanceof BaseNode) {
+            for (var i = 0; i < node.length; i++) {
+                if (!node[i].layer.visible || !node[i].isLookScene()) continue;
+                if (node[i].isPointInsideBox(node[i].getBoxVertices(), this.pos)) return true;
+            }
+            return false;
+        }
     };
 
     InputHandler.prototype.upd = function () {

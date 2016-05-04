@@ -51,45 +51,50 @@
         return num * (Math.PI / 180);
     };
 
-    MathUtil.is4VerticesIntersect = function checkLineIntersection(a, b) {
-        return !!(MathUtil.isLineIntersect(a.a, a.b, b.a, b.b) ||
-        MathUtil.isLineIntersect(a.a, a.b, b.b, b.c) ||
-        MathUtil.isLineIntersect(a.a, a.b, b.c, b.d) ||
-        MathUtil.isLineIntersect(a.a, a.b, b.d, b.a) ||
-
-        MathUtil.isLineIntersect(a.b, a.c, b.a, b.b) ||
-        MathUtil.isLineIntersect(a.b, a.c, b.b, b.c) ||
-        MathUtil.isLineIntersect(a.b, a.c, b.c, b.d) ||
-        MathUtil.isLineIntersect(a.b, a.c, b.d, b.a) ||
-
-        MathUtil.isLineIntersect(a.c, a.d, b.a, b.b) ||
-        MathUtil.isLineIntersect(a.c, a.d, b.b, b.c) ||
-        MathUtil.isLineIntersect(a.c, a.d, b.c, b.d) ||
-        MathUtil.isLineIntersect(a.c, a.d, b.d, b.a) ||
-
-        MathUtil.isLineIntersect(a.d, a.a, b.a, b.b) ||
-        MathUtil.isLineIntersect(a.d, a.a, b.b, b.c) ||
-        MathUtil.isLineIntersect(a.d, a.a, b.c, b.d) ||
-        MathUtil.isLineIntersect(a.d, a.a, b.d, b.a));
-        
+    MathUtil.is4VerticesIntersect = function (a, b) {
+        var m, n;
+        for (m = 0; m < a.length; m++) {
+            for (n = 0; n < b.length; n++) {
+                if (MathUtil.isLineIntersect(
+                        a[m],
+                        a[(m < a.length - 1) ? m + 1 : 0],
+                        b[n],
+                        b[(n < b.length - 1) ? n + 1 : 0])
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     };
 
-    MathUtil.isLineIntersect = function checkLineIntersection(a, b, c, d) {
-        var fcc1 = MathUtil.rotationDirection(a.x, a.y, b.x, b.y, d.x, d.y);
-        var fcc2 = MathUtil.rotationDirection(a.x, a.y, b.x, b.y, c.x, c.y);
-        var fcc3 = MathUtil.rotationDirection(a.x, a.y, c.x, c.y, d.x, d.y);
-        var fcc4 = MathUtil.rotationDirection(b.x, b.y, c.x, c.y, d.x, d.y);
-
-        if (fcc1 == 0 && fcc2 == 0 && fcc3 == 0 && fcc4 == 0) return false;
-        return fcc1 != fcc2 && fcc3 != fcc4;
+    MathUtil.isLineIntersect = function (a, b, c, d) {
+        var dx, g, l;
+        dx = (b.x - a.x) * (d.y - c.y) - (d.x - c.x) * (b.y - a.y);
+        if (dx === 0) {
+            return false;
+        } else {
+            l = ((d.y - c.y) * (d.x - a.x) + (c.x - d.x) * (d.y - a.y)) / dx;
+            g = ((a.y - b.y) * (d.x - a.x) + (b.x - a.x) * (d.y - a.y)) / dx;
+            return (0 < l && l < 1) && (0 < g && g < 1);
+        }
     };
 
-    MathUtil.rotationDirection = function (p1x, p1y, p2x, p2y, p3x, p3y) {
-        if (((p3y - p1y) * (p2x - p1x)) > ((p2y - p1y) * (p3x - p1x)))
-            return 1;
-        else if (((p3y - p1y) * (p2x - p1x)) == ((p2y - p1y) * (p3x - p1x)))
-            return 0;
-        return -1;
+    MathUtil.isPointInRect = function (a, b, c, d, p) {
+        return MathUtil.isPointInTriangle(p, a, b, c) || MathUtil.isPointInTriangle(p, c, d, a);
+    };
+
+    var sign = function (p1, p2, p3) {
+        return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+    };
+
+    MathUtil.isPointInTriangle = function (pt, v1, v2, v3) {
+        var b1, b2, b3;
+        b1 = sign(pt, v1, v2) < 0;
+        b2 = sign(pt, v2, v3) < 0;
+        b3 = sign(pt, v3, v1) < 0;
+
+        return ((b1 == b2) && (b2 == b3));
     };
 
     if (typeof module === 'object' && typeof module.exports === 'object') module.exports.MathUtil = MathUtil;
