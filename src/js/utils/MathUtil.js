@@ -155,7 +155,7 @@
      * @param {{x: number, y: number}} c 3-я вершина прямоугольника
      * @param {{x: number, y: number}} d 4-я вершина прямоугольника
      * @param {{x: number, y: number}} p Точка
-     * @returns {*}
+     * @returns {boolean}
      */
     MathUtil.isPointInRect = function (a, b, c, d, p) {
         return MathUtil.isPointInTriangle(p, a, b, c) || MathUtil.isPointInTriangle(p, c, d, a);

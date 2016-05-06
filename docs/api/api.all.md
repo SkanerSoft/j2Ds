@@ -212,7 +212,7 @@ MathUtil
     * [new MathUtil()](#new_utils/MathUtil_new)
     * [.is4VerticesIntersect(a, b)](#utils/MathUtil.is4VerticesIntersect) ⇒ <code>boolean</code>
     * [.isLineIntersect(a, b, c, d)](#utils/MathUtil.isLineIntersect) ⇒ <code>boolean</code>
-    * [.isPointInRect(a, b, c, d, p)](#utils/MathUtil.isPointInRect) ⇒ <code>\*</code>
+    * [.isPointInRect(a, b, c, d, p)](#utils/MathUtil.isPointInRect) ⇒ <code>boolean</code>
     * [.isPointInTriangle(pt, a, b, c)](#utils/MathUtil.isPointInTriangle) ⇒ <code>boolean</code>
     * [.rad(num)](#utils/MathUtil.rad) ⇒ <code>number</code>
     * [.random(min, max, omitZero)](#utils/MathUtil.random) ⇒ <code>number</code>
@@ -253,7 +253,7 @@ MathUtil
 
 <a name="utils/MathUtil.isPointInRect"></a>
 
-### utils/MathUtil.isPointInRect(a, b, c, d, p) ⇒ <code>\*</code>
+### utils/MathUtil.isPointInRect(a, b, c, d, p) ⇒ <code>boolean</code>
 Проверка принадлежности точки прямоугольнику
 
 **Kind**: static method of <code>[utils/MathUtil](#utils/MathUtil)</code>  

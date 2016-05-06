@@ -1,16 +1,59 @@
 # j2Ds - игровой HTML5 движок
 
-[Лицензия и описание](https://github.com/SkanerSoft/J2ds/wiki)
+[![VK](https://img.shields.io/badge/vk.com-skaner.soft-537599.svg?maxAge=2592000)](http://vk.com/skaner.soft) [![Youtube](https://img.shields.io/badge/youtube-skanersoft-E62117.svg?maxAge=2592000)](https://youtube.com/SkanerSoft?sub_confirmation=1) [![E-Mail](https://img.shields.io/badge/email-skaner0@yandex.ru-ff9900.svg?maxAge=2592000)](mailto://skaner0@yandex.ru)
 
-Автор движка: [Skaner](https://youtube.com/SkanerSoft?sub_confirmation=1) (Нагель Петр)
-Поддержка и разработка: DeVinterX
+**j2Ds** - игровой HTML5 2D движок, распространяющийся на условиях [лицензии zlib](https://ru.wikipedia.org/wiki/%D0%9B%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F_zlib) для HTML5 и Android  / iOS разработки.
+Для отрисовки 2D графики используется технология HTML5 canvas.
 
-E-mail: skaner0@yandex.ru
-vk: [vk.com/skaner.soft](http://vk.com/skaner.soft)
-youtube: [youtube.com/skanersoft](https://youtube.com/SkanerSoft?sub_confirmation=1)
-Сайты: [j2Ds.ru](http://j2Ds.ru), [nagel-petr.ru](http://nagel-petr.ru), [skanersoft.ru](http://skanersoft.ru)
+Автор движка: [Skaner](http://nagel-petr.ru) (Нагель Петр)
 
-### [Форум j2Ds](http://skanersoft.ru/forum/3)
+Поддержка и разработка: [DeVinterX](https://github.com/devinterx) (Дима)
 
-### [Документация на русском](https://github.com/SkanerSoft/j2Ds/blob/development/docs/ru_RU/documentation.md)
-### [API Reference](https://github.com/SkanerSoft/j2Ds/blob/development/docs/api/api.all.md)
+Сайты: [j2Ds.ru](http://j2Ds.ru), [skanersoft.ru](http://skanersoft.ru)
+
+#### [Документация на русском](https://github.com/SkanerSoft/j2Ds/blob/development/docs/ru_RU/documentation.md)
+#### [API Reference](https://github.com/SkanerSoft/j2Ds/blob/development/docs/api/api.all.md)
+#### [Форум j2Ds](http://skanersoft.ru/forum/3)
+
+
+## Характеристики
+* Жанровая направленность: 2D игры любого жанра и типа;
+* Платформа: HTML5 (Web, PC, Android, iOS);
+* Лицензия: абсолютно бесплатно и без ограничений;
+* Языки программирования: JavaScript;
+* SDK - отсутствует, можно использовать в Android Studio, Intel XDK. Для web проектов - любой удобный редактор.
+* Открытый исходный код: предоставляется;
+* Достоинства: понятен для новичков, открыт, развивается, быстрый старт;
+* Разработчик движка: [SkanerSoft](https://youtube.com/SkanerSoft?sub_confirmation=1)
+
+
+## Особенности:
+* Поддержка ограничения FPS
+* ООП архитектура
+* Работа с примитивами
+* Прозрачности, цветовые эффекты
+* Спрайты, сложные линии, текст
+* Анимация изображений, работа со спрайт-картами, скорость анимации, кадр-движок
+* Работа со сценой, как с объектом
+* Работа со слоями, послойная отрисовка, перемещение слоев, невидимости, enabled-слои
+* Работа с игровыми состояниями, меню, паузы, уровни
+* Поддержка мыши/клавиатуры/тачскрина
+* Обнаружение столкновений, создание собственных объектов на основе имеющихся
+* Работа с камерами, вращение, перемещение, поддержка viewports
+* Постобработка, motionBlur, alphaBlur, Сепия, инверс цветов и т.д.
+* Полноценный набор базовых возможностей
+* Бесплатность и открытость кода (GitHub)
+
+
+Целевая платформа для готовой игры может быть совершенно любой, на данный момент протестированы следующие платформы:
+* WEB. Независимо от операционной системы
+* Android
+* iOS (не полностью)
+* Социальная сеть ВКонтакте (ВК API идет отдельно)
+
+Движок очень прост в изучении, есть [примеры](http://j2ds.ru) приложений.
+Нет каких-либо ограничений на расширяемость, любой класс можно переписать либо создать свой аналог
+
+## Лицензия
+
+Zlib. © 2015-2016 Нагель Петр
