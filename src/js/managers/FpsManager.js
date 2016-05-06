@@ -33,7 +33,6 @@
         this.j2Ds.events.addEvent('engine:after', function () {
             fpsManager.update();
         });
-
     };
 
     FpsManager.prototype.update = function () {

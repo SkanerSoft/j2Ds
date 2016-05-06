@@ -6,6 +6,9 @@
  * @version 0.6.4
  */
 
+/**
+ * @module "j2Ds"
+ */
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define('j2Ds', [
@@ -102,11 +105,24 @@
 
         var frameLimit = 60;
 
-        /*------------------ 2D движок --------------------*/
+        /**
+         * @class j2DsEngine
+         * @exports module:"j2Ds"
+         * @alias module:"j2Ds"
+         *
+         * @constructor
+         * @property {number} now
+         * @property {number} dt
+         * @property {number} stopAll
+         * @property {number} frameLimit
+         * @property {number} sceneStartTime
+         * @property {number} sceneSkipTime
+         * @property {function} engine
+         * @property {boolean} ready
+         * @property {Window} window
+         * @property {boolean} canDeactivate
+         */
         var j2DsEngine = function () {
-            this.vector = {}; //TODO:: is need?
-            this.math = {}; //TODO:: is need?
-            this.dom = {};
             this.now = Date.now();
             this.dt = 0;
             this.stopAll = 0;
@@ -120,108 +136,6 @@
             this.ready = false;
             this.window = window;
             this.canDeactivate = true;
-
-            /* Getters & Setters */
-
-            this.getInfo = function () {
-                return {
-                    'name': 'j2Ds',
-                    'version': '0.6.4',
-                    'git': 'https://github.com/SkanerSoft/j2Ds',
-                    'site': 'http://j2ds.ru',
-                    'description': 'HTML5 2D Game Engine',
-                    'author': 'Skaner'
-                };
-            };
-
-            this.getFPSManager = function () {
-                this.fpsManager.init();
-                return this.fpsManager;
-            };
-
-            this.getSceneManager = function () {
-                return this.scene;
-            };
-
-            this.getLayerManager = function () {
-                return this.layers;
-            };
-
-            this.getTextureManager = function () {
-                return this.scene.texture;
-            };
-
-            this.getAudioManager = function () {
-                this.audio.init();
-                return this.audio;
-            };
-
-            this.getPaintManager = function () {
-                return this.paint;
-            };
-
-            this.getIO = function () {
-                this.input.init();
-                return this.input;
-            };
-
-            this.getTouchIO = function () {
-                this.touch.init();
-                return this.touch;
-            };
-
-            this.getDOMManager = function () {
-                return this.dom;
-            };
-
-            this.getTriggerManager = function () {
-                this.trigger.init();
-                return this.trigger;
-            };
-
-            this.getMathManager = function () {
-                return MathUtil;
-            };
-
-            this.getGameStateManager = function () {
-                return this.gameStates;
-            };
-
-            this.getViewManager = function () {
-                return this.viewManager;
-            };
-
-            this.getDeviceManager = function () {
-                return this.deviceManager;
-            };
-
-            this.getErrorManager = function () {
-                this.errorManager.init();
-                return this.errorManager;
-            };
-
-            this.getTimeManager = function () {
-                return this.timeManager;
-            };
-
-            this.getResourceManager = function () {
-                return this.resources;
-            };
-
-            this.setWindow = function (_window) {
-                this.window = _window ? _window : window;
-            };
-
-            this.setFrameLimit = function (fps) {
-                this.frameLimit = (fps > 0 && fps <= 60) ? fps : 60;
-                frameLimit = this.frameLimit;
-            };
-
-            this.setActiveEngine = function (engine) {
-                this.engine = typeof engine == 'function'
-                    ? engine
-                    : this.errorManager.show('Error in "GameStateManager"');
-            };
 
             this.events = new Events(this);
             this.dom = new DOM(this);
@@ -237,11 +151,181 @@
             this.viewManager = new ViewManager(this);
             this.scene = new Scene(this);
 
+            /**
+             * @method
+             * @param {string} id
+             * @returns {StorageManager}
+             */
             this.createLocal = function (id) {
-                new StorageManager(this, id);
+                return new StorageManager(this, id);
             }
         };
 
+        /* Getters & Setters */
+        /**
+         * @returns {{name: string, version: string, git: string, site: string, description: string, author: string}}
+         */
+        j2DsEngine.prototype.getInfo = function () {
+            return {
+                'name': 'j2Ds',
+                'version': '0.6.4',
+                'git': 'https://github.com/SkanerSoft/j2Ds',
+                'site': 'http://j2ds.ru',
+                'description': 'HTML5 2D Game Engine',
+                'author': 'Skaner'
+            };
+        };
+
+        /**
+         * @returns {FpsManager}
+         */
+        j2DsEngine.prototype.getFPSManager = function () {
+            this.fpsManager.init();
+            return this.fpsManager;
+        };
+
+        /**
+         * @returns {SceneManager}
+         */
+        j2DsEngine.prototype.getSceneManager = function () {
+            return this.scene;
+        };
+
+        /**
+         * @returns {Layers}
+         */
+        j2DsEngine.prototype.getLayerManager = function () {
+            return this.layers;
+        };
+
+        /**
+         * @returns {TextureUtil}
+         */
+        j2DsEngine.prototype.getTextureManager = function () {
+            return this.scene.texture;
+        };
+
+        /**
+         * @returns {AudioHandler}
+         */
+        j2DsEngine.prototype.getAudioManager = function () {
+            this.audio.init();
+            return this.audio;
+        };
+
+        /** @deprecated */
+        j2DsEngine.prototype.getPaintManager = function () {
+            return this.paint;
+        };
+
+        /**
+         * @returns {InputHandler}
+         */
+        j2DsEngine.prototype.getIO = function () {
+            this.input.init();
+            return this.input;
+        };
+
+        /**
+         * @returns {TouchHandler}
+         */
+        j2DsEngine.prototype.getTouchIO = function () {
+            this.touch.init();
+            return this.touch;
+        };
+
+        /**
+         * @returns {Dom}
+         */
+        j2DsEngine.prototype.getDOMManager = function () {
+            return this.dom;
+        };
+
+        /**
+         * @returns {TriggerManager}
+         */
+        j2DsEngine.prototype.getTriggerManager = function () {
+            this.trigger.init();
+            return this.trigger;
+        };
+
+        /**
+         * @returns {MathUtil}
+         */
+        j2DsEngine.prototype.getMathManager = function () {
+            return MathUtil;
+        };
+
+        /**
+         * @returns {{states: {}, add: j2DsEngine.gameStates.add}}
+         */
+        j2DsEngine.prototype.getGameStateManager = function () {
+            return this.gameStates;
+        };
+
+        /**
+         * @returns {ViewManager}
+         */
+        j2DsEngine.prototype.getViewManager = function () {
+            return this.viewManager;
+        };
+
+        /**
+         * @returns {DeviceManager}
+         */
+        j2DsEngine.prototype.getDeviceManager = function () {
+            return this.deviceManager;
+        };
+
+        /**
+         * @returns {ErrorManager}
+         */
+        j2DsEngine.prototype.getErrorManager = function () {
+            this.errorManager.init();
+            return this.errorManager;
+        };
+
+        /**
+         * @returns {TimeManager}
+         */
+        j2DsEngine.prototype.getTimeManager = function () {
+            return this.timeManager;
+        };
+
+        /**
+         * @returns {ResourceManager}
+         */
+        j2DsEngine.prototype.getResourceManager = function () {
+            return this.resources;
+        };
+
+        /**
+         * @param {Window} global
+         */
+        j2DsEngine.prototype.setWindow = function (global) {
+            this.window = global ? global : window;
+        };
+
+        /**
+         * @param {number} fps
+         */
+        j2DsEngine.prototype.setFrameLimit = function (fps) {
+            this.frameLimit = (fps > 0 && fps <= 60) ? fps : 60;
+            frameLimit = this.frameLimit;
+        };
+
+        /**
+         * @param {function} engine
+         */
+        j2DsEngine.prototype.setActiveEngine = function (engine) {
+            this.engine = typeof engine == 'function'
+                ? engine
+                : this.errorManager.show('Error in "GameStateManager"');
+        };
+
+        /**
+         * @type {{states: {}, add: j2DsEngine.gameStates.add}}
+         */
         j2DsEngine.prototype.gameStates = {
             states: {},
 
@@ -255,6 +339,10 @@
             }
         };
 
+        /**
+         * @param {function} engine
+         * @param {number} frameLimit
+         */
         j2DsEngine.prototype.start = function (engine, frameLimit) {
             this.setActiveEngine(engine);
             this.frameLimit = frameLimit || 60;
@@ -265,6 +353,9 @@
             this.gameEngine(this);
         };
 
+        /**
+         * @param {j2DsEngine} j2Ds
+         */
         j2DsEngine.prototype.gameEngine = function (j2Ds) {
             j2Ds.now = Date.now();
             setTimeout(function () {
@@ -303,11 +394,17 @@
                 };
         })();
 
+        /**
+         *
+         */
         j2DsEngine.prototype.stopEngine = function () {
             if (!this.canDeactivate) return;
             this.stopAll = true;
         };
 
+        /**
+         * @param {j2DsEngine} j2Ds
+         */
         j2DsEngine.prototype.runEngine = function (j2Ds) {
             j2Ds = j2Ds || this;
             if (!j2Ds.canDeactivate) return;

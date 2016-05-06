@@ -16,6 +16,8 @@ var header = require('gulp-header');
 var replace = require('gulp-replace');
 var newer = require('gulp-newer');
 
+var jsdoc2md = require('gulp-jsdoc-to-markdown');
+
 var http = require('http');
 
 var paths = {
@@ -105,6 +107,29 @@ gulp.task('js-scripts', [], function () {
         }))
         .pipe(replace('.js.map', '.min.map'))
         .pipe(gulp.dest('dist/js'));
+});
+
+/** Docs */
+gulp.task('docs', function () {
+    return gulp.src(paths.scripts)
+        .pipe(plumber({
+            errorHandler: function (err) {
+                console.log(err);
+                this.emit('end');
+            }
+        }))
+        .pipe(concat('api.all.md'))
+        .pipe(jsdoc2md({
+            'sort-by': 'name',
+            encoding: "utf8",
+            recurse: true,
+            private: true,
+            lenient: true,
+            template: fs.readFileSync('./jsdoc.hbs', 'utf8')}))
+        .pipe(rename(function (path) {
+            path.extname = '.md'
+        }))
+        .pipe(gulp.dest('docs/api'))
 });
 
 /** Watcher **/
