@@ -19,9 +19,32 @@
 
     var j2Ds;
 
-    var SpriteNode = function (_j2Ds, pos, size, animation) {
-        j2Ds = _j2Ds;
-        BaseNode.call(this, _j2Ds, pos, size);
+    /**
+     * @exports module:nodes/SpriteNode
+     */
+    var SpriteNode;
+    
+    /**
+     * Примитивный узел для отрисовки спрайта.
+     *
+     * @class SpriteNode
+     *
+     * @constructor
+     * @extends module:nodes/BaseNode
+     * 
+     * @param {j2DsEngine} j2DsEngine
+     * @param {{x: number, y: number}} pos
+     * @param {{x: number, y: number}} size
+     * @param {{imageMap: {img: null|Element, loaded: boolean, width: number, height: number}, sourceX: number, sourceY: number, sourceW: number, sourceH: number, frameCount: number}} animation
+     * 
+     * @property {number} tmpSpeed
+     * @property {number} frame
+     * @property {{imageMap: {img: null|Element, loaded: boolean, width: number, height: number}, sourceX: number, sourceY: number, sourceW: number, sourceH: number, frameCount: number}} animation
+     * @property {{x: boolean|number, y: boolean|number}} flip
+     */
+    SpriteNode = function (j2DsEngine, pos, size, animation) {
+        j2Ds = j2DsEngine;
+        BaseNode.call(this, j2DsEngine, pos, size);
 
         this.tmpSpeed = 0;
         this.frame = 0;
@@ -32,10 +55,19 @@
     SpriteNode.prototype = Object.create(BaseNode.prototype);
     SpriteNode.prototype.constructor = SpriteNode;
 
+    /**
+     * //TODO Добавить описание этой херни
+     *
+     * @param {number} x
+     * @param {number} y
+     */
     SpriteNode.prototype.setFlip = function (x, y) {
         this.flip = {x: x, y: y};
     };
 
+    /**
+     * Метод для отрисовки узла
+     */
     SpriteNode.prototype.draw = function (speed) {
         if (this.visible && this.isLookScene()) {
             speed = speed || 1;
@@ -55,7 +87,12 @@
         }
     };
 
-    // отрисовка одного кадра
+    /**
+     * Отрисовка одного кадра
+     *
+     * @param {number} frame
+     * @returns {void|{added, loaded, failed}}
+     */
     SpriteNode.prototype.drawFrame = function (frame) {
         if (!this.animation.imageMap.loaded) return (err.show('Invalid ImageMap', 'red'));
         var context = this.layer.context;
@@ -95,7 +132,12 @@
         }
     };
 
-    SpriteNode.prototype.setAnimation = function (id) {
+    /**
+     * Устанавливает анимацию
+     *
+     * @param {{imageMap: {img: null|Element, loaded: boolean, width: number, height: number}}} animation
+     */
+    SpriteNode.prototype.setAnimation = function (animation) {
         if (this.animation != id) {
             this.animation = id;
         }

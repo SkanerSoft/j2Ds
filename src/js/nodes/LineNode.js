@@ -19,14 +19,42 @@
 
     var j2Ds;
 
-    var LineNode = function (_j2Ds, pos, points, scale, color, width, fill, cFill) {
-        j2Ds = _j2Ds;
-        BaseNode.call(this, _j2Ds, pos, MathUtil.v2f(0, 0));
+    /**
+     * @exports module:nodes/LineNode
+     */
+    var LineNode;
+
+    /**
+     * Примитивный узел для отрисовки линии.
+     *
+     * @class LineNode
+     *
+     * @constructor
+     * @extends module:nodes/BaseNode
+     * @param {j2DsEngine} j2DsEngine
+     * @param {{x: number, y: number}} pos
+     * @param {Array.<Array.<number>>} points
+     * @param {number} scale
+     * @param {string} color
+     * @param {number} width
+     * @param {boolean} fill
+     * @param {string} cFill
+     * 
+     * @property {string} color
+     * @property {Array.<Array.<number>>} points
+     * @property {boolean} fill
+     * @property {number} scale
+     * @property {string} cFill
+     * @property {number} lineWidth
+     */
+    LineNode = function (j2DsEngine, pos, points, scale, color, width, fill, cFill) {
+        j2Ds = j2DsEngine;
+        BaseNode.call(this, j2DsEngine, pos, MathUtil.v2f(0, 0));
 
         /*Свойства*/
         this.color = color;
         this.points = points;
-        this.fill = fill || false;
+        this.fill = !!fill || false;
         this.scale = scale || 0;
         this.cFill = cFill;
         this.lineWidth = width;
@@ -35,6 +63,9 @@
     LineNode.prototype = Object.create(BaseNode.prototype);
     LineNode.prototype.constructor = LineNode;
 
+    /**
+     * Метод для отрисовки узла
+     */
     LineNode.prototype.draw = function () {
         var context = this.layer.context;
         if (this.visible && this.isLookScene()) {

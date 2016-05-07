@@ -19,9 +19,29 @@
 
     var j2Ds;
 
-    var CircleNode = function (_j2Ds, pos, radius, color) {
-        j2Ds = _j2Ds;
-        BaseNode.call(this, _j2Ds, pos, MathUtil.v2f(radius * 2, radius * 2));
+    /**
+     * @exports module:nodes/CircleNode
+     */
+    var CircleNode;
+
+    /**
+     * Примитивный узел для отрисовки круга.
+     *
+     * @class CircleNode
+     *
+     * @constructor
+     * @extends module:nodes/BaseNode
+     * @param {j2DsEngine} j2DsEngine
+     * @param {{x: number, y: number}} pos
+     * @param {number} radius
+     * @param {string} color
+     *
+     * @property {string} color
+     * @property {number} radius
+     */
+    CircleNode = function (j2DsEngine, pos, radius, color) {
+        j2Ds = j2DsEngine;
+        BaseNode.call(this, j2DsEngine, pos, MathUtil.v2f(radius * 2, radius * 2));
 
         /*Свойства*/
         this.color = color;
@@ -31,6 +51,9 @@
     CircleNode.prototype = Object.create(BaseNode.prototype);
     CircleNode.prototype.constructor = CircleNode;
 
+    /**
+     * Метод для отрисовки узла
+     */
     CircleNode.prototype.draw = function () {
         var context = this.layer.context;
         if (this.visible && this.isLookScene()) {

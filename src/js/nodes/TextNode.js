@@ -19,9 +19,43 @@
 
     var j2Ds;
 
-    var TextNode = function (_j2Ds, pos, text, sizePx, color, family, width, colorL) {
-        j2Ds = _j2Ds;
-        BaseNode.call(this, _j2Ds, pos, MathUtil.v2f(0, 0));
+    /**
+     * @exports module:nodes/TextNode
+     */
+    var TextNode;
+    
+    /**
+     * Примитивный узел для отрисовки текста.
+     *
+     * @class TextNode
+     *
+     * @constructor
+     * @extends module:nodes/BaseNode
+     * 
+     * @param {j2DsEngine} j2DsEngine
+     * @param {{x: number, y: number}} pos
+     * @param {string} text
+     * @param {number} sizePx
+     * @param {string} color
+     * @param {string} family
+     * @param {number} width
+     * @param {string} colorL
+     *
+     * @property {number} vAlign
+     * @property {number} hAlign
+     * @property {string} color
+     * @property {string} family
+     * @property {number} sizePx
+     * @property {number} lineWidth
+     * @property {string} colorL
+     * @property {string} font
+     * @property {string} fullText
+     * @property {number} maxWidth
+     * @property {Array.<string>} lines
+     */
+    TextNode = function (j2DsEngine, pos, text, sizePx, color, family, width, colorL) {
+        j2Ds = j2DsEngine;
+        BaseNode.call(this, j2DsEngine, pos, MathUtil.v2f(0, 0));
 
         /*Свойства*/
 
@@ -59,6 +93,11 @@
     TextNode.prototype = Object.create(BaseNode.prototype);
     TextNode.prototype.constructor = TextNode;
 
+    /**
+     * Устанавливает размер текста
+     *
+     * @param {number} sizePx
+     */
     TextNode.prototype.setSize = function (sizePx) {
         this.sizePx = sizePx;
         this.font = this.sizePx + 'px ' + this.family;
@@ -76,10 +115,24 @@
         this.size.y = this.lines.length * this.sizePx;
     };
 
+    /**
+     * Возвращает текущий размер
+     *
+     * @returns {number}
+     */
     TextNode.prototype.getSize = function () {
         return this.sizePx;
     };
 
+    /**
+     * Метод для быстрого изменения текста и его последующей отрисовки.
+     *
+     * @deprecated
+     * @param {string} text
+     * @param {{x: number, y: number}} pos
+     * @param {string} color
+     * @param {string} colorL
+     */
     TextNode.prototype.drawSimpleText = function (text, pos, color, colorL) {
         var context = this.layer.context;
         context.fillStyle = color ? color : this.color;
@@ -113,10 +166,20 @@
         context.strokeStyle = 'black';
     };
 
+    /**
+     * Возвращает текст
+     *
+     * @returns {string}
+     */
     TextNode.prototype.getText = function () {
         return this.fullText;
     };
 
+    /**
+     * Устанавливает текст
+     *
+     * @param {string} text
+     */
     TextNode.prototype.setText = function (text) {
         this.fullText = text;
         this.maxWidth = 0;
@@ -136,6 +199,9 @@
         this.size.y = this.lines.length * this.sizePx;
     };
 
+    /**
+     * Метод для отрисовки узла
+     */
     TextNode.prototype.draw = function () {
         var context = this.layer.context;
         if (this.visible && this.isLookScene()) {

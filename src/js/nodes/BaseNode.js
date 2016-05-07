@@ -19,8 +19,34 @@
 
     var j2Ds;
 
-    var BaseNode = function (_j2Ds, pos, size) {
-        j2Ds = _j2Ds;
+    /**
+     * @exports module:nodes/BaseNode
+     */
+    var BaseNode;
+
+    /**
+     * Базовый класс о общими методами для всех узлов.
+     *
+     * @class BaseNode
+     * @alias module:nodes/BaseNode
+     *
+     * @abstract
+     * @constructor
+     * @param {j2DsEngine} j2DsEngine
+     * @param {{x: number, y: number}} pos
+     * @param {{x: number, y: number}} size
+     *
+     * @property {boolean} visible
+     * @property {number} alpha
+     * @property {{x: number, y: number}} pos
+     * @property {{x: number, y: number}} size
+     * @property {boolean} parent
+     * @property {number} angle
+     * @property {core/Scene} layer
+     * @property {{offset: {x: number, y: number}, size: {x: number, y: number}}} box
+     */
+    BaseNode = function (j2DsEngine, pos, size) {
+        j2Ds = j2DsEngine;
         this.visible = true;
         this.alpha = 1;
         this.pos = pos;
@@ -41,37 +67,71 @@
         j2Ds.scene.nodes.push(this);
     };
 
+    /**
+     *
+     * @param offset
+     * @param size
+     */
     BaseNode.prototype.resizeBox = function (offset, size) {
         this.box.offset = offset;
         this.box.size = size;
     };
 
+    /**
+     *
+     * @param layer
+     */
     BaseNode.prototype.setLayer = function (layer) {
         this.layer = layer ? j2Ds.layers.layer(layer) : j2Ds.scene;
     };
 
+    /**
+     *
+     * @returns {*}
+     */
     BaseNode.prototype.getLayer = function () {
         return this.layer;
     };
 
+    /**
+     *
+     * @param visible
+     */
     BaseNode.prototype.setVisible = function (visible) {
         this.visible = !!visible;
     };
 
+    /**
+     *
+     * @returns {boolean|*}
+     */
     BaseNode.prototype.isVisible = function () {
         return this.visible;
     };
 
+    /**
+     *
+     * @param alpha
+     */
     BaseNode.prototype.setAlpha = function (alpha) {
         if (alpha < 0) alpha = 0;
         if (alpha > 1) alpha = 1;
         this.alpha = alpha;
     };
 
+    /**
+     *
+     * @returns {*|number}
+     */
     BaseNode.prototype.getAlpha = function () {
         return this.alpha;
     };
 
+    /**
+     *
+     * @param to
+     * @param t
+     */
     BaseNode.prototype.moveTo = function (to, t) {
         t = t ? t : 1;
         this.move(MathUtil.v2f(
@@ -80,6 +140,11 @@
         ));
     };
 
+    /**
+     *
+     * @param pos
+     * @returns {*}
+     */
     BaseNode.prototype.setPosition = function (pos) {
         if (pos) {
             this.pos = MathUtil.v2f(pos.x - Math.ceil(this.size.x / 2), pos.y - Math.ceil(this.size.y / 2));
@@ -88,15 +153,28 @@
         }
     };
 
+    /**
+     *
+     * @param pos
+     */
     BaseNode.prototype.move = function (pos) {
         this.pos.x += pos.x;
         this.pos.y += pos.y;
     };
 
+    /**
+     *
+     * @returns {{x, y}|{x: number, y: number}}
+     */
     BaseNode.prototype.getPosition = function () {
         return MathUtil.v2f(this.pos.x + Math.ceil(this.size.x / 2), this.pos.y + Math.ceil(this.size.y / 2));
     };
 
+    /**
+     *
+     * @param size
+     * @returns {*}
+     */
     BaseNode.prototype.setSize = function (size) {
         if (size) {
             this.size = size;
@@ -105,14 +183,27 @@
         }
     };
 
+    /**
+     *
+     * @returns {*}
+     */
     BaseNode.prototype.getSize = function () {
         return this.size;
     };
 
+    /**
+     *
+     * @param id
+     */
     BaseNode.prototype.setParent = function (id) {
         this.parent = id;
     };
 
+    /**
+     *
+     * @param id
+     * @returns {number}
+     */
     BaseNode.prototype.getDistance = function (id) {
         return Math.ceil(Math.sqrt(
                 Math.pow(id.getPosition().x - this.getPosition().x, 2) +
@@ -121,10 +212,20 @@
         );
     };
 
+    /**
+     *
+     * @param id
+     * @returns {{x, y}|{x: number, y: number}}
+     */
     BaseNode.prototype.getDistanceXY = function (id) {
         return MathUtil.v2f(Math.abs(id.getPosition().x - this.getPosition().x), Math.abs(id.getPosition().y - this.getPosition().y));
     };
 
+    /**
+     *
+     * @param node
+     * @returns {{x1: *, x2: *, y1: *, y2: *}}
+     */
     BaseNode.prototype.getBox = function (node) {
         return {
             x1: node.pos.x + node.box.offset.x,
@@ -134,6 +235,11 @@
         }
     };
 
+    /**
+     *
+     * @param {BaseNode} node
+     * @returns {Array.<{x: number, y: number}>}
+     */
     BaseNode.prototype.getBoxVertices = function (node) {
         if (node === undefined) node = this;
         var angle = -MathUtil.rad(node.angle);
@@ -163,6 +269,12 @@
         ]
     };
 
+    /**
+     *
+     * @param node1
+     * @param node2
+     * @returns {*}
+     */
     var checkBoxIntersect = function (node1, node2) {
         var a, b;
         if (node1.angle === 0 && node2.angle === 0) {
@@ -182,10 +294,21 @@
         }
     };
 
+    /**
+     *
+     * @param vf
+     * @param point
+     * @returns {boolean}
+     */
     BaseNode.prototype.isPointInsideBox = function (vf, point) {
         return MathUtil.isPointInRect(vf[0], vf[1], vf[2], vf[3], point);
     };
 
+    /**
+     *
+     * @param node2
+     * @returns {*}
+     */
     BaseNode.prototype.isIntersect = function (node2) {
         var node1 = this;
 
@@ -199,6 +322,11 @@
         }
     };
 
+    /**
+     *
+     * @param id
+     * @returns {boolean}
+     */
     BaseNode.prototype.isCollision = function (id) {
         var result = false;
         if (
@@ -210,32 +338,57 @@
         return result;
     };
 
+    /**
+     *
+     * @returns {boolean}
+     */
     BaseNode.prototype.isLookScene = function () {
         return !((this.pos.x > j2Ds.scene.view.pos.x + j2Ds.scene.width || this.pos.x + this.size.x < j2Ds.scene.view.pos.x)
         || (this.pos.y > j2Ds.scene.view.pos.y + j2Ds.scene.height || this.pos.y + this.size.y < j2Ds.scene.view.pos.y));
     };
 
+    /**
+     *
+     * @param angle
+     */
     BaseNode.prototype.turn = function (angle) {
         this.angle = (this.angle % 360);
         this.angle += angle;
     };
 
+    /**
+     *
+     * @param angle
+     */
     BaseNode.prototype.setRotation = function (angle) {
         this.angle = angle % 360;
     };
 
+    /**
+     *
+     * @returns {number|*}
+     */
     BaseNode.prototype.getRotation = function () {
         return this.angle;
     };
 
-    BaseNode.prototype.rotateTo = function (_to, _t) {
-        _t = _t ? _t : 1;
+    /**
+     *
+     * @param to
+     * @param t
+     */
+    BaseNode.prototype.rotateTo = function (to, t) {
+        t = t ? t : 1;
         this.setRotation((Math.atan2(
-                (_to.y - this.getPosition().y),
-                (_to.x - this.getPosition().x)
-            ) * (180 / Math.PI)) / _t);
+                (to.y - this.getPosition().y),
+                (to.x - this.getPosition().x)
+            ) * (180 / Math.PI)) / t);
     };
 
+    /**
+     *
+     * @returns {{}}
+     */
     BaseNode.prototype.isOutScene = function () {
         var vector = {};
 
@@ -260,11 +413,18 @@
         return vector;
     };
 
+    /**
+     *
+     * @param speed
+     */
     BaseNode.prototype.moveDir = function (speed) {
         this.pos.x += speed * (Math.cos(MathUtil.rad(this.angle)));
         this.pos.y += speed * (Math.sin(MathUtil.rad(this.angle)));
     };
 
+    /**
+     *
+     */
     BaseNode.prototype.drawBox = function () {
         var context = this.layer.context;
 

@@ -20,15 +20,28 @@
     var j2Ds;
 
     /**
-     * @param _j2Ds
-     * @param pos
-     * @param size
-     * @param color
-     * @constructor
+     * @exports module:nodes/RectNode
      */
-    var RectNode = function (_j2Ds, pos, size, color) {
-        j2Ds = _j2Ds;
-        BaseNode.call(this, _j2Ds, pos, size);
+    var RectNode;
+    
+    /**
+     * Примитивный узел для отрисовки прямоугольника.
+     *
+     * @class RectNode
+     *
+     * @constructor
+     * @extends module:nodes/BaseNode
+     *
+     * @param {j2DsEngine} j2DsEngine
+     * @param {{x: number, y: number}} pos
+     * @param {{x: number, y: number}} size
+     * @param {string} color
+     *
+     * @property {string} color
+     */
+    RectNode = function (j2DsEngine, pos, size, color) {
+        j2Ds = j2DsEngine;
+        BaseNode.call(this, j2DsEngine, pos, size);
 
         this.color = color;
     };
@@ -36,6 +49,9 @@
     RectNode.prototype = Object.create(BaseNode.prototype);
     RectNode.prototype.constructor = RectNode;
 
+    /**
+     * Метод для отрисовки узла
+     */
     RectNode.prototype.draw = function () {
         var context = this.layer.context;
         if (this.visible && this.isLookScene()) {

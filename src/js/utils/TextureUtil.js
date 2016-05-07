@@ -17,14 +17,31 @@
 }(typeof window !== 'undefined' ? window : global, function () {
     "use strict";
 
+    /**
+     * Вспомогательный класс содержащий методы для генерации текстур.
+     *
+     * @class TextureUtil
+     * @exports module:utils/TextureUtil
+     *
+     * @constructor
+     */
     var TextureUtil = function (j2Ds) {
         this.j2Ds = j2Ds;
     };
 
+    /**
+     * Создает карту текстур
+     *
+     * @param {number} width
+     * @param {number} height
+     * @param {function} callback
+     * @returns {{img: null|Element, loaded: boolean, width: number, height: number}}
+     */
     TextureUtil.prototype.createImageMap = function (width, height, callback) {
         var textureUtil = this;
         textureUtil.j2Ds.resources.add();
         var image = {
+            /** @type null|Element */
             img: null,
             loaded: false,
             width: width,
@@ -39,7 +56,16 @@
         callback(image.context);
         image.loaded = true;
 
-        /* Функции */
+        /**
+         * Возвращает анимацию
+         *
+         * @param {number} sourceX
+         * @param {number} sourceY
+         * @param {number} sourceW
+         * @param {number} sourceH
+         * @param {number} frameCount
+         * @returns {{imageMap: image, sourceX: number, sourceY: number, sourceW: number, sourceH: number, frameCount: number}}
+         */
         image.getAnimation = function (sourceX, sourceY, sourceW, sourceH, frameCount) {
             return {
                 imageMap: this,
@@ -56,10 +82,17 @@
         return image;
     };
 
+    /**
+     * Загружает из файла карту текстур
+     *
+     * @param {string} path
+     * @returns {{img: null, width: number, height: number, loaded: boolean}}
+     */
     TextureUtil.prototype.loadImageMap = function (path) {
         var textureUtil = this;
         textureUtil.j2Ds.resources.add();
         var image = {
+            /** @type null|Element */
             img: null,
             width: 0,
             height: 0,
@@ -85,7 +118,16 @@
         });
         /* Свойства */
 
-        /* Функции */
+        /**
+         * Возвращает анимацию
+         *
+         * @param {number} sourceX
+         * @param {number} sourceY
+         * @param {number} sourceW
+         * @param {number} sourceH
+         * @param {number} frameCount
+         * @returns {{imageMap: image, sourceX: number, sourceY: number, sourceW: number, sourceH: number, frameCount: number}}
+         */
         image.getAnimation = function (sourceX, sourceY, sourceW, sourceH, frameCount) {
             return {
                 imageMap: this,
@@ -102,18 +144,56 @@
 
     /* -------------------- */
 
+    /**
+     * Шаблоны
+     *
+     * @type {{ellipse: TextureUtil.templates.ellipse, fillRect: TextureUtil.templates.fillRect, strokeRect: TextureUtil.templates.strokeRect, gradientL: TextureUtil.templates.gradientL, gradientR: TextureUtil.templates.gradientR}}
+     */
     TextureUtil.prototype.templates = {
+        /**
+         * Рисует эллипс
+         *
+         * @param {CanvasRenderingContext2D} context
+         * @param {number} size
+         * @param {string} color
+         */
         ellipse: function (context, size, color) { // TODO??
         },
+
+        /**
+         * Рисует прямоугольник закрашенный
+         *
+         * @param {CanvasRenderingContext2D} context
+         * @param {number} size
+         * @param {string} color
+         */
         fillRect: function (context, size, color) {
             context.fillStyle = color;
             context.fillRect(0, 0, size.x, size.y);
         },
+
+        /**
+         * Рисует пустой прямоугольник
+         *
+         * @param {CanvasRenderingContext2D} context
+         * @param {number} size
+         * @param {string} color
+         * @param {number} lineWidth
+         */
         strokeRect: function (context, size, color, lineWidth) {
             context.strokeStyle = color;
             context.lineWidth = lineWidth;
             context.strokeRect(0, 0, size.x, size.y);
         },
+
+        /**
+         * Рисует линейным градиентом
+         *
+         * @param {CanvasRenderingContext2D} context
+         * @param {number} size
+         * @param {Array.<string>} colors
+         * @param {boolean} isHorizontal
+         */
         gradientL: function (context, size, colors, isHorizontal) {
             var gradient = context.createLinearGradient(0, 0, size.x, 0);
             var step = 1 / colors.length;
@@ -126,6 +206,18 @@
             context.fillStyle = gradient;
             context.fillRect(0, 0, size.x, size.y);
         },
+
+        /**
+         * Рисует радиальным градиентом
+         *
+         * @param {CanvasRenderingContext2D} context
+         * @param {{x: number, y: number}} size
+         * @param {{x: number, y: number}} pos1
+         * @param {number} r1
+         * @param {{x: number, y: number}} pos2
+         * @param {number} r2
+         * @param {Array.<string>} colors
+         */
         gradientR: function (context, size, pos1, r1, pos2, r2, colors) {
             var gradient = context.createRadialGradient(pos1.x, pos1.y, r1, pos2.x, pos2.y, r2);
             var step = 1 / colors.length;
