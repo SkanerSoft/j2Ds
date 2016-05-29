@@ -20,7 +20,6 @@
 
             'io/AudioHandler',
             'io/InputHandler',
-            'io/TouchHandler',
 
             'managers/DeviceManager',
             'managers/ErrorManager',
@@ -44,7 +43,6 @@
 
             require('io/AudioHandler'),
             require('io/InputHandler'),
-            require('io/TouchHandler'),
 
             require('managers/DeviceManager'),
             require('managers/ErrorManager'),
@@ -68,7 +66,6 @@
 
             root.modules.io.AudioHandler,
             root.modules.io.InputHandler,
-            root.modules.io.TouchHandler,
 
             root.modules.managers.DeviceManager,
             root.modules.managers.ErrorManager,
@@ -91,7 +88,6 @@
               Scene,
               AudioHandler,
               InputHandler,
-              TouchHandler,
               DeviceManager,
               ErrorManager,
               FPSManager,
@@ -224,14 +220,6 @@
         j2DsEngine.prototype.getIO = function () {
             this.input.init();
             return this.input;
-        };
-
-        /**
-         * @returns {TouchHandler}
-         */
-        j2DsEngine.prototype.getTouchIO = function () {
-            this.touch.init();
-            return this.touch;
         };
 
         /**

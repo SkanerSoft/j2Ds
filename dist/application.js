@@ -20,6 +20,7 @@ scene.setAutoClear(true);
 lr.add('back', -1).fill('black');
 
 var b = scene.addTextNode(v2f(5, 270), '', 30, 'white', '', 1, 'black');
+var b2 = scene.addTextNode(v2f(5, 240), '', 30, 'white', '', 1, 'black');
 var f = scene.addTextNode(v2f(300, 270), '', 30, 'white', '', 1, 'black');
 var r1 = scene.addRectNode(v2f(40, 40), v2f(50, 50), 'red');
 var r2 = scene.addRectNode(v2f(100, 100), v2f(90, 90), 'green');
@@ -46,7 +47,9 @@ gm.add('myGame', function () {
         if (io.isKeyDown('S')) r1.move(v2f(0, 1));
         if (io.isKeyDown('A')) r1.move(v2f(-1, 0));
         if (io.isKeyDown('D')) r1.move(v2f(1, 0));
-        if (io.isTouch()) console.log(io.getPosition());
+        if (io.isTouch()) b2.drawSimpleText('IS TOUCH');
+        if (io.isTouchTap()) console.log('touchTap', io.getPosition());
+        if (io.isTouchHold()) console.log('touchHold', io.getPosition());
 
         b.drawSimpleText(io.onNode([r1, r2, r3]) ? 'TRUE' : 'FALSE');
         //b.drawSimpleText(r1.isIntersect([r2, r3]) ? 'TRUE' : 'FALSE');

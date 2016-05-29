@@ -46,7 +46,6 @@ var paths = {
 
         'src/js/io/AudioHandler.js',
         'src/js/io/InputHandler.js',
-        'src/js/io/TouchHandler.js',
 
         'src/js/core/Layers.js',
         'src/js/core/Scene.js',

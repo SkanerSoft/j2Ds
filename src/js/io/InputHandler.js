@@ -25,6 +25,11 @@
         this.y = 0;
         this.screenPos = {x: 0, y: 0};
         this.touch = false;
+        this.touchTap = false;
+        this.touchHold = false;
+        this.touchAutoHold = false;
+        this.touchCount = 0;
+        this.touchDuration = 60;
         this.keyDown = [];
         this.keyPress = [];
         this.keyPressed = [];
@@ -146,6 +151,8 @@
         this.mousePress = [];
         this.mouseUp = [];
         this.mouseWheel = 0;
+        this.touchHold = false;
+        this.touchTap = false;
     };
 
     InputHandler.prototype.isKeyDown = function (code) {
@@ -216,6 +223,10 @@
             this.canceled = true;
             this.keyDown = [];
             this.mouseDown = [];
+            this.touchHold = false;
+            this.touchTap = false;
+            this.touch = false;
+            this.touchCount = 0;
         } else {
             this.keyDown[this.jKey[id]] = false;
         }
@@ -242,6 +253,12 @@
         this.y = (this.screenPos.y / dY);
         this.pos.x = this.j2Ds.scene.view.pos.x + this.x;
         this.pos.y = this.j2Ds.scene.view.pos.y + this.y;
+
+        if (this.touchCount > 0 && this.touchCount < this.touchDuration) this.touchCount++;
+        // Repeater TouchHold
+        if (!this.touchHold && this.touchCount >= this.touchDuration) {
+            if (this.touchAutoHold) this.touchHold = true;
+        }
     };
 
     InputHandler.prototype.onMove = function (e) {
@@ -266,6 +283,18 @@
 
     InputHandler.prototype.isTouch = function () {
         return this.touch;
+    };
+
+    InputHandler.prototype.isTouchTap = function () {
+        return this.touchTap;
+    };
+
+    InputHandler.prototype.isTouchHold = function () {
+        return this.touchHold;
+    };
+
+    InputHandler.prototype.setTouchDuration = function (duration) {
+        return this.touchDuration = (duration > 0) ? duration : 60;
     };
 
     InputHandler.prototype.isMouseWheel = function (code) {
@@ -313,10 +342,12 @@
         var input = this.j2Ds.input;
         if (!input.enabled) return false;
         e.preventDefault();
-        input.touch = (!input.canceled);
+
+        if (input.touchCount == 0) input.touchCount++;
 
         if (!input.canceled) {
             input.mouseDown = [];
+            input.touch = !input.canceled;
         }
 
         input.screenPos.x = -input.j2Ds.scene.offsetLeft + e.touches[0].pageX;
@@ -363,11 +394,19 @@
             input.j2Ds.window.addEventListener('touchmove', input.onTouchEvent);
             input.j2Ds.window.addEventListener('touchend', function () {
                 input.canceled = false;
+                if (input.touchCount >= input.touchDuration) {
+                    input.touchHold = true;
+                    input.touchTap = false;
+                    input.touchCount = 0;
+                } else if (input.touchCount >= 0 && input.touchCount < input.touchDuration) {
+                    input.touchTap = true;
+                    input.touchHold = false;
+                    input.touchCount = 0;
+                }
                 input.touch = false;
             });
             input.j2Ds.window.addEventListener('touchcancel', function () {
                 input.canceled = false;
-                input.touch = false;
             });
             input.j2Ds.window.oncontextmenu = function () {
                 return false;

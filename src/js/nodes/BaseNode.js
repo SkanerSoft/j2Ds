@@ -69,8 +69,8 @@
 
     /**
      *
-     * @param offset
-     * @param size
+     * @param {{x: number, y: number}} offset
+     * @param {{x: number, y: number}} size
      */
     BaseNode.prototype.resizeBox = function (offset, size) {
         this.box.offset = offset;
