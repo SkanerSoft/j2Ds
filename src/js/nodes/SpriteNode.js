@@ -135,11 +135,11 @@
     /**
      * Устанавливает анимацию
      *
-     * @param {{imageMap: {img: null|Element, loaded: boolean, width: number, height: number}}} animation
+     * @param {{imageMap: {img: null|Element, loaded: boolean, width: number, height: number}, sourceX: number, sourceY: number, sourceW: number, sourceH: number, frameCount: number}} animation
      */
     SpriteNode.prototype.setAnimation = function (animation) {
-        if (this.animation != id) {
-            this.animation = id;
+        if (this.animation != animation) {
+            this.animation = animation;
         }
     };
 
