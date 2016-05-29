@@ -24,6 +24,7 @@
         this.x = 0;
         this.y = 0;
         this.screenPos = {x: 0, y: 0};
+        this.touch = false;
         this.keyDown = [];
         this.keyPress = [];
         this.keyPressed = [];
@@ -215,8 +216,7 @@
             this.canceled = true;
             this.keyDown = [];
             this.mouseDown = [];
-        }
-        else {
+        } else {
             this.keyDown[this.jKey[id]] = false;
         }
     };
@@ -245,8 +245,11 @@
     };
 
     InputHandler.prototype.onMove = function (e) {
-        this.screenPos.x = -this.j2Ds.scene.offsetLeft + e.pageX;
-        this.screenPos.y = -this.j2Ds.scene.offsetTop + e.pageY;
+        var input = this.j2Ds.input;
+        if (!input.touch) {
+            input.screenPos.x = -input.j2Ds.scene.offsetLeft + e.pageX;
+            input.screenPos.y = -input.j2Ds.scene.offsetTop + e.pageY;
+        }
     };
 
     InputHandler.prototype.isMouseDown = function (code) {
@@ -259,6 +262,10 @@
 
     InputHandler.prototype.isMouseUp = function (code) {
         return this.mouseUp[this.mKey[code]];
+    };
+
+    InputHandler.prototype.isTouch = function () {
+        return this.touch;
     };
 
     InputHandler.prototype.isMouseWheel = function (code) {
@@ -302,6 +309,23 @@
         return false;
     };
 
+    InputHandler.prototype.onTouchEvent = function (e) {
+        var input = this.j2Ds.input;
+        if (!input.enabled) return false;
+        e.preventDefault();
+        input.touch = (!input.canceled);
+
+        if (!input.canceled) {
+            input.mouseDown = [];
+        }
+
+        input.screenPos.x = -input.j2Ds.scene.offsetLeft + e.touches[0].pageX;
+        input.screenPos.y = -input.j2Ds.scene.offsetTop + e.touches[0].pageY;
+
+        input.j2Ds.window.focus();
+        return false;
+    };
+
     InputHandler.prototype.setCursorImage = function (curImg) {
         this.j2Ds.dom.tag('body')[0].style.cursor = 'url("' + curImg + '"), auto';
     };
@@ -334,6 +358,17 @@
 
 
         input.j2Ds.events.addEvent('dom:loaded', function () {
+            input.j2Ds.window.focus();
+            input.j2Ds.window.addEventListener('touchstart', input.onTouchEvent);
+            input.j2Ds.window.addEventListener('touchmove', input.onTouchEvent);
+            input.j2Ds.window.addEventListener('touchend', function () {
+                input.canceled = false;
+                input.touch = false;
+            });
+            input.j2Ds.window.addEventListener('touchcancel', function () {
+                input.canceled = false;
+                input.touch = false;
+            });
             input.j2Ds.window.oncontextmenu = function () {
                 return false;
             };
@@ -344,27 +379,17 @@
                 input.canceled = false;
                 input.onMouseEvent(e);
             };
-            input.j2Ds.window.onmousemove = function (e) {
-                input.onMove(e);
-            };
-            input.j2Ds.window.onkeydown = function (e) {
-                input.keyEvent(e);
-            };
+            input.j2Ds.window.onmousemove = input.onMove;
+            input.j2Ds.window.onkeydown = input.keyEvent;
             input.j2Ds.window.onkeyup = function (e) {
                 input.canceled = false;
                 input.keyEvent(e);
             };
-            input.j2Ds.window.onkeypress = function (e) {
-                input.keyEvent(e);
-            };
-            input.j2Ds.window.onmousewheel = function (e) {
-                input.onMouseWheel(e);
-            };
+            input.j2Ds.window.onkeypress = input.keyEvent;
+            input.j2Ds.window.onmousewheel = input.onMouseWheel;
 
             if (input.j2Ds.window.addEventListener) {
-                input.j2Ds.window.addEventListener("DOMMouseScroll", function (e) {
-                    input.onMouseWheel(e);
-                }, false);
+                input.j2Ds.window.addEventListener("DOMMouseScroll", input.onMouseWheel, false);
             }
         });
     };

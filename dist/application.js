@@ -39,13 +39,14 @@ r1.box = r2.box = r3.box = {
         y: 10
     }
 };
-var t;
+
 gm.add('myGame', function () {
     try {
         if (io.isKeyDown('W')) r1.move(v2f(0, -1));
         if (io.isKeyDown('S')) r1.move(v2f(0, 1));
         if (io.isKeyDown('A')) r1.move(v2f(-1, 0));
         if (io.isKeyDown('D')) r1.move(v2f(1, 0));
+        if (io.isTouch()) console.log(io.getPosition());
 
         b.drawSimpleText(io.onNode([r1, r2, r3]) ? 'TRUE' : 'FALSE');
         //b.drawSimpleText(r1.isIntersect([r2, r3]) ? 'TRUE' : 'FALSE');
