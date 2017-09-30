@@ -3,7 +3,7 @@
  *
  * @authors Skaner, DeVinterX
  * @license zlib
- * @version 0.6.4
+ * @version 0.6.5
  */
 
 (function (root, factory) {
@@ -156,15 +156,15 @@
     };
 
     InputHandler.prototype.isKeyDown = function (code) {
-        return this.keyDown[this.jKey[code]];
+        return this.keyDown[this.jKey[code]] !== undefined;
     };
 
     InputHandler.prototype.isKeyPress = function (code) {
-        return this.keyPress[this.jKey[code]];
+        return this.keyPress[this.jKey[code]] !== undefined;
     };
 
     InputHandler.prototype.isKeyUp = function (code) {
-        return this.keyUp[this.jKey[code]];
+        return this.keyUp[this.jKey[code]] !== undefined;
     };
 
     InputHandler.prototype.getPosition = function () {
@@ -185,7 +185,7 @@
 
     InputHandler.prototype.keyEvent = function (e) {
         if (!this.enabled) return false;
-        if (e.type == 'keydown') {
+        if (e.type === 'keydown') {
             if (!this.keyPressed[e.keyCode]) {
                 this.keyPress[e.keyCode] = true;
                 this.keyPressed[e.keyCode] = true;
@@ -195,7 +195,7 @@
             } else {
                 this.j2Ds.events.onEvent('writeMode:keyPress', '');
             }
-        } else if (e.type == 'keyup') {
+        } else if (e.type === 'keyup') {
             if (this.keyPressed[e.keyCode]) {
                 e.preventDefault();
                 this.keyPress[e.keyCode] = false;
@@ -203,9 +203,9 @@
                 this.keyUp[e.keyCode] = true;
                 this.keyUped = true;
             }
-        } else if (e.type == 'keypress' && (this.writeMode)) {
+        } else if (e.type === 'keypress' && (this.writeMode)) {
             var char = '';
-            if (e.which != 0 && e.charCode != 0) {
+            if (e.which !== 0 && e.charCode !== 0) {
                 if (e.which >= 32) {
                     char = String.fromCharCode(e.which);
                 }
@@ -213,7 +213,7 @@
             this.j2Ds.events.onEvent('writeMode:keyPress', char);
         }
 
-        this.keyDown[e.keyCode] = (e.type == 'keydown') && (!this.canceled);
+        this.keyDown[e.keyCode] = (e.type === 'keydown') && (!this.canceled);
         this.anyKey = e.keyCode;
         return false;
     };
@@ -298,8 +298,8 @@
     };
 
     InputHandler.prototype.isMouseWheel = function (code) {
-        return (code == 'UP' && this.mouseWheel > 0) ||
-            (code == 'DOWN' && this.mouseWheel < 0)
+        return (code === 'UP' && this.mouseWheel > 0) ||
+            (code === 'DOWN' && this.mouseWheel < 0)
     };
 
     InputHandler.prototype.onMouseWheel = function (e) {
@@ -318,12 +318,12 @@
             else if (e.button & 2) e.which = 3;
         }
 
-        if (e.type == 'mousedown') {
+        if (e.type === 'mousedown') {
             if (!this.mousePressed[e.which]) {
                 this.mousePress[e.which] = true;
                 this.mousePressed[e.which] = true;
             }
-        } else if (e.type == 'mouseup') {
+        } else if (e.type === 'mouseup') {
             if (this.mousePressed[e.which]) {
                 this.mousePress[e.which] = false;
                 this.mousePressed[e.which] = false;
@@ -332,7 +332,7 @@
             }
         }
 
-        this.mouseDown[e.which] = (e.type == 'mousedown') && (!this.canceled);
+        this.mouseDown[e.which] = (e.type === 'mousedown') && (!this.canceled);
 
         this.j2Ds.window.focus();
         return false;
@@ -343,7 +343,7 @@
         if (!input.enabled) return false;
         e.preventDefault();
 
-        if (input.touchCount == 0) input.touchCount++;
+        if (input.touchCount === 0) input.touchCount++;
 
         if (!input.canceled) {
             input.mouseDown = [];
@@ -386,7 +386,6 @@
         input.j2Ds.events.addEvent('engine:after', function () {
             input.reset();
         });
-
 
         input.j2Ds.events.addEvent('dom:loaded', function () {
             input.j2Ds.window.focus();
